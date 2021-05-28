@@ -16,11 +16,11 @@ defmodule FiubaWebMigration do
     :world
   end
 
-
   def noticias_migration do
-
     alias FiubaWebMigration.Repo
     import Ecto.Query
+    import HTTPoison
+    import JSON
 
     {:ok, respuesta} = Repo.query("
       SELECT
@@ -36,20 +36,32 @@ defmodule FiubaWebMigration do
       LEFT JOIN file_managed ON field_data_field_image.field_image_fid = file_managed.fid
       WHERE node.type = 'article'
       ORDER BY node.title
+      Limit 2
       ")
 
     noticias = respuesta.rows
 
-    Enum.map(noticias,
+    Enum.map(
+      noticias,
       fn elemento ->
-
         noticia = %{
-          "titulo" => Enum.at(elemento,1),
-          "fecha" => Enum.at(elemento,2),
-          "cuerpo" => Enum.at(elemento,3)}
+          "titulo" => Enum.at(elemento, 1),
+          "cuerpo" => Enum.at(elemento, 3),
+          "fecha_publicacion" => "2021-04-27T21:52:39.581Z",
+          "seo_url" => to_string(Enum.at(elemento,0))
+        }
 
-        ##Aca tiene que venir el post
+        IO.puts("json data")
+        IO.puts(JSON.encode!(noticia))
 
-      end)
+        HTTPoison.post!(
+          "https://testing.cms.fiuba.lambdaclass.com/noticias",
+          JSON.encode!(noticia),
+          [{"Content-type", "application/json"}]
+        )
+
+        ## Aca tiene que venir el post
+      end
+    )
   end
 end
