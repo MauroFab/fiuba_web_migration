@@ -23,7 +23,8 @@ defmodule FiubaWebMigration.MixProject do
   defp deps do
     [
       {:ecto_sql, "~> 3.0"},
-      {:myxql, "~> 0.5.0"}
+      {:myxql, "~> 0.5.0"},
+      {:httpoison, "~> 1.8"}
     ]
   end
 end
