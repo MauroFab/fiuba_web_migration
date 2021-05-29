@@ -25,7 +25,10 @@ defmodule FiubaWebMigration.MixProject do
       {:ecto_sql, "~> 3.0"},
       {:myxql, "~> 0.5.0"},
       {:httpoison, "~> 1.8"},
-      {:json, "~> 1.4.1"}
+      {:json, "~> 1.4.1"},
+      {:html_sanitize_ex, "~> 1.3.0-rc3"},
+      {:timex, "~> 3.0"},
+      {:tzdata, "~> 0.1.8", override: true}
     ]
   end
 end
