@@ -27,7 +27,8 @@ defmodule FiubaWebMigration do
         menu_links.link_title AS titulo,
         menu_links.mlid AS mlid
       FROM menu_links
-      WHERE menu_links.plid = '1018'"
+      WHERE menu_links.plid = '1018'
+      ORDER BY menu_links.link_title DESC"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -77,6 +78,7 @@ defmodule FiubaWebMigration do
     alias FiubaWebMigration.Repo
     import Ecto.Query
     import JSON
+    import String
 
     carreras = cargar_carreras_grado()
 
@@ -136,7 +138,7 @@ defmodule FiubaWebMigration do
 
         response_body_navegacion = response_navegacion.body
         {:ok, response_body_navegacion_map} = JSON.decode(response_body_navegacion)
-        {:ok, id } = Map.fetch(response_body_navegacion_map, "id")
+        {:ok, id_navegacion } = Map.fetch(response_body_navegacion_map, "id")
 
         HTTPoison.post!(
           "https://testing.cms.fiuba.lambdaclass.com/navegacion",
@@ -144,13 +146,31 @@ defmodule FiubaWebMigration do
           [{"Content-type", "application/json"}]
         )
 
-        #Ahora falta anexar el link a pagina carreras
 
-        #link = %{
-        #  "nombre" => "Carreras",
-        #}
+        pagina_carrera_response = HTTPoison.get!(
+          "https://testing.cms.fiuba.lambdaclass.com/paginas?nombre=Carreras"
+        )
 
+        pagina_carrera_response_body = pagina_carrera_response.body
+        {:ok, response_body_carreras_map} = JSON.decode(pagina_carrera_response_body)
+        {:ok, id_pagina_carrera } = Map.fetch( Enum.at(response_body_carreras_map,0) , "id")
+        {:ok, componentes_actuales} = Map.fetch( Enum.at(response_body_carreras_map,0) , "componentes")
+        {:ok, links_actuales} = Map.fetch(Enum.at(componentes_actuales,0), "links")
 
+        link = %{
+          "updid" => id_pagina_carrera,
+          "componentes" => [%{
+            "__component" => "paginas.navegacion-listado",
+            "links" => links_actuales ++ [%{"navegacion" => id_navegacion}]
+          }]
+        }
+        #{"nombre":"Carreras","created_at":"2021-04-13T19:45:16.763Z","componentes":[{"__component":"paginas.navegacion-listado","id":3,"encabezado":null,"links":[{"id":4,"navegacion":40},{"navegacion":68}]}],"created_by":1,"menu_lateral":null,"updated_at":"2021-06-02T03:08:45.832Z","id":24,"updated_by":4,"portada":46}
+
+        HTTPoison.put!(
+          "https://testing.cms.fiuba.lambdaclass.com/paginas/" <> to_string(id_pagina_carrera),
+          JSON.encode!(link),
+          [{"Content-type", "application/json"}]
+          )
       end
       )
   end
