@@ -15,7 +15,9 @@ defmodule FiubaWebMigration do
     def hello do
       :world
     end
-  """
+
+    """
+
 
   def cargar_carreras_grado do
     alias FiubaWebMigration.Repo
@@ -26,7 +28,8 @@ defmodule FiubaWebMigration do
         menu_links.mlid AS mlid
       FROM menu_links
       WHERE menu_links.plid = '1018'
-      ORDER BY menu_links.link_title DESC"
+      ORDER BY menu_links.link_title DESC
+      LIMIT 1"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -41,8 +44,10 @@ defmodule FiubaWebMigration do
         menu_links.link_title AS titulo_nodo_asociado,
         REPLACE(menu_links.link_path, 'node/','') AS nid
       FROM menu_links
-      WHERE menu_links.link_title != 'Video' AND (menu_links.plid = " <>
-        to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
+      WHERE menu_links.link_title != 'Video' AND
+            menu_links.link_title != 'Plan de estudios' AND
+            menu_links.link_title != 'Autoridades' AND
+            (menu_links.plid = " <> to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -63,7 +68,7 @@ defmodule FiubaWebMigration do
     respuesta.rows
   end
 
-  def carreras_grado_migration do
+  def pepito do
     alias FiubaWebMigration.Repo
     import Ecto.Query
     import JSON
@@ -295,6 +300,7 @@ defmodule FiubaWebMigration do
   def cargar_carreras_especializacion do
     alias FiubaWebMigration.Repo
     import Ecto.Query
+    import HTTPoison
 
     query_sql = "SELECT
         menu_links.link_title AS titulo,
@@ -342,4 +348,44 @@ defmodule FiubaWebMigration do
       end
     )
   end
+
+
+
+  def carreras_grado_migration() do
+
+    alias FiubaWebMigration.Repo
+    import Ecto.Query
+
+    carreras_grado = cargar_carreras_grado()
+
+    Enum.map(
+      carreras_grado,
+      fn elemento ->
+        nodos_asociados = cargar_nodos_asociados( Enum.at(elemento,1))
+
+        Enum.map(
+          nodos_asociados,
+          fn nodo ->
+            texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
+
+            nombre_pagina = if(Enum.at(texto_asociado,0) != nombre_carrera) do nombre_carrera else "Bokita" end
+
+            pagina = %{
+              "nombre" => nombre_pagina,
+              "componentes" => %{
+                "__component" => "paginas.texto-con-formato",
+                "texto" => HtmlSanitizeEx.strip_tags(Enum.at(texto_asociado, 1))}
+              }
+
+            end
+        )
+      end
+    )
+  end
+
+
+  def hello do
+      :world
+  end
+
 end
