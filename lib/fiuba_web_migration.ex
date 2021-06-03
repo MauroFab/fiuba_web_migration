@@ -355,32 +355,32 @@ defmodule FiubaWebMigration do
 
     alias FiubaWebMigration.Repo
     import Ecto.Query
+    import HTTPoison
 
-    carreras_grado = cargar_carreras_grado()
+    carreras = cargar_carreras_grado()
 
     Enum.map(
-      carreras_grado,
-      fn elemento ->
-        nodos_asociados = cargar_nodos_asociados( Enum.at(elemento,1))
+      carreras,
+      fn carrera ->
+        nodos_asociados = cargar_nodos_asociados(Enum.at(carrera, 1))
+        nombre_carrera = Enum.at(carrera, 0)
 
-        Enum.map(
-          nodos_asociados,
-          fn nodo ->
-            texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
+        componentes_pagina =
+          Enum.map(
+            nodos_asociados,
+            fn nodo ->
+              texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
 
-            nombre_pagina = if(Enum.at(texto_asociado,0) != nombre_carrera) do nombre_carrera else "Bokita" end
-
-            pagina = %{
-              "nombre" => nombre_pagina,
-              "componentes" => %{
-                "__component" => "paginas.texto-con-formato",
-                "texto" => HtmlSanitizeEx.strip_tags(Enum.at(texto_asociado, 1))}
+              paginas = %{
+                "nombre" => if (Enum.at(texto_asociado,0) != nombre_carrera) do (nombre_carrera <> " - " <> Enum.at(texto_asociado,0)) else nombre_carrera end,
+                "componentes" => %{
+                  "__component" => "paginas.texto-con-formato",
+                  "texto" => HtmlSanitizeEx.strip_tags(Enum.at(texto_asociado, 1))
+                }
               }
-
             end
-        )
-      end
-    )
+          )
+      end)
   end
 
 
