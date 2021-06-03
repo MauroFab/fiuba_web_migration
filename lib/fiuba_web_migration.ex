@@ -28,12 +28,43 @@ defmodule FiubaWebMigration do
         menu_links.mlid AS mlid
       FROM menu_links
       WHERE menu_links.plid = '1018'
-      ORDER BY menu_links.link_title DESC
-      LIMIT 1"
+      ORDER BY menu_links.link_title DESC"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
   end
+
+
+  def cargar_maestrias do
+    alias FiubaWebMigration.Repo
+    import Ecto.Query
+
+    query_sql = "SELECT
+        menu_links.link_title AS titulo,
+        menu_links.mlid AS mlid
+      FROM menu_links
+      WHERE menu_links.plid = '1157'
+      ORDER BY menu_links.link_title DESC"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+    respuesta.rows
+  end
+
+  def cargar_nodos_asociados_maestrias(mlid) do
+    alias FiubaWebMigration.Repo
+    import Ecto.Query
+
+    query_sql =
+      "SELECT
+        menu_links.link_title AS titulo_nodo_asociado,
+        REPLACE(menu_links.link_path, 'node/','') AS nid
+      FROM menu_links
+      WHERE (menu_links.plid = " <> to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+    respuesta.rows
+  end
+
 
   def cargar_nodos_asociados(mlid) do
     alias FiubaWebMigration.Repo
@@ -371,21 +402,68 @@ defmodule FiubaWebMigration do
             fn nodo ->
               texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
 
-              paginas = %{
+              pagina = %{
                 "nombre" => if (String.contains?(Enum.at(texto_asociado,0), nombre_carrera)) do nombre_carrera else (nombre_carrera <> " - " <> Enum.at(texto_asociado,0)) end,
-                "componentes" => %{
+                "componentes" => [%{
                   "__component" => "paginas.texto-con-formato",
                   "texto" => HtmlSanitizeEx.strip_tags(Enum.at(texto_asociado, 1))
-                }
+                }]
               }
+
+              response_pagina =
+                HTTPoison.post!(
+                  "https://testing.cms.fiuba.lambdaclass.com/paginas",
+                  JSON.encode!(pagina),
+                  [{"Content-type", "application/json"}]
+                )
             end
           )
-      end)
+      end
+    )
+  end
+
+  def maestrias_posgrado_migration() do
+
+    alias FiubaWebMigration.Repo
+    import Ecto.Query
+    import HTTPoison
+
+    maestrias = cargar_maestrias()
+
+    Enum.map(
+      maestrias,
+      fn maestria ->
+        nodos_asociados = cargar_nodos_asociados_maestrias(Enum.at(maestria, 1))
+        nombre_maestria = Enum.at(maestria, 0)
+
+        Enum.map(
+          nodos_asociados,
+          fn nodo ->
+            texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
+
+            pagina = %{
+              "nombre" => if (String.contains?(Enum.at(texto_asociado,0), nombre_maestria)) do ("Maestría - " <> nombre_maestria) else ("Maestría - " <> nombre_maestria <> " - " <> Enum.at(texto_asociado,0)) end,
+              "componentes" => [%{
+                "__component" => "paginas.texto-con-formato",
+                "texto" => HtmlSanitizeEx.strip_tags(Enum.at(texto_asociado, 1))
+              }]
+            }
+
+            response_pagina =
+              HTTPoison.post!(
+                "https://testing.cms.fiuba.lambdaclass.com/paginas",
+                JSON.encode!(pagina),
+                [{"Content-type", "application/json"}]
+              )
+          end
+        )
+      end
+    )
   end
 
 
-  def hello do
-      :world
-  end
+  def bienestar_migration do
 
+
+  end
 end
