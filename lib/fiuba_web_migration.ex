@@ -372,7 +372,7 @@ defmodule FiubaWebMigration do
               texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
 
               paginas = %{
-                "nombre" => if (Enum.at(texto_asociado,0) != nombre_carrera) do (nombre_carrera <> " - " <> Enum.at(texto_asociado,0)) else nombre_carrera end,
+                "nombre" => if (String.contains?(Enum.at(texto_asociado,0), nombre_carrera)) do nombre_carrera else (nombre_carrera <> " - " <> Enum.at(texto_asociado,0)) end,
                 "componentes" => %{
                   "__component" => "paginas.texto-con-formato",
                   "texto" => HtmlSanitizeEx.strip_tags(Enum.at(texto_asociado, 1))
