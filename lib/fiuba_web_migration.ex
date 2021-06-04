@@ -17,11 +17,168 @@ defmodule FiubaWebMigration do
     end
 
     """
+  alias FiubaWebMigration.Repo
+  import Ecto.Query
+  import JSON
+  import String
+
+  def fecha_format(fecha) do
+
+      if(fecha) do
+        Timex.format!(fecha, "%FT%T%:z", :strftime) <> ".000Z"
+      else
+        "2012-01-01T15:00:00.000Z"
+      end
+  end
+
+
+  def noticias do
+
+      {:ok, respuesta} = Repo.query("
+        SELECT
+            node.nid as NODO,
+            node.title as TITULO,
+            field_data_field_date.field_date_value AS FECHA,
+            field_data_body.body_value as TEXTO
+        FROM node
+        INNER JOIN field_data_body ON  node.nid = field_data_body.entity_id
+        LEFT JOIN field_data_field_date ON node.nid = field_data_field_date.entity_id
+        WHERE node.type = 'article'
+        ORDER BY node.nid
+        ")
+
+      noticias = respuesta.rows
+
+      Enum.map(
+        noticias,
+        fn elemento ->
+          noticia = %{
+            "seo_url" => to_string(Enum.at(elemento, 0)),
+            "titulo" => Enum.at(elemento, 1),
+            "fecha_publicacion" => fecha_format(Enum.at(elemento, 2)),
+            "cuerpo" => HtmlSanitizeEx.strip_tags(Enum.at(elemento, 3)),
+            "bajada" => String.slice(HtmlSanitizeEx.strip_tags(Enum.at(elemento, 3)), 0, 265) <> "...",
+            "portada" => %{
+              "id" => 15,
+              "name" => "Imágenes iconos-09.png",
+              "alternativeText" => "",
+              "caption" => "",
+              "width" => 1920,
+              "height" => 508,
+              "formats" => %{
+                "large" => %{
+                  "ext" => ".png",
+                  "url" => "/uploads/large_Imagenes_iconos_09_06e64bf2f5.png",
+                  "hash" => "large_Imagenes_iconos_09_06e64bf2f5",
+                  "mime" => "image/png",
+                  "name" => "large_Imágenes iconos-09.png",
+                  "size" => 85.31,
+                  "width" => 1000,
+                  "height" => 265
+                },
+                "small" => %{
+                  "ext" => ".png",
+                  "url" => "/uploads/small_Imagenes_iconos_09_06e64bf2f5.png",
+                  "hash" => "small_Imagenes_iconos_09_06e64bf2f5",
+                  "mime" => "image/png",
+                  "name" => "small_Imágenes iconos-09.png",
+                  "size" => 32.53,
+                  "width" => 500,
+                  "height" => 132
+                },
+                "medium" => %{
+                  "ext" => ".png",
+                  "url" => "/uploads/medium_Imagenes_iconos_09_06e64bf2f5.png",
+                  "hash" => "medium_Imagenes_iconos_09_06e64bf2f5",
+                  "mime" => "image/png",
+                  "name" => "medium_Imágenes iconos-09.png",
+                  "size" => 58.1,
+                  "width" => 750,
+                  "height" => 198
+                },
+                "thumbnail" => %{
+                  "ext" => ".png",
+                  "url" => "/uploads/thumbnail_Imagenes_iconos_09_06e64bf2f5.png",
+                  "hash" => "thumbnail_Imagenes_iconos_09_06e64bf2f5",
+                  "mime" => "image/png",
+                  "name" => "thumbnail_Imágenes iconos-09.png",
+                  "size" => 11.9,
+                  "width" => 245,
+                  "height" => 65
+                }
+              },
+              "hash" => "Imagenes_iconos_09_06e64bf2f5",
+              "ext" => ".png",
+              "mime" => "image/png",
+              "size" => 59.05,
+              "url" => "/uploads/Imagenes_iconos_09_06e64bf2f5.png",
+              "provider" => "local",
+              "created_at" => "2021-03-22T15:06:19.993Z",
+              "updated_at" => "2021-03-22T15:06:20.004Z"
+            }
+          }
+
+          HTTPoison.post!(
+            "https://testing.cms.fiuba.lambdaclass.com/noticias",
+            JSON.encode!(noticia),
+            [{"Content-type", "application/json"}]
+          )
+        end
+      )
+  end
+
+
+  def cargar_carreras_especializacion do
+
+      query_sql = "SELECT
+          menu_links.link_title AS titulo,
+          menu_links.mlid AS mlid
+        FROM menu_links
+        WHERE menu_links.plid = '1158'
+        ORDER BY menu_links.link_title DESC
+        Limit 2"
+
+      {:ok, respuesta} = Repo.query(query_sql)
+      respuesta.rows
+  end
+
+
+  def cargar_nodos_asociados_carreras_especializadas(mlid) do
+
+      query_sql =
+        "SELECT
+          menu_links.link_title AS titulo_nodo_asociado,
+          REPLACE(menu_links.link_path, 'node/','') AS nid
+        FROM menu_links
+        WHERE menu_links.plid = " <>
+          to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ";"
+
+      {:ok, respuesta} = Repo.query(query_sql)
+      respuesta.rows
+  end
+
+
+  def menen() do
+      especializaciones = cargar_carreras_especializacion()
+
+      Enum.map(
+        especializaciones,
+        fn especializacion ->
+          nodos_asociados =
+            cargar_nodos_asociados_carreras_especializadas(Enum.at(especializacion, 1))
+
+          Enum.map(
+            nodos_asociados,
+            fn nodo ->
+              texto_nodo = cargar_texto_asociado(Enum.at(nodo, 1))
+            end
+          )
+        end
+      )
+  end
 
 
   def cargar_carreras_grado do
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
 
     query_sql = "SELECT
         menu_links.link_title AS titulo,
@@ -36,8 +193,6 @@ defmodule FiubaWebMigration do
 
 
   def cargar_maestrias do
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
 
     query_sql = "SELECT
         menu_links.link_title AS titulo,
@@ -50,9 +205,22 @@ defmodule FiubaWebMigration do
     respuesta.rows
   end
 
+
+  def cargar_anuales_bianuales do
+
+    query_sql = "SELECT
+        menu_links.link_title AS titulo,
+        menu_links.mlid AS mlid
+      FROM menu_links
+      WHERE menu_links.plid = '1159'
+      ORDER BY menu_links.link_title DESC"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+    respuesta.rows
+  end
+
+
   def cargar_nodos_asociados_maestrias(mlid) do
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
 
     query_sql =
       "SELECT
@@ -67,8 +235,6 @@ defmodule FiubaWebMigration do
 
 
   def cargar_nodos_asociados(mlid) do
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
 
     query_sql =
       "SELECT
@@ -85,8 +251,6 @@ defmodule FiubaWebMigration do
   end
 
   def cargar_texto_asociado(nid) do
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
 
     query_sql = "SELECT
         node.title AS titulo_nodo,
@@ -99,11 +263,8 @@ defmodule FiubaWebMigration do
     respuesta.rows
   end
 
+
   def pepito do
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
-    import JSON
-    import String
 
     carreras = cargar_carreras_grado()
 
@@ -179,12 +340,6 @@ defmodule FiubaWebMigration do
         {:ok, response_body_navegacion_map} = JSON.decode(response_body_navegacion)
         {:ok, id_navegacion} = Map.fetch(response_body_navegacion_map, "id")
 
-        HTTPoison.post!(
-          "https://testing.cms.fiuba.lambdaclass.com/navegacion",
-          JSON.encode!(vinculo),
-          [{"Content-type", "application/json"}]
-        )
-
         pagina_carrera_response =
           HTTPoison.get!("https://testing.cms.fiuba.lambdaclass.com/paginas?nombre=Carreras")
 
@@ -218,175 +373,78 @@ defmodule FiubaWebMigration do
     )
   end
 
-  def fecha_format(fecha) do
-    use Timex
 
-    if(fecha) do
-      Timex.format!(fecha, "%FT%T%:z", :strftime) <> ".000Z"
-    else
-      "2012-01-01T15:00:00.000Z"
-    end
+  @doc """
+  Recibe nombre y texto para crear la pagina,
+  devuelve el id de la pagina creada.
+
+  Ejemplo nombre_pagina: "Ingeniería Informática", texto_pagina: "<p> Soy un parrafo feo </p>
+  """
+  def crear_pagina(nombre_pagina, texto_pagina) do
+
+    pagina = %{
+      "nombre" => nombre_pagina,
+      "componentes" => [%{
+        "__component" => "paginas.texto-con-formato",
+        "texto" => HtmlSanitizeEx.strip_tags(texto_pagina)
+      }]
+    }
+
+    response_pagina =
+      HTTPoison.post!(
+        "https://testing.cms.fiuba.lambdaclass.com/paginas",
+        JSON.encode!(pagina),
+        [{"Content-type", "application/json"}]
+      )
+
+    response_body = response_pagina.body
+    {:ok, response_body_map} = JSON.decode(response_body)
+    {:ok, id_pagina} = Map.fetch(response_body_map, "id")
+
+    id_pagina
+
   end
 
-  def noticias_migration do
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
-    import HTTPoison
-    import JSON
-    import String
 
-    {:ok, respuesta} = Repo.query("
-      SELECT
-          node.nid as NODO,
-          node.title as TITULO,
-          field_data_field_date.field_date_value AS FECHA,
-          field_data_body.body_value as TEXTO
-      FROM node
-      INNER JOIN field_data_body ON  node.nid = field_data_body.entity_id
-      LEFT JOIN field_data_field_date ON node.nid = field_data_field_date.entity_id
-      WHERE node.type = 'article'
-      ORDER BY node.nid
-      ")
+  def url_format(string) do
 
-    noticias = respuesta.rows
+    string
+    |> String.downcase()
+    |> String.normalize(:nfd)
+    |> String.replace(~r/[^A-z\s]/u, "")
+    |> String.replace(~r/\s/, "-")
 
-    Enum.map(
-      noticias,
-      fn elemento ->
-        noticia = %{
-          "seo_url" => to_string(Enum.at(elemento, 0)),
-          "titulo" => Enum.at(elemento, 1),
-          "fecha_publicacion" => fecha_format(Enum.at(elemento, 2)),
-          "cuerpo" => HtmlSanitizeEx.strip_tags(Enum.at(elemento, 3)),
-          "bajada" => slice(HtmlSanitizeEx.strip_tags(Enum.at(elemento, 3)), 0, 265) <> "...",
-          "portada" => %{
-            "id" => 15,
-            "name" => "Imágenes iconos-09.png",
-            "alternativeText" => "",
-            "caption" => "",
-            "width" => 1920,
-            "height" => 508,
-            "formats" => %{
-              "large" => %{
-                "ext" => ".png",
-                "url" => "/uploads/large_Imagenes_iconos_09_06e64bf2f5.png",
-                "hash" => "large_Imagenes_iconos_09_06e64bf2f5",
-                "mime" => "image/png",
-                "name" => "large_Imágenes iconos-09.png",
-                "size" => 85.31,
-                "width" => 1000,
-                "height" => 265
-              },
-              "small" => %{
-                "ext" => ".png",
-                "url" => "/uploads/small_Imagenes_iconos_09_06e64bf2f5.png",
-                "hash" => "small_Imagenes_iconos_09_06e64bf2f5",
-                "mime" => "image/png",
-                "name" => "small_Imágenes iconos-09.png",
-                "size" => 32.53,
-                "width" => 500,
-                "height" => 132
-              },
-              "medium" => %{
-                "ext" => ".png",
-                "url" => "/uploads/medium_Imagenes_iconos_09_06e64bf2f5.png",
-                "hash" => "medium_Imagenes_iconos_09_06e64bf2f5",
-                "mime" => "image/png",
-                "name" => "medium_Imágenes iconos-09.png",
-                "size" => 58.1,
-                "width" => 750,
-                "height" => 198
-              },
-              "thumbnail" => %{
-                "ext" => ".png",
-                "url" => "/uploads/thumbnail_Imagenes_iconos_09_06e64bf2f5.png",
-                "hash" => "thumbnail_Imagenes_iconos_09_06e64bf2f5",
-                "mime" => "image/png",
-                "name" => "thumbnail_Imágenes iconos-09.png",
-                "size" => 11.9,
-                "width" => 245,
-                "height" => 65
-              }
-            },
-            "hash" => "Imagenes_iconos_09_06e64bf2f5",
-            "ext" => ".png",
-            "mime" => "image/png",
-            "size" => 59.05,
-            "url" => "/uploads/Imagenes_iconos_09_06e64bf2f5.png",
-            "provider" => "local",
-            "created_at" => "2021-03-22T15:06:19.993Z",
-            "updated_at" => "2021-03-22T15:06:20.004Z"
-          }
+  end
+
+
+  @doc """
+  Recibe la url generica, el nombre de la navegacion y el id de la pagina a vincular.
+  Ejemplo url: /ensenanza/grado/carreras/, nombre_navegacion: "Ingeniería Informática", id_pagina: 27
+  """
+  def crear_navegacion(url_navegacion, nombre_navegacion,id_pagina) do
+
+    vinculo = %{
+      "vinculo" => [
+        %{
+          "__component" => "navegacion.pagina",
+          "pagina" => id_pagina
         }
+      ],
+      "seo_url" => url_navegacion,
+      "nombre" => nombre_navegacion
+    }
 
-        HTTPoison.post!(
-          "https://testing.cms.fiuba.lambdaclass.com/noticias",
-          JSON.encode!(noticia),
-          [{"Content-type", "application/json"}]
-        )
-      end
-    )
-  end
+    response_navegacion =
+      HTTPoison.post!(
+        "https://testing.cms.fiuba.lambdaclass.com/navegacion",
+        JSON.encode!(vinculo),
+        [{"Content-type", "application/json"}]
+      )
 
-  def cargar_carreras_especializacion do
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
-    import HTTPoison
-
-    query_sql = "SELECT
-        menu_links.link_title AS titulo,
-        menu_links.mlid AS mlid
-      FROM menu_links
-      WHERE menu_links.plid = '1158'
-      ORDER BY menu_links.link_title DESC
-      Limit 2"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def cargar_nodos_asociados_carreras_especializadas(mlid) do
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
-
-    query_sql =
-      "SELECT
-        menu_links.link_title AS titulo_nodo_asociado,
-        REPLACE(menu_links.link_path, 'node/','') AS nid
-      FROM menu_links
-      WHERE menu_links.plid = " <>
-        to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ";"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def menen() do
-    especializaciones = cargar_carreras_especializacion()
-
-    Enum.map(
-      especializaciones,
-      fn especializacion ->
-        nodos_asociados =
-          cargar_nodos_asociados_carreras_especializadas(Enum.at(especializacion, 1))
-
-        Enum.map(
-          nodos_asociados,
-          fn nodo ->
-            texto_nodo = cargar_texto_asociado(Enum.at(nodo, 1))
-          end
-        )
-      end
-    )
   end
 
 
-
-  def carreras_grado_migration() do
-
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
-    import HTTPoison
+  def carreras_grado() do
 
     carreras = cargar_carreras_grado()
 
@@ -402,31 +460,32 @@ defmodule FiubaWebMigration do
             fn nodo ->
               texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
 
-              pagina = %{
-                "nombre" => if (String.contains?(Enum.at(texto_asociado,0), nombre_carrera)) do nombre_carrera else (nombre_carrera <> " - " <> Enum.at(texto_asociado,0)) end,
-                "componentes" => [%{
-                  "__component" => "paginas.texto-con-formato",
-                  "texto" => HtmlSanitizeEx.strip_tags(Enum.at(texto_asociado, 1))
-                }]
-              }
+              nombre_nodo = texto_asociado |> Enum.at(0)
+              texto_nodo = texto_asociado |> Enum.at(1)
 
-              response_pagina =
-                HTTPoison.post!(
-                  "https://testing.cms.fiuba.lambdaclass.com/paginas",
-                  JSON.encode!(pagina),
-                  [{"Content-type", "application/json"}]
+              #Se crea la página
+              id_pagina = crear_pagina(nombre_nodo, texto_nodo)
+
+              #Se crea la navegación
+              nombre_navegacion =
+                if (String.contains?(nombre_nodo,nombre_carrera)) do ("Carrera: " <> nombre_carrera)
+                else ("Carrera: " <> nombre_carrera <> " - " <> nombre_nodo) end
+
+              url_navegacion = "/ensenanza/grado/carreras/" <> (
+                if (String.contains?(nombre_nodo,nombre_carrera)) do (nombre_carrera |> url_format())
+                else ((nombre_carrera |> url_format()) <> "/" <> (nombre_nodo |> url_format()) ) end
                 )
+
+              crear_navegacion(url_navegacion, nombre_navegacion, id_pagina)
+
             end
           )
       end
     )
   end
 
-  def maestrias_posgrado_migration() do
 
-    alias FiubaWebMigration.Repo
-    import Ecto.Query
-    import HTTPoison
+  def maestrias_posgrado() do
 
     maestrias = cargar_maestrias()
 
@@ -439,31 +498,85 @@ defmodule FiubaWebMigration do
         Enum.map(
           nodos_asociados,
           fn nodo ->
-            texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
 
-            pagina = %{
-              "nombre" => if (String.contains?(Enum.at(texto_asociado,0), nombre_maestria)) do ("Maestría - " <> nombre_maestria) else ("Maestría - " <> nombre_maestria <> " - " <> Enum.at(texto_asociado,0)) end,
-              "componentes" => [%{
-                "__component" => "paginas.texto-con-formato",
-                "texto" => HtmlSanitizeEx.strip_tags(Enum.at(texto_asociado, 1))
-              }]
-            }
+            texto_asociado = nodo |> Enum.at(1) |> cargar_texto_asociado |> Enum.at(0)
 
-            response_pagina =
-              HTTPoison.post!(
-                "https://testing.cms.fiuba.lambdaclass.com/paginas",
-                JSON.encode!(pagina),
-                [{"Content-type", "application/json"}]
+            nombre_nodo = texto_asociado |> Enum.at(0)
+            texto_nodo = texto_asociado |> Enum.at(1)
+
+            id_pagina = crear_pagina(nombre_nodo,texto_nodo)
+
+            nombre_navegacion =
+              if (String.contains?(nombre_nodo,nombre_maestria)) do ("Maestría: " <> nombre_maestria)
+              else ( "Maestría: " <> nombre_maestria <> " - " <> nombre_nodo) end
+
+            url_navegacion = "/ensenanza/posgrado/maestrias/" <> (
+              if (String.contains?(nombre_nodo,nombre_maestria)) do (nombre_maestria |> url_format())
+              else ((nombre_maestria |> url_format()) <> "/" <> (nombre_nodo |> url_format()) ) end
               )
+
+            crear_navegacion(url_navegacion,nombre_navegacion,id_pagina)
+
           end
         )
       end
     )
   end
 
+  def anuales_bianuales do
 
-  def bienestar_migration do
+    anuales = cargar_anuales_bianuales()
 
+    Enum.map(
+      anuales,
+      fn anual ->
+        nodos_asociados = anual |> Enum.at(1) |> cargar_nodos_asociados_maestrias()
+        nombre_anual =anual |> Enum.at(0)
+
+        Enum.map(
+          nodos_asociados,
+          fn nodo ->
+
+            texto_asociado = nodo |> Enum.at(1) |> cargar_texto_asociado |> Enum.at(0)
+
+            nombre_nodo = texto_asociado |> Enum.at(0)
+            texto_nodo = texto_asociado |> Enum.at(1)
+
+            id_pagina = crear_pagina(nombre_nodo,texto_nodo)
+
+            nombre_navegacion =
+              if (String.contains?(nombre_nodo,nombre_anual)) do "Anuales/Bianuales: " <> nombre_anual
+              else ( "Anuales/Bianuales: " <> nombre_anual <> " - " <> nombre_nodo) end
+
+            url_navegacion = "/ensenanza/posgrado/anuales-bianuales/" <> (
+              if (String.contains?(nombre_nodo,nombre_anual)) do (nombre_anual |> url_format())
+              else ((nombre_anual |> url_format()) <> "/" <> (nombre_nodo |> url_format()) ) end
+              )
+
+            crear_navegacion(url_navegacion,nombre_navegacion,id_pagina)
+
+
+          end
+        )
+      end
+    )
+  end
+
+  def grado() do
+    carreras_grado()
+  end
+
+  def posgrado() do
+    maestrias_posgrado()
+    anuales_bianuales()
+  end
+
+
+  def migration() do
+    noticias()
+
+    grado()
+    posgrado()
 
   end
 end
