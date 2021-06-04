@@ -220,6 +220,23 @@ defmodule FiubaWebMigration do
   end
 
 
+  def cargar_investigacion_sin_hijos do
+
+    query_sql = "SELECT
+        menu_links.link_title AS titulo,
+        menu_links.mlid AS mlid
+      FROM menu_links
+      WHERE menu_links.plid = 1161 AND menu_links.has_children = 0"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+    respuesta.rows
+  end
+
+
+  def cargar_investigacion_con_hijos do
+  end
+
+
   def cargar_nodos_asociados_maestrias(mlid) do
 
     query_sql =
@@ -249,6 +266,7 @@ defmodule FiubaWebMigration do
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
   end
+
 
   def cargar_texto_asociado(nid) do
 
@@ -523,6 +541,7 @@ defmodule FiubaWebMigration do
     )
   end
 
+
   def anuales_bianuales do
 
     anuales = cargar_anuales_bianuales()
@@ -562,21 +581,62 @@ defmodule FiubaWebMigration do
     )
   end
 
+
+  def investigacion_sin_hijos() do
+
+    investigaciones_sh = cargar_investigacion_sin_hijos()
+
+    Enum.map(
+      investigaciones_sh,
+      fn investigacion ->
+        nodos_asociados = investigacion |> Enum.at(1) |> cargar_nodos_asociados_maestrias()
+        nombre_investigacion = investigacion |> Enum.at(0)
+
+        Enum.map(
+          nodos_asociados,
+          fn nodo ->
+
+            texto_asociado = nodo |> Enum.at(1) |> cargar_texto_asociado |> Enum.at(0)
+
+            nombre_nodo = texto_asociado |> Enum.at(0)
+            texto_nodo = texto_asociado |> Enum.at(1)
+
+            id_pagina = crear_pagina(nombre_nodo,texto_nodo)
+
+            nombre_navegacion = ("Investigación - " <> nombre_nodo)
+
+            url_navegacion = ("/investigacion/" <> (nombre_nodo |> url_format()) )
+
+
+            crear_navegacion(url_navegacion,nombre_navegacion,id_pagina)
+
+          end
+        )
+      end
+    )
+  end
+
+
   def grado() do
     carreras_grado()
   end
 
+
   def posgrado() do
+
     maestrias_posgrado()
     anuales_bianuales()
+    #aca falta carreras de especializacion
   end
 
 
   def migration() do
-    noticias()
+
+    #noticias()
 
     grado()
     posgrado()
 
   end
+
 end
