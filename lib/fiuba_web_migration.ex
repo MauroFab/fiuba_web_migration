@@ -5,15 +5,21 @@ defmodule FiubaWebMigration do
   import Migracion_maestria
   import Migracion_anuales_bianuales
   import Migracion_investigacion
+  import Migracion_institucional
+  import Migracion_bienestar
 
   def migration() do
 
-    #carreras_grado()
-    #maestrias_posgrado()
-    #anuales_bianuales()
+    noticias()
+
+    carreras_grado()
+    maestrias_posgrado()
+    anuales_bianuales()
     #aca falta carreras de especializacion
 
-    #investigacion()
+    investigacion()
+    institucional()
+    bienestar()
 
   end
 

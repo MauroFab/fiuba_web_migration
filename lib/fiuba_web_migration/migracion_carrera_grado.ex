@@ -45,8 +45,8 @@ defmodule Migracion_carrera_grado do
 
               #Se crea la navegación
               nombre_navegacion =
-                if (String.contains?(nombre_nodo,nombre_carrera)) do ("Carrera: " <> nombre_carrera)
-                else ("Carrera: " <> nombre_carrera <> " - " <> nombre_nodo) end
+                if (String.contains?(nombre_nodo,nombre_carrera)) do ("Carrera - " <> nombre_carrera)
+                else ("Carrera - " <> nombre_carrera <> " - " <> nombre_nodo) end
 
               url_navegacion = "/ensenanza/grado/carreras/" <> (
                 if (String.contains?(nombre_nodo,nombre_carrera)) do (nombre_carrera |> url_format())

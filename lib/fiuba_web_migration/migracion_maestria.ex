@@ -24,8 +24,8 @@ defmodule Migracion_maestria do
             id_pagina = crear_pagina(nombre_nodo,texto_nodo)
 
             nombre_navegacion =
-              if (String.contains?(nombre_nodo,nombre_maestria)) do ("Maestría: " <> nombre_maestria)
-              else ( "Maestría: " <> nombre_maestria <> " - " <> nombre_nodo) end
+              if (String.contains?(nombre_nodo,nombre_maestria)) do ("Maestría - " <> nombre_maestria)
+              else ( "Maestría - " <> nombre_maestria <> " - " <> nombre_nodo) end
 
             url_navegacion = "/ensenanza/posgrado/maestrias/" <> (
               if (String.contains?(nombre_nodo,nombre_maestria)) do (nombre_maestria |> url_format())
