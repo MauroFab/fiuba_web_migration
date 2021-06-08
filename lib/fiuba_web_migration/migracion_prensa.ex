@@ -57,9 +57,10 @@ defmodule Migracion_prensa do
     nodo = cargar_nodo(nid) |> Enum.at(0)
 
     titulo = nodo |> Enum.at(0)
-    texto = nodo |> Enum.at(1)
+    texto_prensa = nodo |> Enum.at(1)
+    texto_con_links = texto_prensa |> String.replace( "<a href=", "\n") |> String.replace(">(+)</a>", "\n\n")
 
-    id_pagina = crear_pagina(titulo, texto)
+    id_pagina = crear_pagina(titulo, texto_con_links)
 
     nombre_nav = nombre_nav_padre <> " - " <> titulo
     url_nav = url_nav_padre <> "/" <> (titulo |> url_format())
@@ -89,9 +90,10 @@ defmodule Migracion_prensa do
     nodo = cargar_nodo(nid) |> Enum.at(0)
 
     nombre_pagina = nodo |> Enum.at(0)
-    texto_pagina = nodo |> Enum.at(1)
+    texto_prensa = nodo |> Enum.at(1)
+    texto_con_links = texto_prensa |> String.replace( "<a href=\"", "\n") |> String.replace(">(+)</a>", "\n\n")
 
-    id_pagina_prensa = crear_pagina(nombre_pagina, texto_pagina)
+    id_pagina_prensa = crear_pagina(nombre_pagina, texto_con_links)
 
     url_prensa = "/prensa"
     crear_navegacion(url_prensa, nombre_pagina, id_pagina_prensa)
