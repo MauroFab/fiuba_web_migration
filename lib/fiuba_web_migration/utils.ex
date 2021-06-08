@@ -233,7 +233,7 @@ defmodule Utils do
     string
     |> String.downcase()
     |> String.normalize(:nfd)
-    |> String.replace(~r/[^A-z\s]/u, "")
+    |> String.replace(~r/[^A-Z^a-z^0-9\s]/u, "")
     |> String.replace(~r/\s/, "-")
   end
 

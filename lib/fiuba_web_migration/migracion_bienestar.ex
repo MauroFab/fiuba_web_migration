@@ -1,19 +1,16 @@
-defmodule Migracion_investigacion do
+defmodule Migracion_bienestar do
 
   import Utils
 
   alias FiubaWebMigration.Repo
-  import Ecto.Query
-  import JSON
-  import String
 
-  def cargar_investigacion() do
+  def cargar_bienestar() do
 
     query_sql = "SELECT
         menu_links.mlid AS mlid,
         menu_links.link_title AS titulo
       FROM menu_links
-      WHERE menu_links.mlid = 1161;"
+      WHERE menu_links.mlid = 1162;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -53,7 +50,7 @@ defmodule Migracion_investigacion do
   end
 
 
-  def investigacion_recursivo(elemento, url_nav_padre, nombre_nav_padre) do
+  def bienestar_recursivo(elemento, url_nav_padre, nombre_nav_padre) do
 
     nid = elemento |> Enum.at(2)
     nodo = cargar_nodo(nid) |> Enum.at(0)
@@ -76,30 +73,30 @@ defmodule Migracion_investigacion do
       Enum.map(
         hijos,
         fn hijo ->
-          investigacion_recursivo(hijo,url_nav,nombre_nav)
+          bienestar_recursivo(hijo,url_nav,nombre_nav)
         end
       )
     end
   end
 
 
-  def investigacion() do
+  def bienestar() do
 
-    investigacion = cargar_investigacion() |> Enum.at(0)
+    bienestar = cargar_bienestar() |> Enum.at(0)
 
     texto_pagina= ""
-    nombre_pagina = "Investigación"
+    nombre_pagina = "Bienestar"
 
-    id_pagina_investigacion = crear_pagina(nombre_pagina, texto_pagina)
+    id_pagina_bienestar = crear_pagina(nombre_pagina, texto_pagina)
 
-    url_investigacion = "/investigacion"
-    crear_navegacion(url_investigacion, nombre_pagina, id_pagina_investigacion)
+    url_bienestar = "/bienestar"
+    crear_navegacion(url_bienestar, nombre_pagina, id_pagina_bienestar)
 
-    investigaciones = investigacion |> Enum.at(0) |> cargar_hijos()
+    bienestares = bienestar |> Enum.at(0) |> cargar_hijos()
     Enum.map(
-      investigaciones,
+      bienestares,
       fn elemento ->
-        investigacion_recursivo(elemento,url_investigacion,nombre_pagina)
+        bienestar_recursivo(elemento,url_bienestar,nombre_pagina)
       end
     )
   end

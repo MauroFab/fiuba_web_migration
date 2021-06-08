@@ -24,8 +24,8 @@ defmodule Migracion_anuales_bianuales do
             id_pagina = crear_pagina(nombre_nodo,texto_nodo)
 
             nombre_navegacion =
-              if (String.contains?(nombre_nodo,nombre_anual)) do "Anuales/Bianuales: " <> nombre_anual
-              else ( "Anuales/Bianuales: " <> nombre_anual <> " - " <> nombre_nodo) end
+              if (String.contains?(nombre_nodo,nombre_anual)) do "Anuales/Bianuales - " <> nombre_anual
+              else ( "Anuales/Bianuales - " <> nombre_anual <> " - " <> nombre_nodo) end
 
             url_navegacion = "/ensenanza/posgrado/anuales-bianuales/" <> (
               if (String.contains?(nombre_nodo,nombre_anual)) do (nombre_anual |> url_format())

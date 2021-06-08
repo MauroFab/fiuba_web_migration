@@ -1,4 +1,4 @@
-defmodule Migracion_investigacion do
+defmodule Migracion_institucional do
 
   import Utils
 
@@ -7,13 +7,13 @@ defmodule Migracion_investigacion do
   import JSON
   import String
 
-  def cargar_investigacion() do
+  def cargar_institucional() do
 
     query_sql = "SELECT
         menu_links.mlid AS mlid,
         menu_links.link_title AS titulo
       FROM menu_links
-      WHERE menu_links.mlid = 1161;"
+      WHERE menu_links.mlid = 1225;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -53,7 +53,7 @@ defmodule Migracion_investigacion do
   end
 
 
-  def investigacion_recursivo(elemento, url_nav_padre, nombre_nav_padre) do
+  def institucional_recursivo(elemento, url_nav_padre, nombre_nav_padre) do
 
     nid = elemento |> Enum.at(2)
     nodo = cargar_nodo(nid) |> Enum.at(0)
@@ -76,30 +76,30 @@ defmodule Migracion_investigacion do
       Enum.map(
         hijos,
         fn hijo ->
-          investigacion_recursivo(hijo,url_nav,nombre_nav)
+          institucional_recursivo(hijo,url_nav,nombre_nav)
         end
       )
     end
   end
 
 
-  def investigacion() do
+  def institucional() do
 
-    investigacion = cargar_investigacion() |> Enum.at(0)
+    institucional = cargar_institucional() |> Enum.at(0)
 
     texto_pagina= ""
-    nombre_pagina = "Investigación"
+    nombre_pagina = "Institucional"
 
-    id_pagina_investigacion = crear_pagina(nombre_pagina, texto_pagina)
+    id_pagina_institucional = crear_pagina(nombre_pagina, texto_pagina)
 
-    url_investigacion = "/investigacion"
-    crear_navegacion(url_investigacion, nombre_pagina, id_pagina_investigacion)
+    url_institucional = "/institucional"
+    crear_navegacion(url_institucional, nombre_pagina, id_pagina_institucional)
 
-    investigaciones = investigacion |> Enum.at(0) |> cargar_hijos()
+    institucionales= institucional |> Enum.at(0) |> cargar_hijos()
     Enum.map(
-      investigaciones,
+      institucionales,
       fn elemento ->
-        investigacion_recursivo(elemento,url_investigacion,nombre_pagina)
+        institucional_recursivo(elemento,url_institucional,nombre_pagina)
       end
     )
   end

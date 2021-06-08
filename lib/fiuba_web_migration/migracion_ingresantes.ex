@@ -1,19 +1,18 @@
-defmodule Migracion_investigacion do
+defmodule Migracion_ingresantes do
 
   import Utils
 
   alias FiubaWebMigration.Repo
-  import Ecto.Query
-  import JSON
-  import String
 
-  def cargar_investigacion() do
+  def cargar_ingresantes() do
 
     query_sql = "SELECT
         menu_links.mlid AS mlid,
-        menu_links.link_title AS titulo
+        menu_links.link_title AS titulo,
+        REPLACE(menu_links.link_path, 'node/','') AS nid
       FROM menu_links
-      WHERE menu_links.mlid = 1161;"
+      WHERE menu_links.mlid = 1599
+      AND menu_links.router_path= 'node/%';"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -53,7 +52,7 @@ defmodule Migracion_investigacion do
   end
 
 
-  def investigacion_recursivo(elemento, url_nav_padre, nombre_nav_padre) do
+  def ingresantes_recursivo(elemento, url_nav_padre, nombre_nav_padre) do
 
     nid = elemento |> Enum.at(2)
     nodo = cargar_nodo(nid) |> Enum.at(0)
@@ -66,7 +65,7 @@ defmodule Migracion_investigacion do
     nombre_nav = nombre_nav_padre <> " - " <> titulo
     url_nav = url_nav_padre <> "/" <> (titulo |> url_format())
 
-    crear_navegacion(url_nav,nombre_nav, id_pagina)
+    resultado = crear_navegacion(url_nav,nombre_nav, id_pagina)
 
     # 1 = Tiene hijos, 0 = No tiene hijos
     has_children = elemento |> Enum.at(3)
@@ -76,33 +75,36 @@ defmodule Migracion_investigacion do
       Enum.map(
         hijos,
         fn hijo ->
-          investigacion_recursivo(hijo,url_nav,nombre_nav)
+          ingresantes_recursivo(hijo,url_nav,nombre_nav)
         end
       )
     end
+    resultado
   end
 
 
-  def investigacion() do
+   def ingresantes() do
 
-    investigacion = cargar_investigacion() |> Enum.at(0)
+     ingresantes = cargar_ingresantes() |> Enum.at(0)
 
-    texto_pagina= ""
-    nombre_pagina = "Investigación"
+     nid = ingresantes |> Enum.at(2)
+     nodo = cargar_nodo(nid) |> Enum.at(0)
 
-    id_pagina_investigacion = crear_pagina(nombre_pagina, texto_pagina)
+     nombre_pagina = nodo |> Enum.at(0)
+     texto_pagina = nodo |> Enum.at(1)
 
-    url_investigacion = "/investigacion"
-    crear_navegacion(url_investigacion, nombre_pagina, id_pagina_investigacion)
+     id_pagina_ingresantes = crear_pagina(nombre_pagina, texto_pagina)
 
-    investigaciones = investigacion |> Enum.at(0) |> cargar_hijos()
-    Enum.map(
-      investigaciones,
-      fn elemento ->
-        investigacion_recursivo(elemento,url_investigacion,nombre_pagina)
-      end
-    )
-  end
+     url_ingresantes = "/ingresantes"
+     crear_navegacion(url_ingresantes, nombre_pagina, id_pagina_ingresantes)
 
+     ingresantes_opts = ingresantes |> Enum.at(0) |> cargar_hijos()
+     Enum.map(
+       ingresantes_opts,
+       fn elemento ->
+         ingresantes_recursivo(elemento,url_ingresantes,nombre_pagina)
+       end
+     )
+   end
 
 end
