@@ -1,42 +1,10 @@
 defmodule Utils do
-
-
   alias FiubaWebMigration.Repo
   import Ecto.Query
   import JSON
   import String
 
-
-  def cargar_nodos_asociados_carreras_especializadas(mlid) do
-
-    query_sql =
-      "SELECT
-        menu_links.link_title AS titulo_nodo_asociado,
-        REPLACE(menu_links.link_path, 'node/','') AS nid
-      FROM menu_links
-      WHERE menu_links.plid = " <>
-        to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ";"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def cargar_carreras_especializacion do
-
-    query_sql = "SELECT
-        menu_links.link_title AS titulo,
-        menu_links.mlid AS mlid
-      FROM menu_links
-      WHERE menu_links.plid = '1158'
-      ORDER BY menu_links.link_title DESC
-      Limit 2"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
   def cargar_maestrias do
-
     query_sql = "SELECT
         menu_links.link_title AS titulo,
         menu_links.mlid AS mlid
@@ -49,7 +17,6 @@ defmodule Utils do
   end
 
   def cargar_anuales_bianuales do
-
     query_sql = "SELECT
         menu_links.link_title AS titulo,
         menu_links.mlid AS mlid
@@ -61,54 +28,46 @@ defmodule Utils do
     respuesta.rows
   end
 
-
   def cargar_investigaciones() do
-
-    query_sql = ("SELECT
+    query_sql = "SELECT
         menu_links.link_title AS titulo,
         menu_links.mlid AS mlid
       FROM menu_links
-      WHERE menu_links.plid = 1161 AND menu_links.router_path = 'node/%';")
+      WHERE menu_links.plid = 1161 AND menu_links.router_path = 'node/%';"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
   end
 
-
   def cargar_investigaciones_hijos(plid) do
-
-    query_sql = (
+    query_sql =
       "SELECT
         menu_links.link_title AS titulo,
         menu_links.mlid AS mlid
       FROM menu_links
-      WHERE menu_links.plid = " <>to_string(plid) <>
+      WHERE menu_links.plid = " <>
+        to_string(plid) <>
         " AND menu_links.has_children = 0
         AND menu_links.router_path = 'node/%';"
-      )
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
-
   end
 
-
   def cargar_nodos_asociados_maestrias(mlid) do
-
     query_sql =
       "SELECT
         menu_links.link_title AS titulo_nodo_asociado,
         REPLACE(menu_links.link_path, 'node/','') AS nid
       FROM menu_links
-      WHERE (menu_links.plid = " <> to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
+      WHERE (menu_links.plid = " <>
+        to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
   end
 
-
   def cargar_nodos_asociados(mlid) do
-
     query_sql =
       "SELECT
         menu_links.link_title AS titulo_nodo_asociado,
@@ -117,15 +76,14 @@ defmodule Utils do
       WHERE menu_links.link_title != 'Video' AND
             menu_links.link_title != 'Plan de estudios' AND
             menu_links.link_title != 'Autoridades' AND
-            (menu_links.plid = " <> to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
+            (menu_links.plid = " <>
+        to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
   end
 
-
   def cargar_texto_asociado(nid) do
-
     query_sql = "SELECT
         node.title AS titulo_nodo,
         field_data_body.body_value AS texto_asociado
@@ -247,13 +205,14 @@ defmodule Utils do
   # end
 
   def crear_pagina(nombre_pagina, texto_pagina \\ "") do
-
     pagina = %{
       "nombre" => nombre_pagina,
-      "componentes" => [%{
-        "__component" => "paginas.texto-con-formato",
-        "texto" => HtmlSanitizeEx.strip_tags(texto_pagina)
-      }]
+      "componentes" => [
+        %{
+          "__component" => "paginas.texto-con-formato",
+          "texto" => HtmlSanitizeEx.strip_tags(texto_pagina)
+        }
+      ]
     }
 
     response_pagina =
@@ -268,27 +227,21 @@ defmodule Utils do
     {:ok, id_pagina} = Map.fetch(response_body_map, "id")
 
     id_pagina
-
   end
 
-
   def url_format(string) do
-
     string
     |> String.downcase()
     |> String.normalize(:nfd)
     |> String.replace(~r/[^A-Z^a-z^0-9\s]/u, "")
     |> String.replace(~r/\s/, "-")
-
   end
-
 
   @doc """
   Recibe la url generica, el nombre de la navegacion y el id de la pagina a vincular.
   Ejemplo url: /ensenanza/grado/carreras/, nombre_navegacion: "Ingeniería Informática", id_pagina: 27
   """
-  def crear_navegacion(url_navegacion, nombre_navegacion,id_pagina) do
-
+  def crear_navegacion(url_navegacion, nombre_navegacion, id_pagina) do
     vinculo = %{
       "vinculo" => [
         %{
@@ -306,7 +259,5 @@ defmodule Utils do
         JSON.encode!(vinculo),
         [{"Content-type", "application/json"}]
       )
-
   end
-
 end

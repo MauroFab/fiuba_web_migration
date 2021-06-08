@@ -1,25 +1,71 @@
 defmodule Migracion_carrera_especializacion do
+  alias FiubaWebMigration.Repo
+  import String
 
   import Utils
 
-  def menen() do
-    especializaciones = cargar_carreras_especializacion()
+  def cargar_carreras_especializacion do
+    query_sql = "SELECT
+        menu_links.link_title AS titulo,
+        menu_links.mlid AS mlid
+      FROM menu_links
+      WHERE menu_links.plid = '1158'
+      ORDER BY menu_links.link_title ASC"
 
+    {:ok, respuesta} = Repo.query(query_sql)
+    respuesta.rows
+  end
+
+  def cargar_nodos_asociados_carreras_especializadas(mlid) do
+    query_sql =
+      "SELECT
+        menu_links.link_title AS titulo_nodo_asociado,
+        REPLACE(menu_links.link_path, 'node/','') AS nid
+      FROM menu_links
+      WHERE menu_links.plid = " <>
+        to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ";"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+    respuesta.rows
+  end
+
+  def carreras_especializaciones() do
     Enum.map(
-      especializaciones,
+      cargar_carreras_especializacion(),
       fn especializacion ->
-        nodos_asociados =
-          cargar_nodos_asociados_carreras_especializadas(Enum.at(especializacion, 1))
+        nombre_carrera = Enum.at(especializacion, 0)
 
         Enum.map(
-          nodos_asociados,
+          cargar_nodos_asociados_carreras_especializadas(Enum.at(especializacion, 1)),
           fn nodo ->
-            texto_nodo = cargar_texto_asociado(Enum.at(nodo, 1))
+            texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
+
+            nombre_nodo = texto_asociado |> Enum.at(0)
+            texto_nodo = texto_asociado |> Enum.at(1)
+
+            # Se crea la página
+            id_pagina = crear_pagina(nombre_nodo, texto_nodo)
+
+            # Se crea la navegación
+            nombre_navegacion =
+              if String.contains?(nombre_nodo, nombre_carrera) do
+                "Carrera de Especializacion: " <> nombre_carrera
+              else
+                "Carrera de Especializacion: " <> nombre_carrera <> " - " <> nombre_nodo
+              end
+
+            url_navegacion =
+              "/ensenanza/posgrado/carreras-de-especializacion/" <>
+                if String.contains?(nombre_nodo, nombre_carrera) do
+                  nombre_carrera |> url_format()
+                else
+                  (nombre_carrera |> url_format()) <> "/" <> (nombre_nodo |> url_format())
+                end
+
+            crear_navegacion(url_navegacion, nombre_navegacion, id_pagina)
           end
         )
       end
     )
-end
-
-
+  end
 end
