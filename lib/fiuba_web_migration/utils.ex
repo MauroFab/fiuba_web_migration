@@ -4,6 +4,34 @@ defmodule Utils do
   import JSON
   import String
 
+
+  def cargar_imagen(url_imagen) do
+
+    {:ok, result} = HTTPoison.get(url_imagen)
+
+    imagen = result.body
+    headers = [{"Content-Type", "multipart/form-data"}]
+    options = [ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 2000]
+
+    {:ok, response_imagen} =
+      HTTPoison.request(
+      :post,
+      "https://testing.cms.fiuba.lambdaclass.com/upload",
+      {:multipart,
+       [{"file", imagen, {"form-data", [name: "files", filename: "nombre.jpg"]}, [{"Content-Type", "image/jpeg"}]},{"type", "image/jpeg"}]},
+      headers,
+      options
+    )
+
+    response_body = response_imagen.body
+    {:ok, response_body_map} = JSON.decode(response_body)
+    {:ok, id_imagen} = Map.fetch( (response_body_map|> Enum.at(0)) , "id")
+
+    id_imagen
+
+  end
+
+
   def cargar_maestrias do
     query_sql = "SELECT
         menu_links.link_title AS titulo,
