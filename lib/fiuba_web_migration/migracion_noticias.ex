@@ -22,18 +22,13 @@ defmodule Migracion_noticias do
       noticias,
       fn noticia ->
 
-        imagenes_id = []
         url_imgs = noticia |> Enum.at(0) |> urls_imgs_embebidas()
 
-        Enum.map(
+        imagenes_id = Enum.map(
           url_imgs,
           fn elemento ->
-
             url = elemento |> Enum.at(0) |> String.replace(" ","%20")
-
             imagen_id = cargar_imagen(url)
-            [imagen_id | imagenes_id]
-
           end)
 
         noticia_body = %{

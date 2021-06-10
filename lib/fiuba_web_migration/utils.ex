@@ -60,7 +60,7 @@ defmodule Utils do
       FROM node
       INNER JOIN field_data_body ON  node.nid = field_data_body.entity_id
       LEFT JOIN field_data_field_date ON node.nid = field_data_field_date.entity_id
-      WHERE node.type = 'article'"
+      WHERE node.type = 'article';"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
