@@ -18,7 +18,6 @@ defmodule FiubaWebMigration do
 
   def migration() do
     # noticias()
-
     # carreras_grado()
     # maestrias_posgrado()
     # carreras_especializaciones()
@@ -30,6 +29,7 @@ defmodule FiubaWebMigration do
     # ingresantes()
     # biblioteca()
     # prensa()
+
     # estudiantes()
     # docentes()
     # graduados()
