@@ -20,29 +20,28 @@ defmodule Migracion_noticias do
 
     Enum.map(
       noticias,
-      fn elemento ->
+      fn noticia ->
 
         imagenes_id = []
-
-        imagenes_embebidas = urls_imgs_embebidas( elemento |> Enum.at(0))
+        url_imgs = noticia |> Enum.at(0) |> urls_imgs_embebidas()
 
         Enum.map(
-          imagenes_embebidas,
+          url_imgs,
           fn elemento ->
-            imagen_id = cargar_img_embebida(elemento)
-            [imagen_id | imagenes_id]
 
-            # list = [1, 2, 3]
-            # [0 | list] # fast
+            url = elemento |> Enum.at(0) |> String.replace(" ","%20")
+
+            imagen_id = cargar_imagen(url)
+            [imagen_id | imagenes_id]
 
           end)
 
-        noticia = %{
-          "seo_url" => elemento |> Enum.at(1) |> url_format(),
-          "titulo" => Enum.at(elemento, 1),
-          "fecha_publicacion" => fecha_format(Enum.at(elemento, 2)),
-          "cuerpo" => HtmlSanitizeEx.strip_tags(Enum.at(elemento, 3)),
-          "bajada" => String.slice(HtmlSanitizeEx.strip_tags(Enum.at(elemento, 3)), 0, 265) <> "...",
+        noticia_body = %{
+          "seo_url" => (noticia |> Enum.at(1) |> url_format()) <> "-" <> (noticia |> Enum.at(0)|> to_string()),
+          "titulo" => noticia |> Enum.at(1),
+          "fecha_publicacion" =>  noticia |> Enum.at(2) |> fecha_format(),
+          "cuerpo" => HtmlSanitizeEx.strip_tags(Enum.at(noticia, 3)),
+          "bajada" => (noticia |> Enum.at(3) |> HtmlSanitizeEx.strip_tags() |> String.slice( 0, 265)) <> "...",
           "portada" => %{
              "id" => id_imagen_portada
              },
@@ -54,11 +53,10 @@ defmodule Migracion_noticias do
 
         HTTPoison.post!(
           "https://testing.cms.fiuba.lambdaclass.com/noticias",
-          JSON.encode!(noticia),
+          JSON.encode!(noticia_body),
           [{"Content-type", "application/json"}]
         )
 
-        imagenes_id
 
       end
     )

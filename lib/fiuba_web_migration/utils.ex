@@ -18,7 +18,7 @@ defmodule Utils do
       :post,
       "https://testing.cms.fiuba.lambdaclass.com/upload",
       {:multipart,
-       [{"file", imagen, {"form-data", [name: "files", filename: "nombre.jpg"]}, [{"Content-Type", "image/jpeg"}]},{"type", "image/jpeg"}]},
+       [{"file", imagen, {"form-data", [name: "files", filename: "img.jpg"]}, [{"Content-Type", "image/jpeg"}]},{"type", "image/jpeg"}]},
       headers,
       options
     )
@@ -31,44 +31,17 @@ defmodule Utils do
 
   end
 
-  def cargar_img_embebida(elemento) do
-
-    {:ok, result} = HTTPoison.get( elemento|> Enum.at(1))
-
-    imagen = result.body
-    headers = [{"Content-Type", "multipart/form-data"}]
-    options = [ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 20000]
-
-    {:ok, response_imagen} =
-      HTTPoison.request(
-      :post,
-      "https://testing.cms.fiuba.lambdaclass.com/upload",
-      {:multipart,
-       [{"file", imagen, {"form-data", [name: "files", filename: (elemento |> Enum.at(0))]}, [{"Content-Type", "image/jpeg"}]},{"type", "image/jpeg"}]},
-      headers,
-      options
-    )
-
-    # response_body = response_imagen.body
-    # {:ok, response_body_map} = JSON.decode(response_body)
-    # response_body_map
-    # {:ok, id_imagen} = Map.fetch( (response_body_map|> Enum.at(0)) , "id")
-    #
-    # id_imagen
-
-  end
 
 
   def urls_imgs_embebidas(nid) do
 
     query_sql = "SELECT
-        REPLACE (file_managed.uri,'public://','') AS TITULO,
         REPLACE (file_managed.uri,'public://','www.fi.uba.ar/sites/default/files/') AS URL_IMG
       FROM node
       INNER JOIN field_data_field_galeria_embebida ON node.nid = field_data_field_galeria_embebida.entity_id
       LEFT JOIN file_usage ON field_data_field_galeria_embebida.field_galeria_embebida_value = file_usage.id AND file_usage.type = 'field_collection_item'
       LEFT JOIN file_managed ON file_managed.fid = file_usage.fid
-      WHERE node.type = 'article' AND node.nid = " <> to_string(nid) <> " LIMIT 1;"
+      WHERE node.type = 'article' AND node.nid = " <> to_string(nid) <> ";"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -87,7 +60,7 @@ defmodule Utils do
       FROM node
       INNER JOIN field_data_body ON  node.nid = field_data_body.entity_id
       LEFT JOIN field_data_field_date ON node.nid = field_data_field_date.entity_id
-      WHERE node.type = 'article' and node.nid = 2192"
+      WHERE node.type = 'article'"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows

@@ -14,7 +14,7 @@ defmodule FiubaWebMigration do
 
   def migration() do
 
-    #noticias()
+    noticias()
 
     #carreras_grado()
     #maestrias_posgrado()
@@ -26,20 +26,9 @@ defmodule FiubaWebMigration do
     #bienestar()
     #ingresantes()
     #biblioteca()
-    prensa()
+    #prensa()
 
-    # binary_file_content = "Something you fetched and now have it in memory"
-    # headers = [{"Content-Type", "multipart/form-data"}]
-    # options = [ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 2000]
 
-    # HTTPoison.request(
-    #   :post,
-    #   "https://testing.cms.fiuba.lambdaclass.com/upload",
-    #   {:multipart,
-    #    [{"file", binary_file_content, {"form-data", [name: "files", filename: "a_file_name.txt"]}, []}]},
-    #   headers,
-    #   options
-    # )
 
   end
 end
