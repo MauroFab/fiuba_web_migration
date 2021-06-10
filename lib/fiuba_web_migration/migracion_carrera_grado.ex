@@ -1,5 +1,4 @@
 defmodule Migracion_carrera_grado do
-
   import Utils
 
   alias FiubaWebMigration.Repo
@@ -8,7 +7,6 @@ defmodule Migracion_carrera_grado do
   import String
 
   def cargar_carreras_grado do
-
     query_sql = "SELECT
         menu_links.link_title AS titulo,
         menu_links.mlid AS mlid
@@ -20,9 +18,7 @@ defmodule Migracion_carrera_grado do
     respuesta.rows
   end
 
-
   def carreras_grado() do
-
     carreras = cargar_carreras_grado()
 
     Enum.map(
@@ -40,25 +36,29 @@ defmodule Migracion_carrera_grado do
               nombre_nodo = texto_asociado |> Enum.at(0)
               texto_nodo = texto_asociado |> Enum.at(1)
 
-              #Se crea la página
-              id_pagina = crear_pagina(nombre_nodo, texto_nodo)
+              # Se crea la página
+              id_pagina = crear_pagina(nombre_nodo, texto_nodo, "Carreras Grado")
 
-              #Se crea la navegación
+              # Se crea la navegación
               nombre_navegacion =
-                if (String.contains?(nombre_nodo,nombre_carrera)) do ("Carrera - " <> nombre_carrera)
-                else ("Carrera - " <> nombre_carrera <> " - " <> nombre_nodo) end
+                if String.contains?(nombre_nodo, nombre_carrera) do
+                  "Carrera - " <> nombre_carrera
+                else
+                  "Carrera - " <> nombre_carrera <> " - " <> nombre_nodo
+                end
 
-              url_navegacion = "/ensenanza/grado/carreras/" <> (
-                if (String.contains?(nombre_nodo,nombre_carrera)) do (nombre_carrera |> url_format())
-                else ((nombre_carrera |> url_format()) <> "/" <> (nombre_nodo |> url_format()) ) end
-                )
+              url_navegacion =
+                "/ensenanza/grado/carreras/" <>
+                  if String.contains?(nombre_nodo, nombre_carrera) do
+                    nombre_carrera |> url_format()
+                  else
+                    (nombre_carrera |> url_format()) <> "/" <> (nombre_nodo |> url_format())
+                  end
 
               crear_navegacion(url_navegacion, nombre_navegacion, id_pagina)
-
             end
           )
       end
     )
   end
-
 end
