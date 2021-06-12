@@ -3,25 +3,29 @@ defmodule Utils do
   import Ecto.Query
   import JSON
   import String
+  import HTTPoison.Retry
 
 
-  def cargar_imagen(url_imagen) do
+  def cargar_imagen(url_imagen,nombre_imagen) do
 
-    {:ok, result} = HTTPoison.get(url_imagen)
+    {:ok, result} = HTTPoison.get(url_imagen) |> HTTPoison.Retry.autoretry(max_attempts: 10, wait: 20000, include_404s: false, retry_unknown_errors: false)
 
     imagen = result.body
     headers = [{"Content-Type", "multipart/form-data"}]
     options = [ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 20000]
 
     {:ok, response_imagen} =
-      HTTPoison.request(
+      (HTTPoison.request(
       :post,
       "https://testing.cms.fiuba.lambdaclass.com/upload",
       {:multipart,
-       [{"file", imagen, {"form-data", [name: "files", filename: "img.jpg"]}, [{"Content-Type", "image/jpeg"}]},{"type", "image/jpeg"}]},
+       [{"file", imagen, {"form-data", [name: "files", filename: (nombre_imagen <> ".jpg")]}, [{"Content-Type", "image/jpeg"}]},{"type", "image/jpeg"}]},
       headers,
       options
     )
+    |> HTTPoison.Retry.autoretry(max_attempts: 20, wait: 20000, include_404s: false, retry_unknown_errors: false))
+
+
 
     response_body = response_imagen.body
     {:ok, response_body_map} = JSON.decode(response_body)

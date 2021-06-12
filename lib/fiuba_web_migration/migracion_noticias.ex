@@ -16,23 +16,25 @@ defmodule Migracion_noticias do
 
     noticias = cargar_noticias()
 
-    id_imagen_portada = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png")
+    id_imagen_portada = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada.jpg")
 
     Enum.map(
       noticias,
       fn noticia ->
 
         url_imgs = noticia |> Enum.at(0) |> urls_imgs_embebidas()
+        url_noticia = (noticia |> Enum.at(1) |> url_format()) <> "-" <> (noticia |> Enum.at(0)|> to_string())
 
         imagenes_id = Enum.map(
           url_imgs,
           fn elemento ->
-            url = elemento |> Enum.at(0) |> String.replace(" ","%20")
-            imagen_id = cargar_imagen(url)
+
+            url_img = elemento |> Enum.at(0) |> String.replace(" ","%20")
+            imagen_id = cargar_imagen(url_img,url_noticia)
           end)
 
         noticia_body = %{
-          "seo_url" => (noticia |> Enum.at(1) |> url_format()) <> "-" <> (noticia |> Enum.at(0)|> to_string()),
+          "seo_url" => url_noticia,
           "titulo" => noticia |> Enum.at(1),
           "fecha_publicacion" =>  noticia |> Enum.at(2) |> fecha_format(),
           "cuerpo" => HtmlSanitizeEx.strip_tags(Enum.at(noticia, 3)),
