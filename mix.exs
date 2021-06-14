@@ -29,6 +29,7 @@ defmodule FiubaWebMigration.MixProject do
       {:html_sanitize_ex, "~> 1.3.0-rc3"},
       {:timex, "~> 3.0"},
       {:tzdata, "~> 0.1.8", override: true},
+      {:httpoison_retry, "~> 1.0.0"},
       {:panpipe, "~> 0.1.1"}
     ]
   end
