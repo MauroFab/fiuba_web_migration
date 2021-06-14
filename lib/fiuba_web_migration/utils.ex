@@ -238,18 +238,18 @@ defmodule Utils do
       ]
     }
 
-    # response_pagina =
-    #   HTTPoison.post!(
-    #     "https://testing.cms.fiuba.lambdaclass.com/paginas",
-    #     JSON.encode!(pagina),
-    #     [{"Content-type", "application/json"}]
-    #   )
+    response_pagina =
+      HTTPoison.post!(
+        "https://testing.cms.fiuba.lambdaclass.com/paginas",
+        JSON.encode!(pagina),
+        [{"Content-type", "application/json"}]
+      )
 
-    # response_body = response_pagina.body
-    # {:ok, response_body_map} = JSON.decode(response_body)
-    # {:ok, id_pagina} = Map.fetch(response_body_map, "id")
+    response_body = response_pagina.body
+    {:ok, response_body_map} = JSON.decode(response_body)
+    {:ok, id_pagina} = Map.fetch(response_body_map, "id")
 
-    # id_pagina
+    id_pagina
   end
 
   def url_format(string) do
@@ -276,12 +276,12 @@ defmodule Utils do
       "nombre" => nombre_navegacion
     }
 
-    # response_navegacion =
-    #   HTTPoison.post!(
-    #     "https://testing.cms.fiuba.lambdaclass.com/navegacion",
-    #     JSON.encode!(vinculo),
-    #     [{"Content-type", "application/json"}]
-    #   )
+    response_navegacion =
+      HTTPoison.post!(
+        "https://testing.cms.fiuba.lambdaclass.com/navegacion",
+        JSON.encode!(vinculo),
+        [{"Content-type", "application/json"}]
+      )
   end
 
   def cargar_hijos(plid) do
