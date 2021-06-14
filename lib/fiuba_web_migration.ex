@@ -17,23 +17,21 @@ defmodule FiubaWebMigration do
   import Migracion_no_docentes
 
   def migration() do
-    # noticias()
-    # carreras_grado()
-    # maestrias_posgrado()
-    # carreras_especializaciones()
-    # anuales_bianuales()
-
-    # investigacion()
-    # institucional()
-    # bienestar()
-    # ingresantes()
-    # biblioteca()
-    # prensa()
-
-    # estudiantes()
-    # docentes()
-    # graduados()
-    # extranjeros()
+    noticias()
+    carreras_grado()
+    maestrias_posgrado()
+    carreras_especializaciones()
+    anuales_bianuales()
+    investigacion()
+    institucional()
+    bienestar()
+    ingresantes()
+    biblioteca()
+    prensa()
+    estudiantes()
+    docentes()
+    graduados()
+    extranjeros()
     no_docentes()
   end
 end

@@ -4,37 +4,64 @@ defmodule Utils do
   import JSON
   import String
 
+  def cargar_nodo_padre_standard(nid) do
+    query_sql =
+      "SELECT
+        menu_links.mlid AS mlid,
+        menu_links.link_title AS titulo,
+        REPLACE(menu_links.link_path, 'node/','') AS nid
+      FROM menu_links
+      WHERE menu_links.mlid = " <>
+        to_string(nid) <>
+        " AND menu_links.router_path= 'node/%';"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+    respuesta.rows
+  end
+
+  def cargar_nodo_padre_no_standard(nid) do
+    query_sql =
+      "SELECT
+        menu_links.mlid AS mlid,
+        menu_links.link_title AS titulo
+      FROM menu_links
+      WHERE menu_links.plid = " <>
+        to_string(nid) <>
+        " ORDER BY menu_links.link_title DESC"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+    respuesta.rows
+  end
 
   def cargar_imagen(url_imagen) do
-
     {:ok, result} = HTTPoison.get(url_imagen)
 
     imagen = result.body
     headers = [{"Content-Type", "multipart/form-data"}]
-    options = [ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 20000]
+    options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
 
     {:ok, response_imagen} =
       HTTPoison.request(
-      :post,
-      "https://testing.cms.fiuba.lambdaclass.com/upload",
-      {:multipart,
-       [{"file", imagen, {"form-data", [name: "files", filename: "img.jpg"]}, [{"Content-Type", "image/jpeg"}]},{"type", "image/jpeg"}]},
-      headers,
-      options
-    )
+        :post,
+        "https://testing.cms.fiuba.lambdaclass.com/upload",
+        {:multipart,
+         [
+           {"file", imagen, {"form-data", [name: "files", filename: "img.jpg"]},
+            [{"Content-Type", "image/jpeg"}]},
+           {"type", "image/jpeg"}
+         ]},
+        headers,
+        options
+      )
 
     response_body = response_imagen.body
     {:ok, response_body_map} = JSON.decode(response_body)
-    {:ok, id_imagen} = Map.fetch( (response_body_map|> Enum.at(0)) , "id")
+    {:ok, id_imagen} = Map.fetch(response_body_map |> Enum.at(0), "id")
 
     id_imagen
-
   end
 
-
-
   def urls_imgs_embebidas(nid) do
-
     query_sql = "SELECT
         REPLACE (file_managed.uri,'public://','www.fi.uba.ar/sites/default/files/') AS URL_IMG
       FROM node
@@ -42,89 +69,6 @@ defmodule Utils do
       LEFT JOIN file_usage ON field_data_field_galeria_embebida.field_galeria_embebida_value = file_usage.id AND file_usage.type = 'field_collection_item'
       LEFT JOIN file_managed ON file_managed.fid = file_usage.fid
       WHERE node.type = 'article' AND node.nid = " <> to_string(nid) <> ";"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-
-  end
-
-
-  def cargar_noticias() do
-
-    query_sql =
-      "SELECT
-        node.nid as NODO,
-        node.title as TITULO,
-        field_data_field_date.field_date_value AS FECHA,
-        field_data_body.body_value as TEXTO
-      FROM node
-      INNER JOIN field_data_body ON  node.nid = field_data_body.entity_id
-      LEFT JOIN field_data_field_date ON node.nid = field_data_field_date.entity_id
-      WHERE node.type = 'article';"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-
-  def cargar_maestrias do
-    query_sql = "SELECT
-        menu_links.link_title AS titulo,
-        menu_links.mlid AS mlid
-      FROM menu_links
-      WHERE menu_links.plid = '1157'
-      ORDER BY menu_links.link_title DESC"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def cargar_anuales_bianuales do
-    query_sql = "SELECT
-        menu_links.link_title AS titulo,
-        menu_links.mlid AS mlid
-      FROM menu_links
-      WHERE menu_links.plid = 1159
-      ORDER BY menu_links.link_title DESC"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def cargar_investigaciones() do
-    query_sql = "SELECT
-        menu_links.link_title AS titulo,
-        menu_links.mlid AS mlid
-      FROM menu_links
-      WHERE menu_links.plid = 1161 AND menu_links.router_path = 'node/%';"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def cargar_investigaciones_hijos(plid) do
-    query_sql =
-      "SELECT
-        menu_links.link_title AS titulo,
-        menu_links.mlid AS mlid
-      FROM menu_links
-      WHERE menu_links.plid = " <>
-        to_string(plid) <>
-        " AND menu_links.has_children = 0
-        AND menu_links.router_path = 'node/%';"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def cargar_nodos_asociados_maestrias(mlid) do
-    query_sql =
-      "SELECT
-        menu_links.link_title AS titulo_nodo_asociado,
-        REPLACE(menu_links.link_path, 'node/','') AS nid
-      FROM menu_links
-      WHERE (menu_links.plid = " <>
-        to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -141,6 +85,21 @@ defmodule Utils do
             menu_links.link_title != 'Autoridades' AND
             (menu_links.plid = " <>
         to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+    respuesta.rows
+  end
+
+  def cargar_nodos_asociados_maestrias(mlid) do
+    query_sql =
+      "SELECT
+        menu_links.link_title AS titulo_nodo_asociado,
+        REPLACE(menu_links.link_path, 'node/','') AS nid
+      FROM menu_links
+      WHERE (menu_links.plid = " <>
+        to_string(mlid) <>
+        " OR menu_links.mlid = " <>
+        to_string(mlid) <> ");"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -279,18 +238,18 @@ defmodule Utils do
       ]
     }
 
-    response_pagina =
-      HTTPoison.post!(
-        "https://testing.cms.fiuba.lambdaclass.com/paginas",
-        JSON.encode!(pagina),
-        [{"Content-type", "application/json"}]
-      )
+    # response_pagina =
+    #   HTTPoison.post!(
+    #     "https://testing.cms.fiuba.lambdaclass.com/paginas",
+    #     JSON.encode!(pagina),
+    #     [{"Content-type", "application/json"}]
+    #   )
 
-    response_body = response_pagina.body
-    {:ok, response_body_map} = JSON.decode(response_body)
-    {:ok, id_pagina} = Map.fetch(response_body_map, "id")
+    # response_body = response_pagina.body
+    # {:ok, response_body_map} = JSON.decode(response_body)
+    # {:ok, id_pagina} = Map.fetch(response_body_map, "id")
 
-    id_pagina
+    # id_pagina
   end
 
   def url_format(string) do
@@ -317,12 +276,12 @@ defmodule Utils do
       "nombre" => nombre_navegacion
     }
 
-    response_navegacion =
-      HTTPoison.post!(
-        "https://testing.cms.fiuba.lambdaclass.com/navegacion",
-        JSON.encode!(vinculo),
-        [{"Content-type", "application/json"}]
-      )
+    # response_navegacion =
+    #   HTTPoison.post!(
+    #     "https://testing.cms.fiuba.lambdaclass.com/navegacion",
+    #     JSON.encode!(vinculo),
+    #     [{"Content-type", "application/json"}]
+    #   )
   end
 
   def cargar_hijos(plid) do

@@ -2,9 +2,22 @@ defmodule Migracion_anuales_bianuales do
 
   import Utils
 
+  # def cargar_anuales_bianuales do
+  #   query_sql = "SELECT
+  #       menu_links.link_title AS titulo,
+  #       menu_links.mlid AS mlid
+  #     FROM menu_links
+  #     WHERE menu_links.plid = 1159
+  #     ORDER BY menu_links.link_title DESC"
+
+  #   {:ok, respuesta} = Repo.query(query_sql)
+  #   respuesta.rows
+  # end
+
+
   def anuales_bianuales do
 
-    anuales = cargar_anuales_bianuales()
+    anuales = cargar_nodo_padre_standard(1159)
 
     Enum.map(
       anuales,

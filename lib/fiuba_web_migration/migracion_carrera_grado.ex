@@ -1,50 +1,66 @@
 defmodule Migracion_carrera_grado do
   import Utils
 
-  alias FiubaWebMigration.Repo
-  import Ecto.Query
-  import JSON
   import String
 
-  def cargar_carreras_grado do
-    query_sql = "SELECT
-        menu_links.link_title AS titulo,
-        menu_links.mlid AS mlid
-      FROM menu_links
-      WHERE menu_links.plid = '1018'
-      ORDER BY menu_links.link_title DESC"
+  def info_grado() do
+    info_carreras = cargar_nodo_padre_standard(1154) |> Enum.at(0)
 
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
+    nid = info_carreras |> Enum.at(2)
+    nodo = cargar_nodo(nid) |> Enum.at(0)
+
+    nombre_pagina = nodo |> Enum.at(0)
+    texto_pagina = nodo |> Enum.at(1)
+
+    jerarquia_padre = "Grado"
+
+    id_pagina_info_carreras = crear_pagina(nombre_pagina, texto_pagina, jerarquia_padre)
+
+    url_info_carreras = "/grado"
+    crear_navegacion(url_info_carreras, nombre_pagina, id_pagina_info_carreras)
+
+    info_carreras_opts = info_carreras |> Enum.at(0) |> cargar_hijos()
+
+    Enum.map(
+      info_carreras_opts,
+      fn elemento ->
+        busqueda_recursiva(elemento, url_info_carreras, nombre_pagina, jerarquia_padre)
+      end
+    )
   end
 
-  def carreras_grado() do
-    carreras = cargar_carreras_grado()
+  def carreras() do
+    carreras = cargar_nodo_padre_no_standard(1018)
 
     Enum.map(
       carreras,
       fn carrera ->
-        nodos_asociados = cargar_nodos_asociados(Enum.at(carrera, 1))
-        nombre_carrera = Enum.at(carrera, 0)
+        nodos_asociados = cargar_nodos_asociados(Enum.at(carrera, 0))
+        nombre_carrera = Enum.at(carrera, 1)
 
         componentes_pagina =
           Enum.map(
             nodos_asociados,
             fn nodo ->
               texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
-
               nombre_nodo = texto_asociado |> Enum.at(0)
               texto_nodo = texto_asociado |> Enum.at(1)
 
-              # Se crea la página
-              id_pagina = crear_pagina(nombre_nodo, texto_nodo, "Carreras Grado")
+              jerarquia_pagina =
+                if String.contains?(nombre_nodo, nombre_carrera) do
+                  "Grado/Carreras/" <> nombre_carrera
+                else
+                  "Grado/Carreras/" <> nombre_carrera <> "/" <> nombre_nodo
+                end
 
+              # Se crea la página
+              id_pagina = crear_pagina(nombre_nodo, texto_nodo, jerarquia_pagina)
               # Se crea la navegación
               nombre_navegacion =
                 if String.contains?(nombre_nodo, nombre_carrera) do
-                  "Carrera - " <> nombre_carrera
+                  "Grado - Carreras - " <> nombre_carrera
                 else
-                  "Carrera - " <> nombre_carrera <> " - " <> nombre_nodo
+                  "Grado - Carreras - " <> nombre_carrera <> " - " <> nombre_nodo
                 end
 
               url_navegacion =
@@ -60,5 +76,10 @@ defmodule Migracion_carrera_grado do
           )
       end
     )
+  end
+
+  def carreras_grado() do
+    info_grado()
+    carreras()
   end
 end

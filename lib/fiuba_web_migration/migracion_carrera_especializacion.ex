@@ -1,20 +1,19 @@
 defmodule Migracion_carrera_especializacion do
-  alias FiubaWebMigration.Repo
-  import String
-
   import Utils
+  # alias FiubaWebMigration.Repo
+  # import String
 
-  def cargar_carreras_especializacion do
-    query_sql = "SELECT
-        menu_links.link_title AS titulo,
-        menu_links.mlid AS mlid
-      FROM menu_links
-      WHERE menu_links.plid = '1158'
-      ORDER BY menu_links.link_title ASC"
+  # def cargar_carreras_especializacion do
+  #   query_sql = "SELECT
+  #       menu_links.mlid AS mlid,
+  #       menu_links.link_title AS titulo
+  #     FROM menu_links
+  #     WHERE menu_links.plid = '1158'
+  #     ORDER BY menu_links.link_title ASC"
 
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
+  #   {:ok, respuesta} = Repo.query(query_sql)
+  #   respuesta.rows
+  # end
 
   def cargar_nodos_asociados_carreras_especializadas(mlid) do
     query_sql =
@@ -31,12 +30,12 @@ defmodule Migracion_carrera_especializacion do
 
   def carreras_especializaciones() do
     Enum.map(
-      cargar_carreras_especializacion(),
+      cargar_nodo_padre_standard(1158),
       fn especializacion ->
-        nombre_carrera = Enum.at(especializacion, 0)
+        nombre_carrera = Enum.at(especializacion, 1)
 
         Enum.map(
-          cargar_nodos_asociados_carreras_especializadas(Enum.at(especializacion, 1)),
+          cargar_nodos_asociados_carreras_especializadas(Enum.at(especializacion, 0)),
           fn nodo ->
             texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
 
