@@ -15,7 +15,7 @@ defmodule Utils do
       WHERE menu_links.mlid = " <>
         to_string(nid) <>
         " AND menu_links.router_path= 'node/%';"
-        
+
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
   end
@@ -377,7 +377,7 @@ defmodule Utils do
     nombre_nav = nombre_nav_padre <> " - " <> titulo
     url_nav = url_nav_padre <> "/" <> (titulo |> url_format())
 
-    resultado = crear_navegacion(url_nav, nombre_nav, id_pagina)
+    id_navegacion = crear_navegacion(url_nav, nombre_nav, id_pagina)
 
     # 1 = Tiene hijos, 0 = No tiene hijos
     has_children = elemento |> Enum.at(3)
@@ -392,7 +392,6 @@ defmodule Utils do
         end
       )
     end
-
-    resultado
+    id_navegacion
   end
 end
