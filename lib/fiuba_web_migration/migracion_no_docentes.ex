@@ -1,23 +1,23 @@
 defmodule Migracion_no_docentes do
   import Utils
 
-  alias FiubaWebMigration.Repo
+  # alias FiubaWebMigration.Repo
 
-  def cargar_no_docentes() do
-    query_sql = "SELECT
-        menu_links.mlid AS mlid,
-        menu_links.link_title AS titulo,
-        REPLACE(menu_links.link_path, 'node/','') AS nid
-      FROM menu_links
-      WHERE menu_links.mlid = 1604
-      AND menu_links.router_path= 'node/%';"
+  # def cargar_no_docentes() do
+  #   query_sql = "SELECT
+  #       menu_links.mlid AS mlid,
+  #       menu_links.link_title AS titulo,
+  #       REPLACE(menu_links.link_path, 'node/','') AS nid
+  #     FROM menu_links
+  #     WHERE menu_links.mlid = 1604
+  #     AND menu_links.router_path= 'node/%';"
 
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
+  #   {:ok, respuesta} = Repo.query(query_sql)
+  #   respuesta.rows
+  # end
 
   def no_docentes() do
-    no_docentes = cargar_no_docentes() |> Enum.at(0)
+    no_docentes = cargar_nodo_padre_standard(1604) |> Enum.at(0)
 
     nid = no_docentes |> Enum.at(2)
     nodo = cargar_nodo(nid) |> Enum.at(0)
