@@ -43,7 +43,7 @@ defmodule Migracion_carrera_especializacion do
             texto_nodo = texto_asociado |> Enum.at(1)
 
             # Se crea la página
-            id_pagina = crear_pagina(nombre_nodo, texto_nodo)
+            id_pagina = crear_pagina(nombre_nodo, texto_nodo, nombre_nodo)
 
             # Se crea la navegación
             nombre_navegacion =

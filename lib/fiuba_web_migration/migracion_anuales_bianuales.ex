@@ -34,7 +34,7 @@ defmodule Migracion_anuales_bianuales do
             nombre_nodo = texto_asociado |> Enum.at(0)
             texto_nodo = texto_asociado |> Enum.at(1)
 
-            id_pagina = crear_pagina(nombre_nodo,texto_nodo)
+            id_pagina = crear_pagina(nombre_nodo,texto_nodo, nombre_nodo)
 
             nombre_navegacion =
               if (String.contains?(nombre_nodo,nombre_anual)) do "Anuales/Bianuales - " <> nombre_anual
