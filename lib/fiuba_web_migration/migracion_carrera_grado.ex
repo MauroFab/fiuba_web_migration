@@ -1,7 +1,6 @@
 defmodule Migracion_carrera_grado do
 
   import Utils
-  import String
 
   def info_grado() do
     info_carreras = cargar_nodo_padre_standard(1154) |> Enum.at(0)
