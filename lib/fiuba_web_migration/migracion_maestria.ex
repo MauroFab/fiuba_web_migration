@@ -10,7 +10,7 @@ defmodule Migracion_maestria do
         nodos_asociados = cargar_nodos_asociados_maestrias(Enum.at(maestria, 0))
         nombre_maestria = Enum.at(maestria, 1)
 
-        id_menu_lateral_interno = crear_menu_lateral("Maestría - " <> nombre_maestria)
+        id_menu_lateral_interno = crear_menu_lateral("ensenanza/posgrado/maestrias/" <> nombre_maestria)
 
 
         ids_navs_interno = Enum.map(

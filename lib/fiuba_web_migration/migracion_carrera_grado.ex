@@ -41,7 +41,7 @@ defmodule Migracion_carrera_grado do
         nodos_asociados = cargar_nodos_asociados(Enum.at(carrera, 0))
         nombre_carrera = Enum.at(carrera, 1)
 
-        id_menu_lateral = crear_menu_lateral("Grado - Carreras - " <> nombre_carrera)
+        id_menu_lateral = crear_menu_lateral("grado/carreras/" <> nombre_carrera)
 
         ids_navegacion =
           Enum.map(
