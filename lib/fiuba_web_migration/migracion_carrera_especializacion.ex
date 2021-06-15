@@ -1,7 +1,7 @@
 defmodule Migracion_carrera_especializacion do
+  alias FiubaWebMigration.Repo
   import Utils
-  # alias FiubaWebMigration.Repo
-  # import String
+  import String
 
   # def cargar_carreras_especializacion do
   #   query_sql = "SELECT
@@ -30,7 +30,7 @@ defmodule Migracion_carrera_especializacion do
 
   def carreras_especializaciones() do
     Enum.map(
-      cargar_nodo_padre_standard(1158),
+      cargar_nodo_padre_no_standard(1158),
       fn especializacion ->
         nombre_carrera = Enum.at(especializacion, 1)
 
@@ -42,8 +42,15 @@ defmodule Migracion_carrera_especializacion do
             nombre_nodo = texto_asociado |> Enum.at(0)
             texto_nodo = texto_asociado |> Enum.at(1)
 
+            jerarquia_pagina =
+              if String.contains?(nombre_nodo, nombre_carrera) do
+                "Posgrado/Carreras de Especializacion/" <> nombre_carrera
+              else
+                "Posgrado/Carreras de Especializacion/" <> nombre_carrera <> "/" <> nombre_nodo
+              end
+
             # Se crea la página
-            id_pagina = crear_pagina(nombre_nodo, texto_nodo, nombre_nodo)
+            id_pagina = crear_pagina(nombre_nodo, texto_nodo, jerarquia_pagina)
 
             # Se crea la navegación
             nombre_navegacion =
