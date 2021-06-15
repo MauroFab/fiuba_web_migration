@@ -17,25 +17,26 @@ defmodule FiubaWebMigration do
   import Migracion_no_docentes
 
   def migration() do
-    # noticias()
-    
-    # carreras_grado()
-    # maestrias_posgrado()
+
+    # noticias() #Ya trae noticias e imágenes (tarda mucho)
+
+    # carreras_grado() #Ya tiene menúes laterales
+    # maestrias_posgrado() #Ya tiene menúes laterales
     # carreras_especializaciones()
     # anuales_bianuales()
 
     # investigacion()
     # institucional()
-    # bienestar()
-    # ingresantes()
-    # biblioteca()
-    # prensa()
+    # bienestar() #Ya tiene menúes laterales
+    # ingresantes() #Ya tiene menúes laterales
+    # biblioteca() #Ya tiene menúes laterales
+    # prensa() #Ya tiene menúes laterales
 
-    # estudiantes()
-    # docentes()
-    # graduados()
+    # estudiantes() #Ya tiene menúes laterales
+    # docentes() #Ya tiene menúes laterales
+    # graduados() #Ya tiene menúes laterales
     # extranjeros()
-    #no_docentes()
-    
+    # no_docentes()
+
   end
 end

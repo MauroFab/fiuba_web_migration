@@ -1,20 +1,6 @@
 defmodule Migracion_graduados do
+
   import Utils
-
-  # alias FiubaWebMigration.Repo
-
-  # def cargar_graduados() do
-  #   query_sql = "SELECT
-  #       menu_links.mlid AS mlid,
-  #       menu_links.link_title AS titulo,
-  #       REPLACE(menu_links.link_path, 'node/','') AS nid
-  #     FROM menu_links
-  #     WHERE menu_links.mlid = 2716
-  #     AND menu_links.router_path= 'node/%';"
-
-  #   {:ok, respuesta} = Repo.query(query_sql)
-  #   respuesta.rows
-  # end
 
   def graduados() do
 
