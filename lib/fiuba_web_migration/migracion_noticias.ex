@@ -1,5 +1,10 @@
 defmodule Migracion_noticias do
   import Utils
+  alias FiubaWebMigration.Repo
+  import Ecto.Query
+  import JSON
+  import String
+  import HTTPoison.Retry
 
   def cargar_noticias() do
     query_sql = "SELECT
@@ -11,7 +16,7 @@ defmodule Migracion_noticias do
       INNER JOIN field_data_body ON  node.nid = field_data_body.entity_id
       LEFT JOIN field_data_field_date ON node.nid = field_data_field_date.entity_id
       WHERE node.type = 'article'
-      ORDER BY date DESC;"
+      ORDER BY field_data_field_date.field_date_value DESC;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
