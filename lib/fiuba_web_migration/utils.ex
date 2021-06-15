@@ -364,7 +364,8 @@ defmodule Utils do
   end
 
 
-  def busqueda_recursiva(elemento, url_nav_padre, nombre_nav_padre, jerarquia_padre) do
+  def busqueda_recursiva( elemento, url_nav_padre, nombre_nav_padre, jerarquia_padre, id_menu_lateral_padre \\ nil) do
+
     nid = elemento |> Enum.at(2)
     nodo = cargar_nodo(nid) |> Enum.at(0)
 
@@ -372,26 +373,31 @@ defmodule Utils do
     texto = nodo |> Enum.at(1)
 
     jerarquia_padre = jerarquia_padre <> "/" <> titulo
-    id_pagina = crear_pagina(titulo, texto, jerarquia_padre)
-
     nombre_nav = nombre_nav_padre <> " - " <> titulo
     url_nav = url_nav_padre <> "/" <> (titulo |> url_format())
-
-    id_navegacion = crear_navegacion(url_nav, nombre_nav, id_pagina)
 
     # 1 = Tiene hijos, 0 = No tiene hijos
     has_children = elemento |> Enum.at(3)
 
-    if has_children == 1 do
-      hijos = elemento |> Enum.at(0) |> cargar_hijos()
 
-      Enum.map(
+    id_menu_lateral = if (has_children == 1) do crear_menu_lateral(nombre_nav) else id_menu_lateral_padre end
+    id_pagina = crear_pagina( titulo, texto, jerarquia_padre, id_menu_lateral)
+    id_navegacion = crear_navegacion(url_nav, nombre_nav, id_pagina)
+
+
+    if (has_children == 1) do
+
+      hijos = elemento |> Enum.at(0) |> cargar_hijos()
+      ids_navs = Enum.map(
         hijos,
         fn hijo ->
-          busqueda_recursiva(hijo, url_nav, nombre_nav, jerarquia_padre)
+          busqueda_recursiva(hijo, url_nav, nombre_nav, jerarquia_padre,id_menu_lateral)
         end
       )
+      actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
+
     end
     id_navegacion
+
   end
 end
