@@ -22,11 +22,11 @@ defmodule FiubaWebMigration do
 
     # carreras_grado() #Ya tiene menúes laterales
     # maestrias_posgrado() #Ya tiene menúes laterales
-    # carreras_especializaciones()
-    # anuales_bianuales()
+    # carreras_especializaciones() #No trae bien
+    # anuales_bianuales() #No trae bien
 
-    # investigacion()
-    # institucional()
+    # investigacion() #No trae bien
+    # institucional() #No trae bien
     # bienestar() #Ya tiene menúes laterales
     # ingresantes() #Ya tiene menúes laterales
     # biblioteca() #Ya tiene menúes laterales
@@ -35,8 +35,8 @@ defmodule FiubaWebMigration do
     # estudiantes() #Ya tiene menúes laterales
     # docentes() #Ya tiene menúes laterales
     # graduados() #Ya tiene menúes laterales
-    # extranjeros()
-    # no_docentes()
+    # extranjeros() #Ya tiene menúes laterales
+    # no_docentes() #Ya tiene menúes laterales
 
   end
 end

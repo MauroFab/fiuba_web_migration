@@ -1,6 +1,6 @@
 defmodule Migracion_carrera_grado do
-  import Utils
 
+  import Utils
   import String
 
   def info_grado() do
@@ -31,6 +31,7 @@ defmodule Migracion_carrera_grado do
     )
     actualizar_menu_lateral(id_menu_lateral,ids_navegaciones)
   end
+
 
   def carreras() do
     carreras = cargar_nodo_padre_no_standard(1018)
