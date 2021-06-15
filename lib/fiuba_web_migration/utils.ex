@@ -380,7 +380,7 @@ defmodule Utils do
     has_children = elemento |> Enum.at(3)
 
 
-    id_menu_lateral = if (has_children == 1) do crear_menu_lateral(nombre_nav) else id_menu_lateral_padre end
+    id_menu_lateral = if (has_children == 1) do crear_menu_lateral(url_nav) else id_menu_lateral_padre end
     id_pagina = crear_pagina( titulo, texto, jerarquia_padre, id_menu_lateral)
     id_navegacion = crear_navegacion(url_nav, nombre_nav, id_pagina)
 
