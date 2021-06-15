@@ -51,7 +51,7 @@ defmodule Migracion_bienestar do
     nombre_pagina = "Bienestar"
     url_bienestar = "/bienestar"
 
-    id_menu_lateral = crear_menu_lateral(nombre_pagina)
+    id_menu_lateral = crear_menu_lateral("bienestar")
     id_pagina_bienestar = crear_pagina(nombre_pagina, texto_pagina, nombre_pagina, id_menu_lateral)
     id_navegacion = crear_navegacion(url_bienestar, nombre_pagina, id_pagina_bienestar)
 
