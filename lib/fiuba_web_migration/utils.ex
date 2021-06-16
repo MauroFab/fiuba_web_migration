@@ -1,39 +1,10 @@
 defmodule Utils do
+
   alias FiubaWebMigration.Repo
   import Ecto.Query
   import JSON
   import String
   import HTTPoison.Retry
-
-  def cargar_nodo_padre_standard(nid) do
-    query_sql =
-      "SELECT
-        menu_links.mlid AS mlid,
-        menu_links.link_title AS titulo,
-        REPLACE(menu_links.link_path, 'node/','') AS nid
-      FROM menu_links
-      WHERE menu_links.mlid = " <>
-        to_string(nid) <>
-        " AND menu_links.router_path= 'node/%';"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-
-  def cargar_nodo_padre_no_standard(nid) do
-    query_sql =
-      "SELECT
-        menu_links.mlid AS mlid,
-        menu_links.link_title AS titulo
-      FROM menu_links
-      WHERE menu_links.plid = " <>
-        to_string(nid) <>
-        " ORDER BY menu_links.link_title DESC"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
 
 
   def cargar_imagen(url_imagen, nombre_imagen) do
@@ -77,6 +48,7 @@ defmodule Utils do
     id_imagen
   end
 
+
   def urls_imgs_embebidas(nid) do
     query_sql = "SELECT
         REPLACE (file_managed.uri,'public://','www.fi.uba.ar/sites/default/files/') AS URL_IMG
@@ -85,49 +57,6 @@ defmodule Utils do
       LEFT JOIN file_usage ON field_data_field_galeria_embebida.field_galeria_embebida_value = file_usage.id AND file_usage.type = 'field_collection_item'
       LEFT JOIN file_managed ON file_managed.fid = file_usage.fid
       WHERE node.type = 'article' AND node.nid = " <> to_string(nid) <> ";"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def cargar_nodos_asociados(mlid) do
-    query_sql =
-      "SELECT
-        menu_links.link_title AS titulo_nodo_asociado,
-        REPLACE(menu_links.link_path, 'node/','') AS nid
-      FROM menu_links
-      WHERE menu_links.link_title != 'Video' AND
-            menu_links.link_title != 'Plan de estudios' AND
-            menu_links.link_title != 'Autoridades' AND
-            (menu_links.plid = " <>
-        to_string(mlid) <> " OR menu_links.mlid = " <> to_string(mlid) <> ");"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def cargar_nodos_asociados_maestrias(mlid) do
-    query_sql =
-      "SELECT
-        menu_links.link_title AS titulo_nodo_asociado,
-        REPLACE(menu_links.link_path, 'node/','') AS nid
-      FROM menu_links
-      WHERE (menu_links.plid = " <>
-        to_string(mlid) <>
-        " OR menu_links.mlid = " <>
-        to_string(mlid) <> ");"
-
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
-  end
-
-  def cargar_texto_asociado(nid) do
-    query_sql = "SELECT
-        node.title AS titulo_nodo,
-        field_data_body.body_value AS texto_asociado
-      FROM node
-      INNER JOIN field_data_body ON field_data_body.entity_id = node.nid
-      WHERE node.nid = " <> to_string(nid) <> ";"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -166,6 +95,7 @@ defmodule Utils do
     id_pagina
   end
 
+
   def url_format(string) do
     string
     |> String.downcase()
@@ -173,6 +103,7 @@ defmodule Utils do
     |> String.replace(~r/[^A-Z^a-z^0-9\s]/u, "")
     |> String.replace(~r/\s/, "-")
   end
+
 
   def crear_navegacion(url_navegacion, nombre_navegacion, id_pagina) do
     vinculo = %{
@@ -200,6 +131,7 @@ defmodule Utils do
     id_navegacion
   end
 
+
   def crear_menu_lateral(nombre_menu) do
     menu_lateral = %{
       "nombre" => nombre_menu
@@ -219,6 +151,7 @@ defmodule Utils do
     id_menu_lateral
   end
 
+
   def actualizar_menu_lateral(id_menu_lateral, id_navegaciones) do
     links =
       Enum.map(
@@ -237,6 +170,7 @@ defmodule Utils do
     )
   end
 
+
   def cargar_hijos(plid) do
     query_sql = "SELECT
     menu_links.mlid AS mlid,
@@ -250,6 +184,7 @@ defmodule Utils do
     respuesta.rows
   end
 
+
   def cargar_nodo(nid) do
     query_sql = "SELECT
       node.title AS titulo_nodo,
@@ -262,6 +197,7 @@ defmodule Utils do
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
   end
+
 
   def busqueda_recursiva( elemento, url_nav_padre, nombre_nav_padre, jerarquia_padre, id_menu_lateral_padre \\ nil) do
     nid = elemento |> Enum.at(2)
