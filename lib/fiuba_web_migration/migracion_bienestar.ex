@@ -4,8 +4,6 @@ defmodule Migracion_bienestar do
 
   def bienestar() do
 
-    bienestar = cargar_nodo(453)
-
     texto_pagina = ""
     nombre_pagina = "Bienestar"
     url_bienestar = "/bienestar"

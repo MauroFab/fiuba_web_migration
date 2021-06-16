@@ -8,7 +8,6 @@ defmodule Migracion_prensa do
 
     nombre_pagina = prensa |> Enum.at(0)
     texto_prensa = prensa |> Enum.at(1)
-    nid = prensa |> Enum.at(2)
     url_prensa = "/prensa"
 
     # texto_con_links =
