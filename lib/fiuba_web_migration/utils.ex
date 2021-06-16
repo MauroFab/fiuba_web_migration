@@ -136,114 +136,6 @@ defmodule Utils do
     respuesta.rows
   end
 
-  # def ejemplo_completo_carreras_grado do
-
-  #   carreras = cargar_carreras_grado()
-
-  #   Enum.map(
-  #     carreras,
-  #     fn carrera ->
-  #       nodos_asociados = cargar_nodos_asociados(Enum.at(carrera, 1))
-  #       nombre_carrera = Enum.at(carrera, 0)
-
-  #       componentes_pagina =
-  #         Enum.map(
-  #           nodos_asociados,
-  #           fn nodo ->
-  #             texto_asociado = Enum.at(cargar_texto_asociado(Enum.at(nodo, 1)), 0)
-
-  #             %{
-  #               "__component" => "paginas.texto-con-formato",
-  #               "texto" => HtmlSanitizeEx.strip_tags(Enum.at(texto_asociado, 1)),
-  #               "encabezado" =>
-  #                 if Enum.at(texto_asociado, 0) == nombre_carrera do
-  #                   "Propuesta Académica"
-  #                 else
-  #                   Enum.at(texto_asociado, 0)
-  #                 end
-  #             }
-  #           end
-  #         )
-
-  #       # POR CADA CARRERA CREO UNA PAGINA
-  #       pagina = %{
-  #         "componentes" => componentes_pagina,
-  #         "nombre" => nombre_carrera
-  #       }
-
-  #       response_pagina =
-  #         HTTPoison.post!(
-  #           "https://testing.cms.fiuba.lambdaclass.com/paginas",
-  #           JSON.encode!(pagina),
-  #           [{"Content-type", "application/json"}]
-  #         )
-
-  #       response_body = response_pagina.body
-  #       {:ok, response_body_map} = JSON.decode(response_body)
-  #       {:ok, id} = Map.fetch(response_body_map, "id")
-
-  #       # POR CADA PAGINA CREO UN VINCULO
-
-  #       vinculo = %{
-  #         "vinculo" => [
-  #           %{
-  #             "__component" => "navegacion.pagina",
-  #             "pagina" => id
-  #           }
-  #         ],
-  #         "seo_url" =>
-  #           "/ensenanza/grado/carreras/" <>
-  #             (nombre_carrera
-  #              |> String.downcase()
-  #              |> String.normalize(:nfd)
-  #              |> String.replace(~r/[^A-z\s]/u, "")
-  #              |> String.replace(~r/\s/, "-")),
-  #         "nombre" => nombre_carrera
-  #       }
-
-  #       response_navegacion =
-  #         HTTPoison.post!(
-  #           "https://testing.cms.fiuba.lambdaclass.com/navegacion",
-  #           JSON.encode!(vinculo),
-  #           [{"Content-type", "application/json"}]
-  #         )
-
-  #       response_body_navegacion = response_navegacion.body
-  #       {:ok, response_body_navegacion_map} = JSON.decode(response_body_navegacion)
-  #       {:ok, id_navegacion} = Map.fetch(response_body_navegacion_map, "id")
-
-  #       pagina_carrera_response =
-  #         HTTPoison.get!("https://testing.cms.fiuba.lambdaclass.com/paginas?nombre=Carreras")
-
-  #       pagina_carrera_response_body = pagina_carrera_response.body
-  #       {:ok, response_body_carreras_map} = JSON.decode(pagina_carrera_response_body)
-  #       {:ok, id_pagina_carrera} = Map.fetch(Enum.at(response_body_carreras_map, 0), "id")
-
-  #       {:ok, componentes_actuales} =
-  #         Map.fetch(Enum.at(response_body_carreras_map, 0), "componentes")
-
-  #       {:ok, links_actuales} = Map.fetch(Enum.at(componentes_actuales, 0), "links")
-
-  #       link = %{
-  #         "updid" => id_pagina_carrera,
-  #         "componentes" => [
-  #           %{
-  #             "__component" => "paginas.navegacion-listado",
-  #             "links" => links_actuales ++ [%{"navegacion" => id_navegacion}]
-  #           }
-  #         ]
-  #       }
-
-  #       # {"nombre":"Carreras","created_at":"2021-04-13T19:45:16.763Z","componentes":[{"__component":"paginas.navegacion-listado","id":3,"encabezado":null,"links":[{"id":4,"navegacion":40},{"navegacion":68}]}],"created_by":1,"menu_lateral":null,"updated_at":"2021-06-02T03:08:45.832Z","id":24,"updated_by":4,"portada":46}
-
-  #       HTTPoison.put!(
-  #         "https://testing.cms.fiuba.lambdaclass.com/paginas/" <> to_string(id_pagina_carrera),
-  #         JSON.encode!(link),
-  #         [{"Content-type", "application/json"}]
-  #       )
-  #     end
-  #   )
-  # end
 
   def crear_pagina(
         nombre_pagina \\ "",
@@ -363,7 +255,7 @@ defmodule Utils do
 
   def cargar_nodo(nid) do
     query_sql = "SELECT
-  node.title AS titulo_nodo,
+      node.title AS titulo_nodo,
       field_data_body.body_value AS texto_asociado
         FROM node
         LEFT JOIN field_data_body ON field_data_body.entity_id = node.nid
