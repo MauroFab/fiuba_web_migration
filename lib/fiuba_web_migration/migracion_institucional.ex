@@ -50,23 +50,26 @@ defmodule Migracion_institucional do
   # end
 
   def institucional() do
-    institucional = cargar_nodo_padre_standard(1225) |> Enum.at(0)
+
+    # REQUIRE BORRAR UN REGISTRO EN MENU_LINKS: menu_links.link_path = 'node/1406'
 
     texto_pagina = ""
     nombre_pagina = "Institucional"
-
-    id_pagina_institucional = crear_pagina(nombre_pagina, texto_pagina, nombre_pagina)
-
+    jerarquia_institucional = nombre_pagina
     url_institucional = "/institucional"
-    crear_navegacion(url_institucional, nombre_pagina, id_pagina_institucional)
 
-    institucionales = institucional |> Enum.at(0) |> cargar_hijos()
+    id_menu_lateral = crear_menu_lateral(url_institucional)
+    id_pagina_institucional = crear_pagina(nombre_pagina, texto_pagina, jerarquia_institucional, id_menu_lateral)
+    id_navegacion = crear_navegacion(url_institucional, nombre_pagina, id_pagina_institucional)
 
-    Enum.map(
+    institucionales = cargar_hijos(1225)
+
+    ids_navs = Enum.map(
       institucionales,
       fn elemento ->
-        busqueda_recursiva(elemento, url_institucional, nombre_pagina, nombre_pagina)
+        busqueda_recursiva(elemento, url_institucional, nombre_pagina, nombre_pagina, id_menu_lateral)
       end
     )
+    actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
   end
 end
