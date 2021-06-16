@@ -1,12 +1,10 @@
 defmodule Migracion_noticias do
+
   import Utils
-  alias FiubaWebMigration.Repo
-  import Ecto.Query
-  import JSON
-  import String
-  import HTTPoison.Retry
+
 
   def cargar_noticias() do
+
     query_sql = "SELECT
         node.nid as NODO,
         node.title as TITULO,
@@ -22,6 +20,7 @@ defmodule Migracion_noticias do
     respuesta.rows
   end
 
+
   def fecha_format(fecha) do
     if(fecha) do
       Timex.format!(fecha, "%FT%T%:z", :strftime) <> ".000Z"
@@ -30,9 +29,10 @@ defmodule Migracion_noticias do
     end
   end
 
-  def noticias do
-    noticias = cargar_noticias()
 
+  def noticias do
+
+    noticias = cargar_noticias()
 
     id_imagen_portada = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada.jpg")
 
@@ -48,8 +48,9 @@ defmodule Migracion_noticias do
           fn elemento ->
 
             url_img = elemento |> Enum.at(0) |> String.replace(" ","%20")
-            imagen_id = cargar_imagen(url_img,url_noticia)
-          end)
+            cargar_imagen(url_img,url_noticia)
+          end
+          )
 
         noticia_body = %{
           "seo_url" => url_noticia,
