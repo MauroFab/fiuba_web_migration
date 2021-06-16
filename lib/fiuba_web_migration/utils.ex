@@ -20,6 +20,7 @@ defmodule Utils do
     respuesta.rows
   end
 
+
   def cargar_nodo_padre_no_standard(nid) do
     query_sql =
       "SELECT
@@ -34,10 +35,6 @@ defmodule Utils do
     respuesta.rows
   end
 
-  # def id_pagina (url) do
-  #   pagina_carrera_response =
-  #     #         HTTPoison.get!("https://testing.cms.fiuba.lambdaclass.com/paginas?nombre=Carreras")
-  # end
 
   def cargar_imagen(url_imagen, nombre_imagen) do
     {:ok, result} =
