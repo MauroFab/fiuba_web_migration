@@ -8,7 +8,6 @@ defmodule Migracion_biblioteca do
 
     nombre_pagina = biblioteca |> Enum.at(0)
     texto_pagina = ""
-    nid = biblioteca |> Enum.at(2)
     url_biblioteca = "/biblioteca"
 
     id_menu_lateral = crear_menu_lateral(url_biblioteca)
