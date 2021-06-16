@@ -3,23 +3,25 @@ defmodule Migracion_investigacion do
   import Utils
 
   def investigacion() do
-    investigacion = cargar_nodo_padre_standard(1161) |> Enum.at(0)
 
-    texto_pagina = ""
     nombre_pagina = "Investigación"
-
-    id_pagina_investigacion = crear_pagina(nombre_pagina, texto_pagina, nombre_pagina)
-
+    texto_pagina = ""
+    jerarquia_pagina = nombre_pagina
     url_investigacion = "/investigacion"
-    crear_navegacion(url_investigacion, nombre_pagina, id_pagina_investigacion)
 
-    investigaciones = investigacion |> Enum.at(0) |> cargar_hijos()
+    id_menu_lateral = crear_menu_lateral(url_investigacion)
+    id_pagina_investigacion = crear_pagina(nombre_pagina, texto_pagina, jerarquia_pagina, id_menu_lateral)
+    id_navegacion = crear_navegacion(url_investigacion, nombre_pagina, id_pagina_investigacion)
 
-    Enum.map(
+    investigaciones = cargar_hijos(1161)
+
+    ids_navs = Enum.map(
       investigaciones,
       fn elemento ->
-        busqueda_recursiva(elemento, url_investigacion, nombre_pagina, nombre_pagina)
+        busqueda_recursiva(elemento, url_investigacion, nombre_pagina, nombre_pagina, id_menu_lateral)
       end
     )
+    actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
   end
+
 end
