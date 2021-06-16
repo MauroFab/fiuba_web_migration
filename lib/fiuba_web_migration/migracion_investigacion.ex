@@ -47,7 +47,7 @@ defmodule Migracion_investigacion do
   # end
 
   def investigacion() do
-    investigacion = cargar_nodo_padre_no_standard(1161) |> Enum.at(0)
+    investigacion = cargar_nodo_padre_standard(1161) |> Enum.at(0)
 
     texto_pagina = ""
     nombre_pagina = "Investigación"
