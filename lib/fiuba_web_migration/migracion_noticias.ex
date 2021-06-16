@@ -1,5 +1,6 @@
 defmodule Migracion_noticias do
 
+  alias FiubaWebMigration.Repo
   import Utils
 
 
