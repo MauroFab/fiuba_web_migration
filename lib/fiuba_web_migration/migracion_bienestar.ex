@@ -1,7 +1,6 @@
 defmodule Migracion_bienestar do
 
   import Utils
-  alias FiubaWebMigration.Repo
 
   def bienestar() do
 

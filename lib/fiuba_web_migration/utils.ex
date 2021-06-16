@@ -253,7 +253,8 @@ defmodule Utils do
   def cargar_nodo(nid) do
     query_sql = "SELECT
       node.title AS titulo_nodo,
-      field_data_body.body_value AS texto_asociado
+      field_data_body.body_value AS texto_asociado,
+      node.nid AS nid
         FROM node
         LEFT JOIN field_data_body ON field_data_body.entity_id = node.nid
     WHERE node.nid = " <> to_string(nid) <> ";"
