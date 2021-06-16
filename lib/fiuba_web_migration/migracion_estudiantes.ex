@@ -4,20 +4,17 @@ defmodule Migracion_estudiantes do
 
   def estudiantes() do
 
-    estudiantes = cargar_nodo_padre_standard(1600) |> Enum.at(0)
+    estudiantes = cargar_nodo(745) |> Enum.at(0)
 
-    nid = estudiantes |> Enum.at(2)
-    nodo = cargar_nodo(nid) |> Enum.at(0)
-
-    nombre_pagina = nodo |> Enum.at(0)
-    texto_pagina = nodo |> Enum.at(1)
+    nombre_pagina = estudiantes |> Enum.at(0)
+    texto_pagina = estudiantes |> Enum.at(1)
     url_estudiantes = "/estudiantes"
 
     id_menu_lateral = crear_menu_lateral(url_estudiantes)
     id_pagina_estudiantes = crear_pagina(nombre_pagina, texto_pagina, nombre_pagina, id_menu_lateral)
     id_navegacion = crear_navegacion(url_estudiantes, nombre_pagina, id_pagina_estudiantes)
 
-    estudiantes_opts = estudiantes |> Enum.at(0) |> cargar_hijos()
+    estudiantes_opts = cargar_hijos(1600)
 
     ids_navs = Enum.map(
       estudiantes_opts,
