@@ -373,7 +373,13 @@ defmodule Utils do
     respuesta.rows
   end
 
-  def busqueda_recursiva( elemento, url_nav_padre, nombre_nav_padre, jerarquia_padre, id_menu_lateral_padre \\ nil) do
+  def busqueda_recursiva(
+        elemento,
+        url_nav_padre,
+        nombre_nav_padre,
+        jerarquia_padre,
+        id_menu_lateral_padre \\ nil
+      ) do
     nid = elemento |> Enum.at(2)
     nodo = cargar_nodo(nid) |> Enum.at(0)
 
@@ -387,25 +393,81 @@ defmodule Utils do
     # 1 = Tiene hijos, 0 = No tiene hijos
     has_children = elemento |> Enum.at(3)
 
+    id_menu_lateral =
+      if has_children == 1 do
+        crear_menu_lateral(url_nav)
+      else
+        id_menu_lateral_padre
+      end
 
-    id_menu_lateral = if (has_children == 1) do crear_menu_lateral(url_nav) else id_menu_lateral_padre end
-    id_pagina = crear_pagina( titulo, texto, jerarquia_padre, id_menu_lateral)
+    id_pagina = crear_pagina(titulo, texto, jerarquia_padre, id_menu_lateral)
     id_navegacion = crear_navegacion(url_nav, nombre_nav, id_pagina)
 
-
-    if (has_children == 1) do
-
+    if has_children == 1 do
       hijos = elemento |> Enum.at(0) |> cargar_hijos()
-      ids_navs = Enum.map(
-        hijos,
-        fn hijo ->
-          busqueda_recursiva(hijo, url_nav, nombre_nav, jerarquia_padre,id_menu_lateral)
-        end
-      )
+
+      ids_navs =
+        Enum.map(
+          hijos,
+          fn hijo ->
+            busqueda_recursiva(hijo, url_nav, nombre_nav, jerarquia_padre, id_menu_lateral)
+          end
+        )
+
       actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
-
     end
-    id_navegacion
 
+    id_navegacion
   end
+
+  def formatear_link(linea) do
+    # IO.puts(String.replace(linea, ["<a", "</a", ">"], "", trim: true))
+    IO.puts("hola")
+
+    linea
+  end
+
+  def limpiar_linea(linea_sucia) do
+    linea = linea_sucia
+
+    linea =
+      if(String.contains?(linea, "<strong>")) do
+        String.replace(linea, ["<strong>", "</strong>"], "**", trim: true)
+        IO.puts("strong")
+        IO.puts(linea)
+      end
+
+    linea =
+      if(String.contains?(linea, "<a")) do
+        formatear_link(linea)
+        IO.puts("link")
+        IO.puts(linea)
+      end
+
+    # if(String.contains?(linea, "<h")) do formatear_titular(linea)
+    IO.puts("final")
+    IO.puts(linea)
+    HtmlSanitizeEx.strip_tags(linea)
+  end
+
+  def parcer(texto) do
+
+    temp = "<p><strong>Contacto:</strong><br />\r\nInt.:&nbsp;50404<br />\r\nDelegado general: Sr. Alejandro Marasco<br />\r\nCorreo electrónico:&nbsp;<a href=\"mailto:apuba@fi.uba.ar\">apuba@fi.uba.ar</a>&nbsp;<br />\r\n<a href=\"https://cifiuba.com/\">Sitio web</a>&nbsp;</p>\r\n\r\n<p> </p>\r\n\r\n<p> </p>\r\n"
+
+    cuerpo_final = ""
+
+    lineas = String.split(temp, "\r\n", trim: true)
+
+    Enum.map(
+      lineas,
+      fn linea ->
+        cuerpo_final <> limpiar_linea(linea) <> "\r\n"
+      end
+    )
+
+    cuerpo_final
+  end
+
+  # 3446
+  # "<p><strong>Contacto:</strong><br />\r\nInt.:&nbsp;50404<br />\r\nDelegado general: Sr. Alejandro Marasco<br />\r\nCorreo electrónico:&nbsp;<a href=\"mailto:apuba@fi.uba.ar\">apuba@fi.uba.ar</a>&nbsp;<br />\r\n<a href=\"https://cifiuba.com/\">Sitio web</a>&nbsp;</p>\r\n\r\n<p> </p>\r\n\r\n<p> </p>\r\n"
 end
