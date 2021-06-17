@@ -19,7 +19,7 @@ defmodule Migracion_ingresantes do
     ids_navs = Enum.map(
       ingresantes_opts,
       fn elemento ->
-        busqueda_recursiva(elemento, url_ingresantes, nombre_pagina, id_menu_lateral)
+        busqueda_recursiva(elemento, url_ingresantes, id_menu_lateral)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)

@@ -19,7 +19,7 @@ defmodule Migracion_graduados do
     ids_navs = Enum.map(
       graduados_opts,
       fn elemento ->
-        busqueda_recursiva(elemento, url_graduados, nombre_pagina, id_menu_lateral)
+        busqueda_recursiva(elemento, url_graduados, id_menu_lateral)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)

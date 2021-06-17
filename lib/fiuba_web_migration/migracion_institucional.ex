@@ -19,7 +19,7 @@ defmodule Migracion_institucional do
     ids_navs = Enum.map(
       institucionales,
       fn elemento ->
-        busqueda_recursiva(elemento, url_institucional, nombre_pagina, id_menu_lateral)
+        busqueda_recursiva(elemento, url_institucional, id_menu_lateral)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)

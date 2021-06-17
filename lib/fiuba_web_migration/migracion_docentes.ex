@@ -19,7 +19,7 @@ defmodule Migracion_docentes do
     ids_navs = Enum.map(
       docentes_opts,
       fn elemento ->
-        busqueda_recursiva(elemento, url_docentes, nombre_pagina, id_menu_lateral)
+        busqueda_recursiva(elemento, url_docentes, id_menu_lateral)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)

@@ -17,7 +17,7 @@ defmodule Migracion_anuales_bianuales do
     ids_navs = Enum.map(
       anuales_bianuales,
       fn elemento ->
-        busqueda_recursiva(elemento, url_bianuales, nombre_pagina, id_menu_lateral)
+        busqueda_recursiva(elemento, url_bianuales, id_menu_lateral)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)

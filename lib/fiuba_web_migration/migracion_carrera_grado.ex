@@ -18,7 +18,7 @@ defmodule Migracion_carrera_grado do
     ids_navs = Enum.map(
       carreras_info ++ carreras,
       fn elemento ->
-        busqueda_recursiva(elemento, url_carreras, nombre_pagina, id_menu_lateral)
+        busqueda_recursiva(elemento, url_carreras, id_menu_lateral)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
