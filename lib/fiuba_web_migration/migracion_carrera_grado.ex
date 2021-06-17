@@ -7,7 +7,7 @@ defmodule Migracion_carrera_grado do
     nombre_pagina = "Carreras"
     jerarquia_pagina = nombre_pagina
     texto_pagina = ""
-    url_carreras = "/ensenanza/grado/carreras"
+    url_carreras = "/grado/carreras"
 
     id_menu_lateral = crear_menu_lateral(url_carreras)
     id_pagina_carreras = crear_pagina(nombre_pagina, texto_pagina, jerarquia_pagina, id_menu_lateral)

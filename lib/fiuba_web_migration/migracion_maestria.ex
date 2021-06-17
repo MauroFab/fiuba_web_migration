@@ -7,7 +7,7 @@ defmodule Migracion_maestria do
     nombre_pagina = "Maestrías"
     jerarquia_pagina = nombre_pagina
     texto_pagina = ""
-    url_carreras_esp = "/ensenanza/posgrado/maestrias"
+    url_carreras_esp = "/posgrado/maestrias"
 
     id_menu_lateral = crear_menu_lateral(url_carreras_esp)
     id_pagina_carreras_esp = crear_pagina(nombre_pagina, texto_pagina, jerarquia_pagina, id_menu_lateral)
