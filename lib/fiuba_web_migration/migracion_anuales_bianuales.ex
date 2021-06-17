@@ -1,64 +1,26 @@
 defmodule Migracion_anuales_bianuales do
+
   import Utils
 
-  # def cargar_anuales_bianuales do
-  #   query_sql = "SELECT
-  #       menu_links.link_title AS titulo,
-  #       menu_links.mlid AS mlid
-  #     FROM menu_links
-  #     WHERE menu_links.plid = 1159
-  #     ORDER BY menu_links.link_title DESC"
+  def anuales_bianuales() do
 
-  #   {:ok, respuesta} = Repo.query(query_sql)
-  #   respuesta.rows
-  # end
+    nombre_pagina = "Cursos anuales y bianuales"
+    texto_pagina = ""
+    url_bianuales = "/posgrado/cursos-anuales-y-bianuales"
 
-  def anuales_bianuales do
-    anuales = cargar_nodo_padre_no_standard(1159)
+    id_menu_lateral = crear_menu_lateral(url_bianuales)
+    id_pagina_bianuales = crear_pagina(nombre_pagina, texto_pagina, id_menu_lateral)
+    id_navegacion = crear_navegacion(url_bianuales, nombre_pagina, id_pagina_bianuales)
 
-    Enum.map(
-      anuales,
-      fn anual ->
-        nodos_asociados = anual |> Enum.at(0) |> cargar_nodos_asociados_maestrias()
-        nombre_anual = anual |> Enum.at(1)
+    anuales_bianuales = cargar_hijos(1159)
 
-        Enum.map(
-          nodos_asociados,
-          fn nodo ->
-            texto_asociado = nodo |> Enum.at(1) |> cargar_texto_asociado |> Enum.at(0)
-
-            nombre_nodo = texto_asociado |> Enum.at(0)
-            texto_nodo = texto_asociado |> Enum.at(1)
-
-
-            jerarquia_pagina =
-              if String.contains?(nombre_nodo, nombre_anual) do
-                "Posgrado/Cursos/" <> nombre_anual
-              else
-                "Posgrado/Cursos/" <> nombre_anual <> "/" <> nombre_nodo
-              end
-
-            id_pagina = crear_pagina(nombre_nodo, texto_nodo, jerarquia_pagina)
-
-            nombre_navegacion =
-              if String.contains?(nombre_nodo, nombre_anual) do
-                "Posgrado - Cursos - " <> nombre_anual
-              else
-                "Posgrado - Cursos - " <> nombre_anual <> " - " <> nombre_nodo
-              end
-
-            url_navegacion =
-              "/ensenanza/posgrado/cursos/" <>
-                if String.contains?(nombre_nodo, nombre_anual) do
-                  nombre_anual |> url_format()
-                else
-                  (nombre_anual |> url_format()) <> "/" <> (nombre_nodo |> url_format())
-                end
-
-            crear_navegacion(url_navegacion, nombre_navegacion, id_pagina)
-          end
-        )
+    ids_navs = Enum.map(
+      anuales_bianuales,
+      fn elemento ->
+        busqueda_recursiva(elemento, url_bianuales, id_menu_lateral)
       end
     )
+    actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
   end
+
 end

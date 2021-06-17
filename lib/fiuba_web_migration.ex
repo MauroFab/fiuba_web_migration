@@ -1,4 +1,5 @@
 defmodule FiubaWebMigration do
+
   import Migracion_noticias
   import Migracion_carrera_grado
   import Migracion_carrera_especializacion
@@ -20,23 +21,23 @@ defmodule FiubaWebMigration do
 
     # noticias() #Ya trae noticias e imágenes (tarda mucho)
 
-    # carreras_grado() #Ya tiene menúes laterales
-    # maestrias_posgrado() #Ya tiene menúes laterales
-    # carreras_especializaciones() #No trae bien
-    # anuales_bianuales() #No trae bien
+    carreras_grado() #Ya tiene menúes laterales
+    maestrias_posgrado() #Ya tiene menúes laterales (TIENE DATOS BASURA)
+    carreras_especializaciones() #Ya tiene menúes laterales
+    anuales_bianuales() #Ya tiene menúes laterales
 
-    # investigacion() #No trae bien
-    # institucional() #No trae bien
-    # bienestar() #Ya tiene menúes laterales
-    # ingresantes() #Ya tiene menúes laterales
-    # biblioteca() #Ya tiene menúes laterales
-    # prensa() #Ya tiene menúes laterales
+    investigacion() #Ya tiene menúes laterales
+    institucional() #Ya tiene menúes laterales (REQUIERE BORRAR UN REGISTRO)
+    bienestar() #Ya tiene menúes laterales
+    ingresantes() #Ya tiene menúes laterales
+    biblioteca() #Ya tiene menúes laterales
+    prensa() #Ya tiene menúes laterales
 
-    # estudiantes() #Ya tiene menúes laterales
-    # docentes() #Ya tiene menúes laterales
-    # graduados() #Ya tiene menúes laterales
-    # extranjeros() #Ya tiene menúes laterales
-    # no_docentes() #Ya tiene menúes laterales
+    estudiantes() #Ya tiene menúes laterales
+    docentes() #Ya tiene menúes laterales
+    graduados() #Ya tiene menúes laterales
+    extranjeros() #Ya tiene menúes laterales
+    no_docentes() #Ya tiene menúes laterales
 
   end
 end
