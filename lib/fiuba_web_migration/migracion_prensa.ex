@@ -14,7 +14,7 @@ defmodule Migracion_prensa do
     #   texto_prensa |> String.replace("<a href=\"", "\n") |> String.replace(">(+)</a>", "\n\n")
 
     id_menu_lateral = crear_menu_lateral(url_prensa)
-    id_pagina_prensa = crear_pagina(nombre_pagina, texto_prensa, nombre_pagina, id_menu_lateral)
+    id_pagina_prensa = crear_pagina(nombre_pagina, texto_prensa, id_menu_lateral)
     id_navegacion = crear_navegacion(url_prensa, nombre_pagina, id_pagina_prensa)
 
     prensa_anios = cargar_hijos(917)
@@ -22,7 +22,7 @@ defmodule Migracion_prensa do
     ids_navs = Enum.map(
       prensa_anios,
       fn elemento ->
-        busqueda_recursiva(elemento, url_prensa, nombre_pagina, nombre_pagina, id_menu_lateral)
+        busqueda_recursiva(elemento, url_prensa, nombre_pagina, id_menu_lateral)
       end
     )
     actualizar_menu_lateral( id_menu_lateral, [id_navegacion] ++ ids_navs)

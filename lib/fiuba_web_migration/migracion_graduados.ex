@@ -8,11 +8,10 @@ defmodule Migracion_graduados do
 
     nombre_pagina = graduados |> Enum.at(0)
     texto_pagina = graduados |> Enum.at(1)
-    jerarquia = nombre_pagina
     url_graduados = "/graduados"
 
     id_menu_lateral = crear_menu_lateral(url_graduados)
-    id_pagina_graduados = crear_pagina(nombre_pagina, texto_pagina, jerarquia, id_menu_lateral)
+    id_pagina_graduados = crear_pagina(nombre_pagina, texto_pagina, id_menu_lateral)
     id_navegacion = crear_navegacion(url_graduados, nombre_pagina, id_pagina_graduados)
 
     graduados_opts = cargar_hijos(2716)
@@ -20,7 +19,7 @@ defmodule Migracion_graduados do
     ids_navs = Enum.map(
       graduados_opts,
       fn elemento ->
-        busqueda_recursiva(elemento, url_graduados, nombre_pagina, jerarquia, id_menu_lateral)
+        busqueda_recursiva(elemento, url_graduados, nombre_pagina, id_menu_lateral)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)

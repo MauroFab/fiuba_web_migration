@@ -11,7 +11,7 @@ defmodule Migracion_biblioteca do
     url_biblioteca = "/biblioteca"
 
     id_menu_lateral = crear_menu_lateral(url_biblioteca)
-    id_pagina_biblioteca = crear_pagina(nombre_pagina, texto_pagina, nombre_pagina, id_menu_lateral)
+    id_pagina_biblioteca = crear_pagina(nombre_pagina, texto_pagina, id_menu_lateral)
     id_navegacion = crear_navegacion(url_biblioteca, nombre_pagina, id_pagina_biblioteca)
 
     biblioteca_opts = cargar_hijos(923)
@@ -19,7 +19,7 @@ defmodule Migracion_biblioteca do
     ids_navs = Enum.map(
       biblioteca_opts,
       fn elemento ->
-        busqueda_recursiva(elemento, url_biblioteca, nombre_pagina, nombre_pagina, id_menu_lateral)
+        busqueda_recursiva(elemento, url_biblioteca, nombre_pagina, id_menu_lateral)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)

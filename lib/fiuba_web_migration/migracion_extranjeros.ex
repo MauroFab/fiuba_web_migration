@@ -11,7 +11,7 @@ defmodule Migracion_extranjeros do
     url_extranjeros = "/extranjeros"
 
     id_menu_lateral = crear_menu_lateral(url_extranjeros)
-    id_pagina_extranjeros = crear_pagina(nombre_pagina, texto_pagina, nombre_pagina, id_menu_lateral)
+    id_pagina_extranjeros = crear_pagina(nombre_pagina, texto_pagina, id_menu_lateral)
     id_navegacion = crear_navegacion(url_extranjeros, nombre_pagina, id_pagina_extranjeros)
 
     extranjeros_opts = cargar_hijos(1602)
@@ -19,7 +19,7 @@ defmodule Migracion_extranjeros do
     ids_navs = Enum.map(
       extranjeros_opts,
       fn elemento ->
-        busqueda_recursiva(elemento, url_extranjeros, nombre_pagina, nombre_pagina, id_menu_lateral)
+        busqueda_recursiva(elemento, url_extranjeros, nombre_pagina, id_menu_lateral)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
