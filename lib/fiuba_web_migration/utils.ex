@@ -70,6 +70,7 @@ defmodule Utils do
       ) do
     pagina = %{
       "nombre" => nombre_pagina,
+      "portada" => 42,
       "menu_lateral" => id_menu_lateral,
       "componentes" => [
         %{
