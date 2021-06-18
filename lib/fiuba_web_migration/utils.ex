@@ -222,7 +222,7 @@ defmodule Utils do
         Enum.map(
           hijos,
           fn hijo ->
-            busqueda_recursiva(hijo, url_nav, nombre_nav, jerarquia_padre, id_menu_lateral)
+            busqueda_recursiva(hijo, url_nav, id_menu_lateral)
           end
         )
 
