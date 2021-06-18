@@ -87,6 +87,13 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
 
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 20,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
+
     response_body = response_pagina.body
     {:ok, response_body_map} = JSON.decode(response_body)
     {:ok, id_pagina} = Map.fetch(response_body_map, "id")
@@ -123,6 +130,13 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
 
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 20,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
+
     response_body = response_navegacion.body
     {:ok, response_body_map} = JSON.decode(response_body)
     {:ok, id_navegacion} = Map.fetch(response_body_map, "id")
@@ -141,6 +155,13 @@ defmodule Utils do
         "https://testing.cms.fiuba.lambdaclass.com/menu-laterals",
         JSON.encode!(menu_lateral),
         [{"Content-type", "application/json"}]
+      )
+
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 20,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
       )
 
     response_body = response_menu_laterals.body
@@ -171,30 +192,49 @@ defmodule Utils do
 
 
   def cargar_hijos(plid) do
+
     query_sql = "SELECT
     menu_links.mlid AS mlid,
     menu_links.link_title AS titulo,
-    REPLACE(menu_links.link_path, 'node/','') AS nid,
+    menu_links.link_path AS Link_path,
     menu_links.has_children AS tiene_hijos
     FROM menu_links
-    WHERE menu_links.plid = " <> to_string(plid) <> " AND menu_links.router_path= 'node/%';"
+    WHERE menu_links.plid = " <> to_string(plid) <> " ;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
   end
 
 
-  def cargar_nodo(nid) do
-    query_sql = "SELECT
-      node.title AS titulo_nodo,
-      field_data_body.body_value AS texto_asociado,
-      node.nid AS nid
+  def cargar_nodo(link_path) do
+
+    if(contains?(link_path,"node/")) do
+
+      link = String.split(link_path, "node/", trim: true)
+      nid = List.last(link)
+
+      query_sql = "SELECT
+          node.title AS titulo_nodo,
+          field_data_body.body_value AS texto_asociado,
+          node.nid AS nid
         FROM node
         LEFT JOIN field_data_body ON field_data_body.entity_id = node.nid
-    WHERE node.nid = " <> to_string(nid) <> ";"
+        WHERE node.nid = " <> nid <> " ;"
 
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
+        {:ok, respuesta} = Repo.query(query_sql)
+        respuesta.rows
+    else
+      query = "SELECT
+        menu_links.link_title AS titulo
+        FROM menu_links
+        WHERE menu_links.link_path = '" <> link_path <> "' AND menu_links.router_path = '';"
+
+      {:ok, respuesta} = Repo.query(query)
+
+      titulo = respuesta.rows |> Enum.at(0) |> Enum.at(0)
+      [[titulo,"",""]]
+    end
+
   end
 
 

@@ -5,6 +5,7 @@ defmodule Migracion_institucional do
   def institucional() do
 
     # REQUIRE BORRAR UN REGISTRO EN MENU_LINKS: menu_links.link_path = 'node/1406'
+    # TAMBIEN menu_link_path = 'departamento/32/novedades'
 
     texto_pagina = ""
     nombre_pagina = "Institucional"
