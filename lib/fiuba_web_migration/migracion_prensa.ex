@@ -4,7 +4,7 @@ defmodule Migracion_prensa do
 
   def prensa() do
 
-    prensa = cargar_nodo(877) |> Enum.at(0)
+    prensa = cargar_nodo("node/877") |> Enum.at(0)
 
     nombre_pagina = prensa |> Enum.at(0)
     texto_prensa = prensa |> Enum.at(1)

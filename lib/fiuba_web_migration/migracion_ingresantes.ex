@@ -4,7 +4,7 @@ defmodule Migracion_ingresantes do
 
   def ingresantes() do
 
-    ingresantes = cargar_nodo(744) |> Enum.at(0)
+    ingresantes = cargar_nodo("node/744") |> Enum.at(0)
 
     nombre_pagina = ingresantes |> Enum.at(0)
     texto_pagina = ingresantes |> Enum.at(1)

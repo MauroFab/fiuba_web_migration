@@ -22,22 +22,22 @@ defmodule FiubaWebMigration do
     # noticias() #Ya trae noticias e imágenes (tarda mucho)
 
     carreras_grado() #Ya tiene menúes laterales
-    maestrias_posgrado() #Ya tiene menúes laterales (TIENE DATOS BASURA)
-    carreras_especializaciones() #Ya tiene menúes laterales
-    anuales_bianuales() #Ya tiene menúes laterales
+    # maestrias_posgrado() #Ya tiene menúes laterales (TIENE DATOS BASURA)
+    # carreras_especializaciones() #Ya tiene menúes laterales
+    # anuales_bianuales() #Ya tiene menúes laterales
 
-    investigacion() #Ya tiene menúes laterales
-    institucional() #Ya tiene menúes laterales (REQUIERE BORRAR UN REGISTRO)
-    bienestar() #Ya tiene menúes laterales
-    ingresantes() #Ya tiene menúes laterales
-    biblioteca() #Ya tiene menúes laterales
-    prensa() #Ya tiene menúes laterales
+    # investigacion() #Ya tiene menúes laterales
+    # institucional() #Ya tiene menúes laterales e incluye recursión con nodos con links (REQUIERE BORRAR DOS REGISTROS)
+    # bienestar() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # ingresantes() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # biblioteca() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # prensa() #Ya tiene menúes laterales e incluye recursión con nodos con links
 
-    estudiantes() #Ya tiene menúes laterales
-    docentes() #Ya tiene menúes laterales
-    graduados() #Ya tiene menúes laterales
-    extranjeros() #Ya tiene menúes laterales
-    no_docentes() #Ya tiene menúes laterales
+    # estudiantes() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # docentes() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # graduados() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # extranjeros() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # no_docentes() #Ya tiene menúes laterales e incluye recursión con nodos con links
 
   end
 end

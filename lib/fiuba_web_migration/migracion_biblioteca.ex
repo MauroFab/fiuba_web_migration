@@ -4,7 +4,7 @@ defmodule Migracion_biblioteca do
 
   def biblioteca() do
 
-    biblioteca = cargar_nodo(1282) |> Enum.at(0)
+    biblioteca = cargar_nodo("node/1282") |> Enum.at(0)
 
     nombre_pagina = biblioteca |> Enum.at(0)
     texto_pagina = ""

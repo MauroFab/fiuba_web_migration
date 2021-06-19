@@ -4,7 +4,7 @@ defmodule Migracion_estudiantes do
 
   def estudiantes() do
 
-    estudiantes = cargar_nodo(745) |> Enum.at(0)
+    estudiantes = cargar_nodo("node/745") |> Enum.at(0)
 
     nombre_pagina = estudiantes |> Enum.at(0)
     texto_pagina = estudiantes |> Enum.at(1)

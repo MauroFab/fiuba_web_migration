@@ -4,7 +4,7 @@ defmodule Migracion_extranjeros do
 
   def extranjeros() do
 
-    extranjeros = cargar_nodo(747)|> Enum.at(0)
+    extranjeros = cargar_nodo("node/747")|> Enum.at(0)
 
     nombre_pagina = extranjeros |> Enum.at(0)
     texto_pagina = extranjeros |> Enum.at(1)
