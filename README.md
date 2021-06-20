@@ -16,4 +16,4 @@ El parametro -p indica que se va a completar con una contraseña, de no existir,
 
 
 MENU_LINKS
-plid = 0 and router_path = 'node/%'
+plid = 0 and router_path = 'node/%' AND mlid > 900
