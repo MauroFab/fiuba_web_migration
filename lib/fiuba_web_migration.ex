@@ -26,22 +26,16 @@ defmodule FiubaWebMigration do
 
     # investigacion() #ok
     # institucional() #ok (REQUIERE BORRAR DOS REGISTROS)
-    bienestar() #Ya tiene menúes laterales e incluye recursión con nodos con links
-    # ingresantes() #Ya tiene menúes laterales e incluye recursión con nodos con links
-    # biblioteca() #Ya tiene menúes laterales e incluye recursión con nodos con links
-    # prensa() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # bienestar() #ok
+    # ingresantes() #ok
+    # biblioteca() #ok
+    # prensa() #ok
 
-    # estudiantes() #Ya tiene menúes laterales e incluye recursión con nodos con links
-    # docentes() #Ya tiene menúes laterales e incluye recursión con nodos con links
-    # graduados() #Ya tiene menúes laterales e incluye recursión con nodos con links
-    # extranjeros() #Ya tiene menúes laterales e incluye recursión con nodos con links
-    # no_docentes() #Ya tiene menúes laterales e incluye recursión con nodos con links
-
-    #########################    VIEJO   ########################
-    # grado() #Ya tiene menúes laterales e incluye recursión con nodos con links (REQUIERE BORRAR UN REGISTRO)
-    # maestrias_posgrado() #Ya tiene menúes laterales e incluye recursión con nodos con links (TIENE DATOS BASURA)
-    # carreras_especializaciones() #Ya tiene menúes laterales e incluye recursión con nodos con links (TIENE DATOS BASURA)
-    # anuales_bianuales() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # estudiantes() #ok
+    # docentes() #ok
+    # graduados() #ok
+    # extranjeros() #ok
+    # no_docentes() #ok
 
   end
 end

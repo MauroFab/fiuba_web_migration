@@ -1,5 +1,6 @@
 defmodule Migracion_graduados do
 
+  import String
   import Utils
 
   def graduados() do
@@ -9,9 +10,10 @@ defmodule Migracion_graduados do
     nombre_pagina = graduados |> Enum.at(0)
     texto_pagina = graduados |> Enum.at(1)
     url_graduados = "/graduados"
+    nodo_type = graduados |> Enum.at(3)
 
     id_menu_lateral = crear_menu_lateral(url_graduados)
-    id_pagina_graduados = crear_pagina(nombre_pagina, texto_pagina, id_menu_lateral)
+    id_pagina_graduados = crear_pagina(nombre_pagina, id_menu_lateral)
     id_navegacion = crear_navegacion(url_graduados, nombre_pagina, id_pagina_graduados)
 
     graduados_opts = cargar_hijos(2716)
@@ -22,6 +24,14 @@ defmodule Migracion_graduados do
         busqueda_recursiva(elemento, url_graduados, id_menu_lateral)
       end
     )
+
+    ids_navs_graduados = if (contains?(nodo_type,"panel")) do
+      ids_navs
+    else
+      []
+    end
+
+    actualizar_pagina(id_pagina_graduados, texto_pagina, ids_navs_graduados)
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
   end
 end
