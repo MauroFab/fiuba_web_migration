@@ -111,7 +111,7 @@ defmodule Utils do
       "componentes" => [
         %{
           "__component" => "paginas.texto-con-formato",
-          "texto" => (if (texto_pagina == nil) do "" else texto_pagina end)
+          "texto" => (if (texto_pagina == nil) do "" else HtmlSanitizeEx.strip_tags(texto_pagina) end)
         },
         %{
           "__component" => "paginas.navegacion-listado",
