@@ -3,10 +3,6 @@ defmodule FiubaWebMigration do
   import Migracion_noticias
   import Migracion_posgrado
   import Migracion_grado
-  # import Migracion_carrera_grado
-  # import Migracion_carrera_especializacion
-  # import Migracion_maestria
-  # import Migracion_anuales_bianuales
   import Migracion_investigacion
   import Migracion_institucional
   import Migracion_bienestar
@@ -23,14 +19,14 @@ defmodule FiubaWebMigration do
 
   def migration() do
 
-    # noticias() #Ya trae noticias e imágenes (tarda mucho)
+    # noticias()
 
-    # posgrado()
-    # grado()
+    # posgrado() #ok
+    # grado() #ok
 
-    # investigacion() #Ya tiene menúes laterales
-    # institucional() #Ya tiene menúes laterales e incluye recursión con nodos con links (REQUIERE BORRAR DOS REGISTROS)
-    # bienestar() #Ya tiene menúes laterales e incluye recursión con nodos con links
+    # investigacion() #ok
+    # institucional() #ok (REQUIERE BORRAR DOS REGISTROS)
+    bienestar() #Ya tiene menúes laterales e incluye recursión con nodos con links
     # ingresantes() #Ya tiene menúes laterales e incluye recursión con nodos con links
     # biblioteca() #Ya tiene menúes laterales e incluye recursión con nodos con links
     # prensa() #Ya tiene menúes laterales e incluye recursión con nodos con links
@@ -41,7 +37,7 @@ defmodule FiubaWebMigration do
     # extranjeros() #Ya tiene menúes laterales e incluye recursión con nodos con links
     # no_docentes() #Ya tiene menúes laterales e incluye recursión con nodos con links
 
-    #################################################
+    #########################    VIEJO   ########################
     # grado() #Ya tiene menúes laterales e incluye recursión con nodos con links (REQUIERE BORRAR UN REGISTRO)
     # maestrias_posgrado() #Ya tiene menúes laterales e incluye recursión con nodos con links (TIENE DATOS BASURA)
     # carreras_especializaciones() #Ya tiene menúes laterales e incluye recursión con nodos con links (TIENE DATOS BASURA)
