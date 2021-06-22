@@ -1,41 +1,22 @@
 defmodule FiubaWebMigration do
 
   import Migracion_noticias
-  import Migracion_posgrado
-  import Migracion_grado
-  import Migracion_investigacion
-  import Migracion_institucional
-  import Migracion_bienestar
-  import Migracion_ingresantes
-  import Migracion_biblioteca
-  import Migracion_prensa
-  import Migracion_estudiantes
-  import Migracion_docentes
-  import Migracion_graduados
-  import Migracion_extranjeros
-  import Migracion_no_docentes
-
-
+  import Utils
 
   def migration() do
 
-    # noticias()
+    # portada_noticias = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada_noticias.jpg")
+    # noticias(portada_noticias)
 
-    # posgrado() #ok
-    # grado() #ok
+    portada_paginas = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_institucional_dcdabf29f7.png", "portada_paginas.jpg")
+    nodos_raices = carga_nodos_raices()
 
-    # investigacion() #ok
-    # institucional() #ok (REQUIERE BORRAR DOS REGISTROS)
-    # bienestar() #ok
-    # ingresantes() #ok
-    # biblioteca() #ok
-    # prensa() #ok
-
-    # estudiantes() #ok
-    # docentes() #ok
-    # graduados() #ok
-    # extranjeros() #ok
-    # no_docentes() #ok
+    Enum.map(
+      nodos_raices,
+      fn nodo_raiz ->
+        procesar_nodo_raiz(nodo_raiz, portada_paginas)
+      end
+    )
 
   end
 end

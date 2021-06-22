@@ -31,11 +31,9 @@ defmodule Migracion_noticias do
   end
 
 
-  def noticias do
+  def noticias(id_imagen_portada) do
 
     noticias = cargar_noticias()
-
-    id_imagen_portada = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada.jpg")
 
     Enum.map(
       noticias,

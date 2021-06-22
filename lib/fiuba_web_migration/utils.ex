@@ -7,6 +7,59 @@ defmodule Utils do
   import HTTPoison.Retry
 
 
+  def carga_nodos_raices() do
+
+    query_sql =
+      "SELECT
+        menu_links.link_title AS TITULO,
+        menu_links.link_path AS PATH,
+        menu_links.mlid AS MLID
+      FROM menu_links
+      WHERE
+        menu_links.plid = 0 AND
+        menu_links.router_path = 'node/%' AND
+        menu_links.mlid > 900 AND
+        menu_links.link_title != 'Noticias';"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+      respuesta.rows
+
+  end
+
+
+  def procesar_nodo_raiz(nodo_raiz, id_portada_paginas) do
+
+    nombre_pagina = nodo_raiz |> Enum.at(0)
+    nodo = nodo_raiz |> Enum.at(1) |> cargar_nodo() |> Enum.at(0)
+    hijos = nodo_raiz |> Enum.at(2) |> cargar_hijos()
+
+    texto_pagina = nodo |> Enum.at(1)
+    url_pagina = "/" <> (nombre_pagina |> url_format())
+    nodo_type = nodo |> Enum.at(3)
+
+    id_menu_lateral = crear_menu_lateral(url_pagina)
+    id_pagina = crear_pagina(nombre_pagina, id_menu_lateral, id_portada_paginas)
+    id_navegacion = crear_navegacion(url_pagina, nombre_pagina, id_pagina)
+
+    ids_navs = Enum.map(
+      hijos,
+      fn hijo ->
+        busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
+      end
+    )
+
+    ids_navs_pagina = if (contains?(nodo_type,"panel")) do
+      ids_navs
+    else
+      []
+    end
+
+    actualizar_pagina(id_pagina, texto_pagina, ids_navs_pagina)
+    actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
+
+  end
+
+
   def cargar_imagen(url_imagen, nombre_imagen) do
     {:ok, result} =
       HTTPoison.get(url_imagen)
@@ -63,10 +116,10 @@ defmodule Utils do
   end
 
 
-  def crear_pagina( nombre_pagina \\ "", id_menu_lateral \\ nil , blabla \\ nil) do
+  def crear_pagina( nombre_pagina \\ "", id_menu_lateral \\ nil , id_imagen_portada \\ nil) do
     pagina = %{
       "nombre" => nombre_pagina,
-      "portada" => 42,
+      "portada" => id_imagen_portada,
       "menu_lateral" => id_menu_lateral,
       "componentes" => [
         %{
@@ -280,7 +333,7 @@ defmodule Utils do
   end
 
 
-  def busqueda_recursiva( elemento, url_nav_padre, id_menu_lateral_padre \\ nil) do
+  def busqueda_recursiva( elemento, url_nav_padre, id_menu_lateral_padre \\ nil, id_imagen_portada \\ nil) do
     link_path = elemento |> Enum.at(2)
     nodo = cargar_nodo(link_path) |> Enum.at(0)
 
@@ -294,7 +347,7 @@ defmodule Utils do
     has_children = elemento |> Enum.at(3)
 
     id_menu_lateral = if (has_children == 1) do crear_menu_lateral(url_nav) else id_menu_lateral_padre end
-    id_pagina = crear_pagina( titulo, id_menu_lateral)
+    id_pagina = crear_pagina( titulo, id_menu_lateral, id_imagen_portada)
     id_navegacion = crear_navegacion(url_nav, titulo, id_pagina)
 
     ids_navs = if (has_children == 1) do
@@ -302,7 +355,7 @@ defmodule Utils do
       Enum.map(
         hijos,
         fn hijo ->
-          busqueda_recursiva(hijo, url_nav, id_menu_lateral)
+          busqueda_recursiva(hijo, url_nav, id_menu_lateral, id_imagen_portada)
         end
       )
       else
