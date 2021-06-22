@@ -1,43 +1,22 @@
 defmodule FiubaWebMigration do
 
   import Migracion_noticias
-  import Migracion_carrera_grado
-  import Migracion_carrera_especializacion
-  import Migracion_maestria
-  import Migracion_anuales_bianuales
-  import Migracion_investigacion
-  import Migracion_institucional
-  import Migracion_bienestar
-  import Migracion_ingresantes
-  import Migracion_biblioteca
-  import Migracion_prensa
-  import Migracion_estudiantes
-  import Migracion_docentes
-  import Migracion_graduados
-  import Migracion_extranjeros
-  import Migracion_no_docentes
+  import Utils
 
   def migration() do
 
-    # noticias() #Ya trae noticias e imágenes (tarda mucho)
+    # portada_noticias = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada_noticias.jpg")
+    # noticias(portada_noticias)
 
-    carreras_grado() #Ya tiene menúes laterales
-    maestrias_posgrado() #Ya tiene menúes laterales (TIENE DATOS BASURA)
-    carreras_especializaciones() #Ya tiene menúes laterales
-    anuales_bianuales() #Ya tiene menúes laterales
+    portada_paginas = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_institucional_dcdabf29f7.png", "portada_paginas.jpg")
+    nodos_raices = carga_nodos_raices()
 
-    investigacion() #Ya tiene menúes laterales
-    institucional() #Ya tiene menúes laterales (REQUIERE BORRAR UN REGISTRO)
-    bienestar() #Ya tiene menúes laterales
-    ingresantes() #Ya tiene menúes laterales
-    biblioteca() #Ya tiene menúes laterales
-    prensa() #Ya tiene menúes laterales
-
-    estudiantes() #Ya tiene menúes laterales
-    docentes() #Ya tiene menúes laterales
-    graduados() #Ya tiene menúes laterales
-    extranjeros() #Ya tiene menúes laterales
-    no_docentes() #Ya tiene menúes laterales
+    Enum.map(
+      nodos_raices,
+      fn nodo_raiz ->
+        procesar_nodo_raiz(nodo_raiz, portada_paginas)
+      end
+    )
 
   end
 end

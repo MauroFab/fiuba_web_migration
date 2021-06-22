@@ -14,7 +14,7 @@ defmodule Migracion_noticias do
       FROM node
       INNER JOIN field_data_body ON  node.nid = field_data_body.entity_id
       LEFT JOIN field_data_field_date ON node.nid = field_data_field_date.entity_id
-      WHERE node.type = 'article'
+      WHERE node.type = 'article' AND node.status = 1
       ORDER BY field_data_field_date.field_date_value DESC;"
 
     {:ok, respuesta} = Repo.query(query_sql)
@@ -31,11 +31,9 @@ defmodule Migracion_noticias do
   end
 
 
-  def noticias do
+  def noticias(id_imagen_portada) do
 
     noticias = cargar_noticias()
-
-    id_imagen_portada = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada.jpg")
 
     Enum.map(
       noticias,

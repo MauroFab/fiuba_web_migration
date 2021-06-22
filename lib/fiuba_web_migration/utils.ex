@@ -7,6 +7,59 @@ defmodule Utils do
   import HTTPoison.Retry
 
 
+  def carga_nodos_raices() do
+
+    query_sql =
+      "SELECT
+        menu_links.link_title AS TITULO,
+        menu_links.link_path AS PATH,
+        menu_links.mlid AS MLID
+      FROM menu_links
+      WHERE
+        menu_links.plid = 0 AND
+        menu_links.router_path = 'node/%' AND
+        menu_links.mlid > 900 AND
+        menu_links.link_title != 'Noticias';"
+
+    {:ok, respuesta} = Repo.query(query_sql)
+      respuesta.rows
+
+  end
+
+
+  def procesar_nodo_raiz(nodo_raiz, id_portada_paginas) do
+
+    nombre_pagina = nodo_raiz |> Enum.at(0)
+    nodo = nodo_raiz |> Enum.at(1) |> cargar_nodo() |> Enum.at(0)
+    hijos = nodo_raiz |> Enum.at(2) |> cargar_hijos()
+
+    texto_pagina = nodo |> Enum.at(1)
+    url_pagina = "/" <> (nombre_pagina |> url_format())
+    nodo_type = nodo |> Enum.at(3)
+
+    id_menu_lateral = crear_menu_lateral(url_pagina)
+    id_pagina = crear_pagina(nombre_pagina, id_menu_lateral, id_portada_paginas)
+    id_navegacion = crear_navegacion(url_pagina, nombre_pagina, id_pagina)
+
+    ids_navs = Enum.map(
+      hijos,
+      fn hijo ->
+        busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
+      end
+    )
+
+    ids_navs_pagina = if (contains?(nodo_type,"panel")) do
+      ids_navs
+    else
+      []
+    end
+
+    actualizar_pagina(id_pagina, texto_pagina, ids_navs_pagina)
+    actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
+
+  end
+
+
   def cargar_imagen(url_imagen, nombre_imagen) do
     {:ok, result} =
       HTTPoison.get(url_imagen)
@@ -63,19 +116,15 @@ defmodule Utils do
   end
 
 
-  def crear_pagina(
-        nombre_pagina \\ "",
-        texto_pagina \\ "",
-        id_menu_lateral \\ nil
-      ) do
+  def crear_pagina( nombre_pagina \\ "", id_menu_lateral \\ nil , id_imagen_portada \\ nil) do
     pagina = %{
       "nombre" => nombre_pagina,
-      "portada" => 42,
+      "portada" => id_imagen_portada,
       "menu_lateral" => id_menu_lateral,
       "componentes" => [
         %{
           "__component" => "paginas.texto-con-formato",
-          "texto" => HtmlSanitizeEx.strip_tags(texto_pagina)
+          "texto" => ""
         }
       ]
     }
@@ -87,11 +136,55 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
 
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 20,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
+
     response_body = response_pagina.body
     {:ok, response_body_map} = JSON.decode(response_body)
     {:ok, id_pagina} = Map.fetch(response_body_map, "id")
 
     id_pagina
+  end
+
+
+  def actualizar_pagina(id_pagina, texto_pagina, ids_navs_pag) do
+
+    links = Enum.map(
+      ids_navs_pag,
+      fn id ->
+        %{"navegacion" => id}
+      end
+    )
+
+    pagina_actualizaciones = %{
+      "componentes" => [
+        %{
+          "__component" => "paginas.texto-con-formato",
+          "texto" => (if (texto_pagina == nil) do "" else HtmlSanitizeEx.strip_tags(texto_pagina) end)
+        },
+        %{
+          "__component" => "paginas.navegacion-listado",
+          "links" => links
+        }
+      ]
+    }
+
+    HTTPoison.put!(
+      "https://testing.cms.fiuba.lambdaclass.com/paginas/" <> to_string(id_pagina),
+      JSON.encode!(pagina_actualizaciones),
+      [{"Content-type", "application/json"}]
+    )
+    |> HTTPoison.Retry.autoretry(
+        max_attempts: 20,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
+
   end
 
 
@@ -123,6 +216,13 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
 
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 20,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
+
     response_body = response_navegacion.body
     {:ok, response_body_map} = JSON.decode(response_body)
     {:ok, id_navegacion} = Map.fetch(response_body_map, "id")
@@ -141,6 +241,13 @@ defmodule Utils do
         "https://testing.cms.fiuba.lambdaclass.com/menu-laterals",
         JSON.encode!(menu_lateral),
         [{"Content-type", "application/json"}]
+      )
+
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 20,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
       )
 
     response_body = response_menu_laterals.body
@@ -167,126 +274,100 @@ defmodule Utils do
       JSON.encode!(menu_lateral),
       [{"Content-type", "application/json"}]
     )
+
+    |> HTTPoison.Retry.autoretry(
+        max_attempts: 20,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
+
   end
 
 
   def cargar_hijos(plid) do
+
     query_sql = "SELECT
     menu_links.mlid AS mlid,
     menu_links.link_title AS titulo,
-    REPLACE(menu_links.link_path, 'node/','') AS nid,
+    menu_links.link_path AS Link_path,
     menu_links.has_children AS tiene_hijos
     FROM menu_links
-    WHERE menu_links.plid = " <> to_string(plid) <> " AND menu_links.router_path= 'node/%';"
+    WHERE menu_links.plid = " <> to_string(plid) <> " ;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
   end
 
 
-  def cargar_nodo(nid) do
-    query_sql = "SELECT
-      node.title AS titulo_nodo,
-      field_data_body.body_value AS texto_asociado,
-      node.nid AS nid
+  def cargar_nodo(link_path) do
+
+    if(contains?(link_path,"node/")) do
+
+      link = String.split(link_path, "node/", trim: true)
+      nid = List.last(link)
+
+      query_sql = "SELECT
+          node.title AS titulo_nodo,
+          field_data_body.body_value AS texto_asociado,
+          node.nid AS nid,
+          node.type AS tipo
         FROM node
         LEFT JOIN field_data_body ON field_data_body.entity_id = node.nid
-    WHERE node.nid = " <> to_string(nid) <> ";"
+        WHERE node.nid = " <> nid <> " ;"
 
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
+        {:ok, respuesta} = Repo.query(query_sql)
+        respuesta.rows
+    else
+      query = "SELECT
+        menu_links.link_title AS titulo
+        FROM menu_links
+        WHERE menu_links.link_path = '" <> link_path <> "' AND menu_links.router_path = '';"
+
+      {:ok, respuesta} = Repo.query(query)
+
+      titulo = respuesta.rows |> Enum.at(0) |> Enum.at(0)
+      [[titulo,"","",""]]
+    end
+
   end
 
 
 
-  def busqueda_recursiva( elemento, url_nav_padre, id_menu_lateral_padre \\ nil) do
-    nid = elemento |> Enum.at(2)
-    nodo = cargar_nodo(nid) |> Enum.at(0)
+  def busqueda_recursiva( elemento, url_nav_padre, id_menu_lateral_padre \\ nil, id_imagen_portada \\ nil) do
+    link_path = elemento |> Enum.at(2)
+    nodo = cargar_nodo(link_path) |> Enum.at(0)
 
     titulo = nodo |> Enum.at(0)
     texto = nodo |> Enum.at(1)
+    nodo_type = nodo |> Enum.at(3)
 
     url_nav = url_nav_padre <> "/" <> (titulo |> url_format())
 
-    # 1 = Tiene hijos, 0 = No tiene hijos
+    # # 1 = Tiene hijos, 0 = No tiene hijos
     has_children = elemento |> Enum.at(3)
 
     id_menu_lateral = if (has_children == 1) do crear_menu_lateral(url_nav) else id_menu_lateral_padre end
-    id_pagina = crear_pagina( titulo, texto, id_menu_lateral)
+    id_pagina = crear_pagina( titulo, id_menu_lateral, id_imagen_portada)
     id_navegacion = crear_navegacion(url_nav, titulo, id_pagina)
 
-    if has_children == 1 do
+    ids_navs = if (has_children == 1) do
       hijos = elemento |> Enum.at(0) |> cargar_hijos()
-
-      ids_navs =
-        Enum.map(
-          hijos,
-          fn hijo ->
-            busqueda_recursiva(hijo, url_nav, id_menu_lateral)
-          end
-        )
-
-      hijos = elemento |> Enum.at(0) |> cargar_hijos()
-      ids_navs = Enum.map(
+      Enum.map(
         hijos,
         fn hijo ->
-          busqueda_recursiva(hijo, url_nav, id_menu_lateral)
+          busqueda_recursiva(hijo, url_nav, id_menu_lateral, id_imagen_portada)
         end
       )
-      actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
-    end
+      else
+        []
+      end
+
+    ids_navs_pag = if (contains?(nodo_type,"panel")) do ids_navs else [] end
+
+    actualizar_pagina(id_pagina, texto, ids_navs_pag)
+    actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
 
     id_navegacion
   end
-
-  def formatear_link(linea) do
-    # IO.puts(String.replace(linea, ["<a", "</a", ">"], "", trim: true))
-    IO.puts("hola")
-
-    linea
-  end
-
-  def limpiar_linea(linea_sucia) do
-    linea = linea_sucia
-
-    linea =
-      if(String.contains?(linea, "<strong>")) do
-        String.replace(linea, ["<strong>", "</strong>"], "**", trim: true)
-        IO.puts("strong")
-        IO.puts(linea)
-      end
-
-    linea =
-      if(String.contains?(linea, "<a")) do
-        formatear_link(linea)
-        IO.puts("link")
-        IO.puts(linea)
-      end
-
-    # if(String.contains?(linea, "<h")) do formatear_titular(linea)
-    IO.puts("final")
-    IO.puts(linea)
-    HtmlSanitizeEx.strip_tags(linea)
-  end
-
-  def parcer(texto) do
-
-    temp = "<p><strong>Contacto:</strong><br />\r\nInt.:&nbsp;50404<br />\r\nDelegado general: Sr. Alejandro Marasco<br />\r\nCorreo electrónico:&nbsp;<a href=\"mailto:apuba@fi.uba.ar\">apuba@fi.uba.ar</a>&nbsp;<br />\r\n<a href=\"https://cifiuba.com/\">Sitio web</a>&nbsp;</p>\r\n\r\n<p> </p>\r\n\r\n<p> </p>\r\n"
-
-    cuerpo_final = ""
-
-    lineas = String.split(temp, "\r\n", trim: true)
-
-    Enum.map(
-      lineas,
-      fn linea ->
-        cuerpo_final <> limpiar_linea(linea) <> "\r\n"
-      end
-    )
-
-    cuerpo_final
-  end
-
-  # 3446
-  # "<p><strong>Contacto:</strong><br />\r\nInt.:&nbsp;50404<br />\r\nDelegado general: Sr. Alejandro Marasco<br />\r\nCorreo electrónico:&nbsp;<a href=\"mailto:apuba@fi.uba.ar\">apuba@fi.uba.ar</a>&nbsp;<br />\r\n<a href=\"https://cifiuba.com/\">Sitio web</a>&nbsp;</p>\r\n\r\n<p> </p>\r\n\r\n<p> </p>\r\n"
 end

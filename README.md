@@ -13,3 +13,7 @@ Para restaurar la BDD:
 	mysql drupaldb -U root -p < bk_20210610.sql
 	
 El parametro -p indica que se va a completar con una contraseña, de no existir, no usar.
+
+
+MENU_LINKS
+plid = 0 and router_path = 'node/%' AND mlid > 900
