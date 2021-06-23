@@ -164,7 +164,7 @@ defmodule Utils do
       "componentes" => [
         %{
           "__component" => "paginas.texto-con-formato",
-          "texto" => (if (texto_pagina == nil) do "" else HtmlSanitizeEx.strip_tags(texto_pagina) end)
+          "texto" => (if (texto_pagina == nil) do "" else parcer(texto_pagina) end)
         },
         %{
           "__component" => "paginas.navegacion-listado",
@@ -369,5 +369,80 @@ defmodule Utils do
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
 
     id_navegacion
+  end
+
+  def formatear_link(linea) do
+    IO.puts(linea)
+
+    porciones = String.split(linea, ~r/[>,<]/, trim: true)
+
+    indice = Enum.find_index(porciones,
+      fn porcion ->
+        contains?(porcion, "a href=")
+      end
+    )
+    texto = porciones |> Enum.at(indice + 1)
+    link= porciones |> Enum.at(indice) |> String.replace(["a href=", "\""], "")
+
+    final = ~s/[#{texto}](#{link})/
+
+    final
+
+  end
+
+  def formatear_negrita(linea) do
+    String.replace(linea, ["<strong>", "</strong>"], "**")
+  end
+
+  def formatear_head(linea) do
+    linea
+  end
+
+  def adaptar_linea(linea_sucia) do
+    linea = linea_sucia
+
+    linea =
+      if(String.contains?(linea, "<strong>")) do
+        IO.puts("strong")
+        formatear_negrita(linea)
+      else
+        linea
+      end
+
+    linea =
+      if(String.contains?(linea, "<a")) do
+          IO.puts("link")
+          formatear_link(linea)
+      else
+        linea
+      end
+
+    linea =
+      if(String.contains?(linea, "<h"))do
+        IO.puts("head")
+        formatear_head(linea)
+      else
+        linea
+      end
+
+    IO.puts("linea finalizada")
+    IO.puts(linea)
+    linea
+  end
+
+  def parcer(texto) do
+
+    # temp = ~s{<p><strong>Contacto:</strong><br />\r\nInt.:&nbsp;50404<br />\r\nDelegado general: Sr. Alejandro Marasco<br />\r\nCorreo electrónico:&nbsp;<a href=\"mailto:apuba@fi.uba.ar\">apuba@fi.uba.ar</a>&nbsp;<br />\r\n<a href=\"https://cifiuba.com/\">Sitio web</a>&nbsp;</p>\r\n\r\n<p> </p>\r\n\r\n<p> </p>\r\n}
+
+    lineas_limpias = Enum.map(
+      String.split(texto, "\r\n", trim: true),
+      fn linea ->
+        adaptar_linea(linea)
+      end
+    )
+
+    cuerpo = HtmlSanitizeEx.strip_tags(Enum.join(lineas_limpias, "\r\n"))
+
+    cuerpo
   end
 end

@@ -29,7 +29,7 @@ defmodule FiubaWebMigration.MixProject do
       {:html_sanitize_ex, "~> 1.4"},
       {:timex, "~> 3.0"},
       {:httpoison_retry, "~> 1.0.0"},
-      {:panpipe, "~> 0.1.1"}
+      # {:panpipe, "~> 0.1.1"}
     ]
   end
 end
