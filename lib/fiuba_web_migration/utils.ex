@@ -19,6 +19,7 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
+        menu_links.link_title = 'Nodocentes' AND
         menu_links.link_title != 'Noticias';"
 
     {:ok, respuesta} = Repo.query(query_sql)
@@ -403,7 +404,7 @@ defmodule Utils do
 
     linea =
       if(String.contains?(linea, "<strong>")) do
-        IO.puts("strong")
+        # IO.puts("strong")
         formatear_negrita(linea)
       else
         linea
@@ -411,7 +412,7 @@ defmodule Utils do
 
     linea =
       if(String.contains?(linea, "<a")) do
-          IO.puts("link")
+          # IO.puts("link")
           formatear_link(linea)
       else
         linea
@@ -419,14 +420,14 @@ defmodule Utils do
 
     linea =
       if(String.contains?(linea, "<h"))do
-        IO.puts("head")
+        # IO.puts("head")
         formatear_head(linea)
       else
         linea
       end
 
-    IO.puts("linea finalizada")
-    IO.puts(linea)
+    # IO.puts("linea finalizada")
+    # IO.puts(linea)
     linea
   end
 
