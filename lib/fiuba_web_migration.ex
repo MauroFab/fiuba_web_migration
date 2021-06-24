@@ -1,6 +1,7 @@
 defmodule FiubaWebMigration do
 
   import Migracion_noticias
+  import Migracion_paneles
   import Utils
 
   def migration() do
@@ -18,5 +19,6 @@ defmodule FiubaWebMigration do
       end
     )
 
+    paneles()
   end
 end

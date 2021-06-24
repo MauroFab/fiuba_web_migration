@@ -95,29 +95,81 @@ defmodule Migracion_paneles do
 
     elementos =
       [
-        # ["/institucional",
-        #   [
-        #     "/institucional/sedes/paseo-colon",
-        #     "/institucional/sedes/las-heras",
-        #     "/institucional/sedes/ciudad-universitaria"
-        #   ]
-        # ],
-        # ["/grado",
-        #   [
-        #     "/grado/carreras/ingenieria-civil",
-        #     "/grado/carreras/ingenieria-de-alimentos",
-        #     "/grado/carreras/ingenieria-electricista-",
-        #     "/grado/carreras/ingenieria-electronica-",
-        #     "/grado/carreras/ingenieria-en-agrimensura",
-        #     "/grado/carreras/ingenieria-en-informatica-",
-        #     "/grado/carreras/ingenieria-en-petroleo",
-        #     "/grado/carreras/ingenieria-industrial-",
-        #     "/grado/carreras/ingenieria-mecanica",
-        #     "/grado/carreras/ingenieria-naval-y-mecanica-",
-        #     "/grado/carreras/ingenieria-quimica",
-        #     "/grado/carreras/lic-en-analisis-de-sistemas-"
-        #   ]
-        # ],
+        ["/institucional",
+          [
+            "/institucional/sedes/paseo-colon",
+            "/institucional/sedes/las-heras",
+            "/institucional/sedes/ciudad-universitaria"
+          ]
+        ],
+        ["/grado",
+          [
+            "/grado/carreras/ingenieria-civil",
+            "/grado/carreras/ingenieria-de-alimentos",
+            "/grado/carreras/ingenieria-electricista-",
+            "/grado/carreras/ingenieria-electronica-",
+            "/grado/carreras/ingenieria-en-agrimensura",
+            "/grado/carreras/ingenieria-en-informatica-",
+            "/grado/carreras/ingenieria-en-petroleo",
+            "/grado/carreras/ingenieria-industrial-",
+            "/grado/carreras/ingenieria-mecanica",
+            "/grado/carreras/ingenieria-naval-y-mecanica-",
+            "/grado/carreras/ingenieria-quimica",
+            "/grado/carreras/lic-en-analisis-de-sistemas-"
+          ]
+        ],
+        ["/posgrado",
+          [
+            "/posgrado/maestrias",
+            "/posgrado/maestrias/automatizacion-industrial",
+            "/posgrado/maestrias/ciencias-de-la-ingenieria",
+            "/posgrado/maestrias/construccion-y-diseno-estructural",
+            "/posgrado/maestrias/direccion-industrial",
+            "/posgrado/maestrias/diseno-abierto-para-la-innovacion",
+            "/posgrado/maestrias/estudios-sobre-servicios-de-comunicacion-audiovisual",
+            "/posgrado/maestrias/explotacion-de-datos-y-descubrimiento-de-conocimiento",
+            "/posgrado/maestrias/ingenieria-de-materiales-compuestos",
+            "/posgrado/maestrias/ingenieria-de-transporte--orientacion-vial",
+            "/posgrado/maestrias/ingenieria-en-petroleo-y-gas-natural-",
+            "/posgrado/maestrias/ingenieria-en-telecomunicaciones",
+            "/posgrado/maestrias/ingenieria-matematica",
+            "/posgrado/maestrias/ingenieria-optoelectronica-y-fotonica-",
+            "/posgrado/maestrias/ingenieria-sanitaria",
+            # "/posgrado/maestrias/internet-de-las-cosas", #ESTE NO ESTA
+            "/posgrado/maestrias/planificacion-y-gestion-de-la-ingenieria-urbana",
+            "/posgrado/maestrias/planificacion-y-gestion-del-transporte",
+            "/posgrado/maestrias/planificacion-y-movilidad-urbana",
+            "/posgrado/maestrias/seguridad-informatica-",
+            "/posgrado/maestrias/servicios-y-redes-de-telecomunicaciones",
+            "/posgrado/maestrias/simulacion-numerica-y-control-",
+            "/posgrado/maestrias/sistemas-embebidos",
+            "/posgrado/maestrias/tecnologias-urbanas-sostenibles",
+            "/posgrado/carreras-de-especializacion",
+            "/posgrado/carreras-de-especializacion/automatizacion-industrial",
+            "/posgrado/carreras-de-especializacion/explotacion-de-datos-y-descubrimiento-de-conocimiento",
+            "/posgrado/carreras-de-especializacion/gas-natural",
+            "/posgrado/carreras-de-especializacion/gestion-de-servicios",
+            "/posgrado/carreras-de-especializacion/higiene-y-seguridad-en-el-trabajo-",
+            "/posgrado/carreras-de-especializacion/ingenieria-de-reservorios-",
+            "/posgrado/carreras-de-especializacion/ingenieria-ferroviaria",
+            "/posgrado/carreras-de-especializacion/ingenieria-geodesicageofisica-",
+            "/posgrado/carreras-de-especializacion/ingenieria-optoelectronica-",
+            "/posgrado/carreras-de-especializacion/ingenieria-portuaria",
+            "/posgrado/carreras-de-especializacion/ingenieria-sanitaria",
+            # "/posgrado/carreras-de-especializacion/internet-de-las-cosas", # NO ESTA
+            "/posgrado/carreras-de-especializacion/petroleo-y-derivados",
+            "/posgrado/carreras-de-especializacion/proteccion-radiologica-y-seguridad-de-las-fuentes-de-radiacion",
+            "/posgrado/carreras-de-especializacion/seguridad-informatica-",
+            "/posgrado/carreras-de-especializacion/seguridad-nuclear-",
+            "/posgrado/carreras-de-especializacion/servicios-y-redes-de-telecomunicaciones-",
+            "/posgrado/carreras-de-especializacion/sistemas-embebidos",
+            "/posgrado/carreras-de-especializacion/tecnologia-de-telecomunicaciones-",
+            "/posgrado/carreras-de-especializacion/tecnologias-urbanas-sostenibles",
+            "/posgrado/cursos-anuales-y-bianuales",
+            "/posgrado/cursos-anuales-y-bianuales/geociencias-aplicadas-a-la-exploracion-y-desarrollo-de-los-hidrocarburos-",
+            "/posgrado/doctorado"
+          ]
+        ],
         ["/bienestar",
           [
             "/bienestar/articulacion-social",
