@@ -78,7 +78,7 @@ defmodule Migracion_paneles do
 
     # 447,Grado, /grado LISTO
     # 448,Posgrado, /podgrado LISTO
-    # 452,Investigación, /investigacion
+    # 452,Investigación, /investigacion LISTO
     # 453,Bienestar, /bienestar LISTO
     # 514,Institucional, /institucional LISTO
     # 2961,Decanato, /institucional/decanato LISTO
@@ -218,6 +218,20 @@ defmodule Migracion_paneles do
           [
             "/institucional/decanato/decano",
             "/institucional/decanato/vicedecano"
+          ]
+        ],
+        ["/institucional/coleccion-biblioteca-ingenieria",
+          [
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/ampliaciones-en-infraestructura-de-transporte-de-energia-electrica",
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/asignacion-de-derechos-de-propiedad-sobre-la-transmision-de-energia-electrica",
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/azar-ciencia-y-sociedad",
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/biomecanica-y-modelizacion-en-mecanobiologia-",
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/ingenieria-de-cables-aislados-para-transmision-de-energia-electrica",
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/ingenieria-electromagnetica",
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/ingles-en-ciencias-e-ingenieria",
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/introduccion-a-la-filosofia-de-la-ciencia-y-la-tecnologia",
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/java",
+            "/institucional/coleccion-biblioteca-ingenieria/coleccion-biblioteca-ingenieria/matematica-de-pregrado-para-ingenieria"
           ]
         ],
         ["/biblioteca",
