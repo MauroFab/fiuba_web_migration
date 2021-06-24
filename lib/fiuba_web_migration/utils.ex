@@ -373,7 +373,7 @@ defmodule Utils do
   end
 
   def formatear_link(linea) do
-    IO.puts(linea)
+    # IO.puts(linea)
 
     porciones = String.split(linea, ~r/[>,<]/, trim: true)
 
@@ -383,7 +383,7 @@ defmodule Utils do
       end
     )
     texto = porciones |> Enum.at(indice + 1)
-    link= porciones |> Enum.at(indice) |> String.replace(["a href=", "\""], "")
+    link= porciones |> Enum.at(indice) |> String.replace([~s{a href=}, ~s{"}, ~s{target="_blank"}], "")
 
     final = ~s/[#{texto}](#{link})/
 
@@ -442,7 +442,7 @@ defmodule Utils do
       end
     )
 
-    cuerpo = HtmlSanitizeEx.strip_tags(Enum.join(lineas_limpias, "\r\n"))
+    cuerpo = HtmlSanitizeEx.strip_tags(Enum.join(lineas_limpias, "\n\n"))
 
     cuerpo
   end
