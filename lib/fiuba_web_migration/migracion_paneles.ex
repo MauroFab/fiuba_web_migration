@@ -6,24 +6,6 @@ defmodule Migracion_paneles do
   import String
   import HTTPoison.Retry
 
-    # 447,Grado, /grado
-    # 448,Posgrado, /podgrado
-    # 452,Investigación, /investigacion
-    # 453,Bienestar, /bienestar
-    # 514,Institucional, /institucional
-    # 656,Colección Biblioteca Ingeniería
-    # 685,Institucionales (institucional/videoteca/institucionales) NO
-    # 726,Ciclo de ensayos (institucional/videoteca/ciclo de ensayor) NO
-    # 727,Videoentrevistas (institucional/videoteca/videoentrevistas) NO
-    # 888,Videoteca (institucional/videoteca) NO
-    # 1282,Biblioteca, /biblioteca
-    # 1712,Orientación Vocacional y Educativa (institucional/videoteca/inclusion, genero, bienestar y articulacion social / orientacion vocacional y educativa)
-    # 2473,English website
-    # 2602,Graduados, /graduados
-    # 2827,Revista .ing
-    # 2961,Decanato
-    # 3213,Orgullosamente FIUBA
-
 
   def traer_id_pagina(navegacion_seo_url) do
 
@@ -93,15 +75,28 @@ defmodule Migracion_paneles do
 
   def paneles() do
 
+
+    # 447,Grado, /grado LISTO
+    # 448,Posgrado, /podgrado LISTO
+    # 452,Investigación, /investigacion
+    # 453,Bienestar, /bienestar LISTO
+    # 514,Institucional, /institucional LISTO
+    # 2961,Decanato, /institucional/decanato LISTO
+    # 656,Colección Biblioteca Ingeniería
+    # 1282,Biblioteca, /biblioteca LISTO
+    # 2473,English website LISTO
+    # 2602,Graduados, /graduados LISTO
+    # 2827,Revista .ing
+
+    # 1712,Orientación Vocacional y Educativa (institucional/videoteca/inclusion, genero, bienestar y articulacion social / orientacion vocacional y educativa)
+    # 3213,Orgullosamente FIUBA (graduados/Orgullosamente FIUBA, son video entrevistas NO
+    # 685,Institucionales (institucional/videoteca/institucionales) NO
+    # 726,Ciclo de ensayos (institucional/videoteca/ciclo de ensayor) NO
+    # 727,Videoentrevistas (institucional/videoteca/videoentrevistas) NO
+    # 888,Videoteca (institucional/videoteca) NO
+
     elementos =
       [
-        ["/institucional",
-          [
-            "/institucional/sedes/paseo-colon",
-            "/institucional/sedes/las-heras",
-            "/institucional/sedes/ciudad-universitaria"
-          ]
-        ],
         ["/grado",
           [
             "/grado/carreras/ingenieria-civil",
@@ -170,6 +165,34 @@ defmodule Migracion_paneles do
             "/posgrado/doctorado"
           ]
         ],
+        ["/investigacion",
+          [
+            "/investigacion/areas-de-investigacion/ambiente",
+            "/investigacion/areas-de-investigacion/arqueometria",
+            "/investigacion/areas-de-investigacion/bioingenieria",
+            "/investigacion/areas-de-investigacion/bioprinting",
+            "/investigacion/areas-de-investigacion/comunicaciones",
+            "/investigacion/areas-de-investigacion/diseno-y-desarrollo-de-productos",
+            "/investigacion/areas-de-investigacion/electronica",
+            "/investigacion/areas-de-investigacion/energia",
+            "/investigacion/areas-de-investigacion/ensenanza",
+            "/investigacion/areas-de-investigacion/fluidos",
+            "/investigacion/areas-de-investigacion/geodesiageofisica",
+            "/investigacion/areas-de-investigacion/hidrodinamica-naval",
+            "/investigacion/areas-de-investigacion/hidrologiahidraulica",
+            "/investigacion/areas-de-investigacion/informatica",
+            "/investigacion/areas-de-investigacion/matematica-aplicada",
+            "/investigacion/areas-de-investigacion/materiales-y-estructuras-para-ingenieria-civil",
+            "/investigacion/areas-de-investigacion/materiales-y-nanotecnologia",
+            "/investigacion/areas-de-investigacion/mecanica-y-robotica",
+            "/investigacion/areas-de-investigacion/medicion-y-control",
+            "/investigacion/areas-de-investigacion/metodos-y-modelos-aplicados-a-la-gestion-",
+            "/investigacion/areas-de-investigacion/optica-y-laser",
+            "/investigacion/areas-de-investigacion/procesos-quimicos",
+            "/investigacion/areas-de-investigacion/quimica",
+            "/investigacion/areas-de-investigacion/tecnologia-de-alimentos"
+          ]
+        ],
         ["/bienestar",
           [
             "/bienestar/articulacion-social",
@@ -182,6 +205,43 @@ defmodule Migracion_paneles do
             "/bienestar/inclusion-genero-y-diversidad",
             "/bienestar/insercion-laboral",
             "/bienestar/orientacion-vocacional-y-educativa-sove-"
+          ]
+        ],
+        ["/institucional",
+          [
+            "/institucional/sedes/paseo-colon",
+            "/institucional/sedes/las-heras",
+            "/institucional/sedes/ciudad-universitaria"
+          ]
+        ],
+        ["/institucional/decanato",
+          [
+            "/institucional/decanato/decano",
+            "/institucional/decanato/vicedecano"
+          ]
+        ],
+        ["/biblioteca",
+          [
+            "/biblioteca/informacion-general",
+            "/biblioteca/biblioteca-digital",
+            "/biblioteca/servicios",
+            "/biblioteca/catalogo"
+          ]
+        ],
+        ["/extranjeros/english-website",
+          [
+            "/extranjeros/english-website/institutional",
+            "/extranjeros/english-website/undergraduate",
+            "/extranjeros/english-website/posgraduate",
+            "/extranjeros/english-website/doctorate"
+          ]
+        ],
+        ["/graduados",
+          [
+            "/graduados/bodas-con-la-profesion",
+            "/graduados/bolsa-de-trabajo",
+            "/graduados/padron-de-graduados",
+            "/graduados/-departamentos-y-comisiones-curriculares"
           ]
         ]
      ]
