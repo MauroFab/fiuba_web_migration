@@ -1,16 +1,12 @@
 defmodule Utils do
-
   alias FiubaWebMigration.Repo
   import Ecto.Query
   import JSON
   import String
   import HTTPoison.Retry
 
-
   def carga_nodos_raices() do
-
-    query_sql =
-      "SELECT
+    query_sql = "SELECT
         menu_links.link_title AS TITULO,
         menu_links.link_path AS PATH,
         menu_links.mlid AS MLID
@@ -23,13 +19,10 @@ defmodule Utils do
         menu_links.link_title != 'Noticias';"
 
     {:ok, respuesta} = Repo.query(query_sql)
-      respuesta.rows
-
+    respuesta.rows
   end
 
-
   def procesar_nodo_raiz(nodo_raiz, id_portada_paginas) do
-
     nombre_pagina = nodo_raiz |> Enum.at(0)
     nodo = nodo_raiz |> Enum.at(1) |> cargar_nodo() |> Enum.at(0)
     hijos = nodo_raiz |> Enum.at(2) |> cargar_hijos()
@@ -42,24 +35,24 @@ defmodule Utils do
     id_pagina = crear_pagina(nombre_pagina, id_menu_lateral, id_portada_paginas)
     id_navegacion = crear_navegacion(url_pagina, nombre_pagina, id_pagina)
 
-    ids_navs = Enum.map(
-      hijos,
-      fn hijo ->
-        busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
-      end
-    )
+    ids_navs =
+      Enum.map(
+        hijos,
+        fn hijo ->
+          busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
+        end
+      )
 
-    ids_navs_pagina = if (contains?(nodo_type,"panel")) do
-      ids_navs
-    else
-      []
-    end
+    ids_navs_pagina =
+      if contains?(nodo_type, "panel") do
+        ids_navs
+      else
+        []
+      end
 
     actualizar_pagina(id_pagina, texto_pagina, ids_navs_pagina)
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
-
   end
-
 
   def cargar_imagen(url_imagen, nombre_imagen) do
     {:ok, result} =
@@ -102,7 +95,6 @@ defmodule Utils do
     id_imagen
   end
 
-
   def urls_imgs_embebidas(nid) do
     query_sql = "SELECT
         REPLACE (file_managed.uri,'public://','www.fi.uba.ar/sites/default/files/') AS URL_IMG
@@ -116,8 +108,7 @@ defmodule Utils do
     respuesta.rows
   end
 
-
-  def crear_pagina( nombre_pagina \\ "", id_menu_lateral \\ nil , id_imagen_portada \\ nil) do
+  def crear_pagina(nombre_pagina \\ "", id_menu_lateral \\ nil, id_imagen_portada \\ nil) do
     pagina = %{
       "nombre" => nombre_pagina,
       "portada" => id_imagen_portada,
@@ -136,7 +127,6 @@ defmodule Utils do
         JSON.encode!(pagina),
         [{"Content-type", "application/json"}]
       )
-
       |> HTTPoison.Retry.autoretry(
         max_attempts: 20,
         wait: 20000,
@@ -151,21 +141,25 @@ defmodule Utils do
     id_pagina
   end
 
-
   def actualizar_pagina(id_pagina, texto_pagina, ids_navs_pag) do
-
-    links = Enum.map(
-      ids_navs_pag,
-      fn id ->
-        %{"navegacion" => id}
-      end
-    )
+    links =
+      Enum.map(
+        ids_navs_pag,
+        fn id ->
+          %{"navegacion" => id}
+        end
+      )
 
     pagina_actualizaciones = %{
       "componentes" => [
         %{
           "__component" => "paginas.texto-con-formato",
-          "texto" => (if (texto_pagina == nil) do "" else parcer(texto_pagina) end)
+          "texto" =>
+            if texto_pagina == nil do
+              ""
+            else
+              parcer(texto_pagina)
+            end
         },
         %{
           "__component" => "paginas.navegacion-listado",
@@ -180,14 +174,12 @@ defmodule Utils do
       [{"Content-type", "application/json"}]
     )
     |> HTTPoison.Retry.autoretry(
-        max_attempts: 20,
-        wait: 20000,
-        include_404s: false,
-        retry_unknown_errors: false
-      )
-
+      max_attempts: 20,
+      wait: 20000,
+      include_404s: false,
+      retry_unknown_errors: false
+    )
   end
-
 
   def url_format(string) do
     string
@@ -196,7 +188,6 @@ defmodule Utils do
     |> String.replace(~r/[^A-Z^a-z^0-9\s]/u, "")
     |> String.replace(~r/\s/, "-")
   end
-
 
   def crear_navegacion(url_navegacion, nombre_navegacion, id_pagina) do
     vinculo = %{
@@ -216,7 +207,6 @@ defmodule Utils do
         JSON.encode!(vinculo),
         [{"Content-type", "application/json"}]
       )
-
       |> HTTPoison.Retry.autoretry(
         max_attempts: 20,
         wait: 20000,
@@ -231,7 +221,6 @@ defmodule Utils do
     id_navegacion
   end
 
-
   def crear_menu_lateral(nombre_menu) do
     menu_lateral = %{
       "nombre" => nombre_menu
@@ -243,7 +232,6 @@ defmodule Utils do
         JSON.encode!(menu_lateral),
         [{"Content-type", "application/json"}]
       )
-
       |> HTTPoison.Retry.autoretry(
         max_attempts: 20,
         wait: 20000,
@@ -257,7 +245,6 @@ defmodule Utils do
 
     id_menu_lateral
   end
-
 
   def actualizar_menu_lateral(id_menu_lateral, id_navegaciones) do
     links =
@@ -275,19 +262,15 @@ defmodule Utils do
       JSON.encode!(menu_lateral),
       [{"Content-type", "application/json"}]
     )
-
     |> HTTPoison.Retry.autoretry(
-        max_attempts: 20,
-        wait: 20000,
-        include_404s: false,
-        retry_unknown_errors: false
-      )
-
+      max_attempts: 20,
+      wait: 20000,
+      include_404s: false,
+      retry_unknown_errors: false
+    )
   end
 
-
   def cargar_hijos(plid) do
-
     query_sql = "SELECT
     menu_links.mlid AS mlid,
     menu_links.link_title AS titulo,
@@ -300,11 +283,8 @@ defmodule Utils do
     respuesta.rows
   end
 
-
   def cargar_nodo(link_path) do
-
-    if(contains?(link_path,"node/")) do
-
+    if(contains?(link_path, "node/")) do
       link = String.split(link_path, "node/", trim: true)
       nid = List.last(link)
 
@@ -317,8 +297,8 @@ defmodule Utils do
         LEFT JOIN field_data_body ON field_data_body.entity_id = node.nid
         WHERE node.nid = " <> nid <> " ;"
 
-        {:ok, respuesta} = Repo.query(query_sql)
-        respuesta.rows
+      {:ok, respuesta} = Repo.query(query_sql)
+      respuesta.rows
     else
       query = "SELECT
         menu_links.link_title AS titulo
@@ -328,14 +308,16 @@ defmodule Utils do
       {:ok, respuesta} = Repo.query(query)
 
       titulo = respuesta.rows |> Enum.at(0) |> Enum.at(0)
-      [[titulo,"","",""]]
+      [[titulo, "", "", ""]]
     end
-
   end
 
-
-
-  def busqueda_recursiva( elemento, url_nav_padre, id_menu_lateral_padre \\ nil, id_imagen_portada \\ nil) do
+  def busqueda_recursiva(
+        elemento,
+        url_nav_padre,
+        id_menu_lateral_padre \\ nil,
+        id_imagen_portada \\ nil
+      ) do
     link_path = elemento |> Enum.at(2)
     nodo = cargar_nodo(link_path) |> Enum.at(0)
 
@@ -348,23 +330,36 @@ defmodule Utils do
     # # 1 = Tiene hijos, 0 = No tiene hijos
     has_children = elemento |> Enum.at(3)
 
-    id_menu_lateral = if (has_children == 1) do crear_menu_lateral(url_nav) else id_menu_lateral_padre end
-    id_pagina = crear_pagina( titulo, id_menu_lateral, id_imagen_portada)
+    id_menu_lateral =
+      if has_children == 1 do
+        crear_menu_lateral(url_nav)
+      else
+        id_menu_lateral_padre
+      end
+
+    id_pagina = crear_pagina(titulo, id_menu_lateral, id_imagen_portada)
     id_navegacion = crear_navegacion(url_nav, titulo, id_pagina)
 
-    ids_navs = if (has_children == 1) do
-      hijos = elemento |> Enum.at(0) |> cargar_hijos()
-      Enum.map(
-        hijos,
-        fn hijo ->
-          busqueda_recursiva(hijo, url_nav, id_menu_lateral, id_imagen_portada)
-        end
-      )
+    ids_navs =
+      if has_children == 1 do
+        hijos = elemento |> Enum.at(0) |> cargar_hijos()
+
+        Enum.map(
+          hijos,
+          fn hijo ->
+            busqueda_recursiva(hijo, url_nav, id_menu_lateral, id_imagen_portada)
+          end
+        )
       else
         []
       end
 
-    ids_navs_pag = if (contains?(nodo_type,"panel")) do ids_navs else [] end
+    ids_navs_pag =
+      if contains?(nodo_type, "panel") do
+        ids_navs
+      else
+        []
+      end
 
     actualizar_pagina(id_pagina, texto, ids_navs_pag)
     actualizar_menu_lateral(id_menu_lateral, [id_navegacion] ++ ids_navs)
@@ -377,18 +372,26 @@ defmodule Utils do
 
     porciones = String.split(linea, ~r/[>,<]/, trim: true)
 
-    indice = Enum.find_index(porciones,
-      fn porcion ->
-        contains?(porcion, "a href=")
-      end
-    )
+    indice =
+      Enum.find_index(
+        porciones,
+        fn porcion ->
+          contains?(porcion, "a href=")
+        end
+      )
+
+    IO.puts(indice)
+
     texto = porciones |> Enum.at(indice + 1)
-    link= porciones |> Enum.at(indice) |> String.replace([~s{a href=}, ~s{"}, ~s{target="_blank"}], "")
+
+    link =
+      porciones
+      |> Enum.at(indice)
+      |> String.replace([~s{a href=}, ~s{"}, ~s{target="_blank"}], "")
 
     final = ~s/[#{texto}](#{link})/
 
     final
-
   end
 
   def formatear_negrita(linea) do
@@ -411,15 +414,15 @@ defmodule Utils do
       end
 
     linea =
-      if(String.contains?(linea, "<a")) do
-          # IO.puts("link")
-          formatear_link(linea)
+      if(String.contains?(linea, "<a") && !String.contains?(linea, "video")) do
+        # IO.puts("link")
+        formatear_link(linea)
       else
-        linea
+        linea |> String.replace(["Ver video", "\n\n"], "")
       end
 
     linea =
-      if(String.contains?(linea, "<h"))do
+      if(String.contains?(linea, "<h")) do
         # IO.puts("head")
         formatear_head(linea)
       else
@@ -432,15 +435,15 @@ defmodule Utils do
   end
 
   def parcer(texto) do
-
     # temp = ~s{<p><strong>Contacto:</strong><br />\r\nInt.:&nbsp;50404<br />\r\nDelegado general: Sr. Alejandro Marasco<br />\r\nCorreo electrónico:&nbsp;<a href=\"mailto:apuba@fi.uba.ar\">apuba@fi.uba.ar</a>&nbsp;<br />\r\n<a href=\"https://cifiuba.com/\">Sitio web</a>&nbsp;</p>\r\n\r\n<p> </p>\r\n\r\n<p> </p>\r\n}
 
-    lineas_limpias = Enum.map(
-      String.split(texto, "\r\n", trim: true),
-      fn linea ->
-        adaptar_linea(linea)
-      end
-    )
+    lineas_limpias =
+      Enum.map(
+        String.split(texto, "\r\n", trim: true),
+        fn linea ->
+          adaptar_linea(linea)
+        end
+      )
 
     cuerpo = HtmlSanitizeEx.strip_tags(Enum.join(lineas_limpias, "\n\n"))
 
