@@ -6,6 +6,22 @@ defmodule Utils do
   import HTTPoison.Retry
 
   def carga_nodos_raices() do
+
+    # Docentes
+    # Prensa
+    # Biblioteca
+    # Grado
+    # Posgrado
+    # Investigación MUERE
+    # Bienestar
+    # Institucional
+    # Ingresantes
+    # Estudiantes
+    # Extranjeros
+    # Nodocentes
+    # Transparencia
+    # Graduados
+
     query_sql = "SELECT
         menu_links.link_title AS TITULO,
         menu_links.link_path AS PATH,
@@ -16,7 +32,7 @@ defmodule Utils do
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
         menu_links.link_title != 'Noticias'
-      ORDER BY menu_links.mlid DESC;"
+      ORDER BY menu_links.mlid ASC;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -78,6 +94,8 @@ defmodule Utils do
 
   def crear_pagina( nombre_pagina \\ "", texto_pagina, id_menu_lateral \\ nil , id_imagen_portada \\ nil) do
 
+    :timer.sleep(300)
+
     pagina = %{
       "nombre" => nombre_pagina,
       "portada" => id_imagen_portada,
@@ -95,12 +113,6 @@ defmodule Utils do
         "https://testing.cms.fiuba.lambdaclass.com/paginas",
         JSON.encode!(pagina),
         [{"Content-type", "application/json"}]
-      )
-      |> HTTPoison.Retry.autoretry(
-        max_attempts: 40,
-        wait: 20000,
-        include_404s: false,
-        retry_unknown_errors: false
       )
 
     response_body = response_pagina.body
@@ -120,6 +132,9 @@ defmodule Utils do
   end
 
   def crear_navegacion(url_navegacion, nombre_navegacion, id_pagina) do
+
+    :timer.sleep(300)
+
     vinculo = %{
       "vinculo" => [
         %{
@@ -137,12 +152,6 @@ defmodule Utils do
         JSON.encode!(vinculo),
         [{"Content-type", "application/json"}]
       )
-      # |> HTTPoison.Retry.autoretry(
-      #   max_attempts: 40,
-      #   wait: 20000,
-      #   include_404s: false,
-      #   retry_unknown_errors: false
-      # )
 
     response_body = response_navegacion.body
     {:ok, response_body_map} = JSON.decode(response_body)
@@ -152,6 +161,9 @@ defmodule Utils do
   end
 
   def crear_menu_lateral(nombre_menu) do
+
+    :timer.sleep(300)
+
     menu_lateral = %{
       "nombre" => nombre_menu
     }
@@ -162,12 +174,6 @@ defmodule Utils do
         JSON.encode!(menu_lateral),
         [{"Content-type", "application/json"}]
       )
-      |> HTTPoison.Retry.autoretry(
-        max_attempts: 20,
-        wait: 20000,
-        include_404s: false,
-        retry_unknown_errors: false
-      )
 
     response_body = response_menu_laterals.body
     {:ok, response_body_map} = JSON.decode(response_body)
@@ -177,6 +183,9 @@ defmodule Utils do
   end
 
   def actualizar_menu_lateral(id_menu_lateral, id_navegaciones) do
+
+    :timer.sleep(300)
+
     links =
       Enum.map(
         id_navegaciones,
@@ -192,12 +201,7 @@ defmodule Utils do
       JSON.encode!(menu_lateral),
       [{"Content-type", "application/json"}]
     )
-    |> HTTPoison.Retry.autoretry(
-      max_attempts: 20,
-      wait: 20000,
-      include_404s: false,
-      retry_unknown_errors: false
-    )
+
   end
 
   def cargar_hijos(plid) do
@@ -302,6 +306,7 @@ defmodule Utils do
       hijos,
       fn hijo ->
         busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
+        :timer.sleep(1000)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, ids_navs)
@@ -322,7 +327,7 @@ defmodule Utils do
         end
       )
 
-    IO.puts(indice)
+    # IO.puts(indice)
 
     texto = porciones |> Enum.at(indice + 1)
 
