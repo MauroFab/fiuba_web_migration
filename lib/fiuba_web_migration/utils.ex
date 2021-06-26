@@ -31,8 +31,10 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
+
         menu_links.link_title != 'Noticias'
-      ORDER BY menu_links.mlid ASC;"
+
+      ORDER BY menu_links.mlid desc;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -276,6 +278,7 @@ defmodule Utils do
         Enum.map(
           hijos,
           fn hijo ->
+            :timer.sleep(500)
             busqueda_recursiva(hijo, url_nav, id_menu_lateral, id_imagen_portada)
           end
         )
@@ -305,8 +308,8 @@ defmodule Utils do
     ids_navs = Enum.map(
       hijos,
       fn hijo ->
-        busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
         :timer.sleep(1000)
+        busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
       end
     )
     actualizar_menu_lateral(id_menu_lateral, ids_navs)
