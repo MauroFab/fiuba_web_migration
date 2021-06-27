@@ -1,10 +1,11 @@
-defmodule Migracion_paneles do
+defmodule Migracion_paneles_y_menues do
 
   alias FiubaWebMigration.Repo
   import Ecto.Query
   import JSON
   import String
   import HTTPoison.Retry
+  import Utils
 
 
   def traer_id_pagina(navegacion_seo_url) do
@@ -41,7 +42,7 @@ defmodule Migracion_paneles do
 
   end
 
-  def actualizar_pagina(id_pagina, ids_navs_pag) do
+  def actualizar_grilla_pagina(id_pagina, ids_navs_pag) do
 
     links = Enum.map(
       ids_navs_pag,
@@ -72,6 +73,22 @@ defmodule Migracion_paneles do
       )
 
   end
+
+
+  def traer_id_menu_lateral(navegacion_seo_url) do
+
+    response_pagina = HTTPoison.get!("https://testing.cms.fiuba.lambdaclass.com/navegacion?seo_url=" <> navegacion_seo_url)
+
+    response_body = response_pagina.body
+    {:ok, response_body_map} = JSON.decode(response_body)
+    {:ok, vinculo} = Map.fetch(response_body_map |> Enum.at(0), "vinculo")
+    {:ok, pagina} = Map.fetch( vinculo |> Enum.at(0), "pagina")
+    {:ok, id_menu_lateral} = Map.fetch( pagina, "menu_lateral")
+
+    id_menu_lateral
+
+  end
+
 
   def paneles() do
 
@@ -323,7 +340,147 @@ defmodule Migracion_paneles do
             traer_id_navegacion(seo_url_grilla)
           end
         )
-        actualizar_pagina(id_pagina_principal, ids_elementos_grilla)
+        actualizar_grilla_pagina(id_pagina_principal, ids_elementos_grilla)
+      end
+    )
+
+  end
+
+
+  def menues_laterales() do
+
+    elementos =
+      [
+
+        [ "/institucional",
+          [
+            "/institucional/sedes",
+            "/institucional/vision-mision-y-funciones",
+            "/institucional/historia",
+            "/institucional/consejo-directivo",
+            "/institucional/decanato",
+            "/institucional/secretarias",
+            "/institucional/departamentos",
+            "/institucional/institutos-centros-y-escuelas",
+            "/institucional/consulta-de-resoluciones",
+            "/institucional/consulta-de-expedientes",
+            # "/institucional/videoteca",
+            "/institucional/comunicacion-institucional",
+            "/institucional/coleccion-biblioteca-ingenieria",
+            "/institucional/ceremonial",
+            "/institucional/nueva-guia-de-internos"
+          ]
+        ],
+        [
+          "/grado",
+          [
+            "/grado/carreras",
+            "/grado/por-que-la-uba",
+            "/grado/visitas-guiadas"
+          ]
+        ],
+        [
+          "/posgrado",
+          [
+            "/posgrado/maestrias",
+            "/posgrado/carreras-de-especializacion",
+            "/posgrado/cursos-anuales-y-bianuales",
+            "/posgrado/cursos-de-complementacion-y-formacion-continua",
+            "/posgrado/cursos-a-empresas-e-instituciones",
+            "/posgrado/destinatarios",
+            "/posgrado/estudiantes-extranjeros",
+            "/posgrado/tipos-de-posgrado",
+            "/posgrado/beneficios-comunidad-fiuba",
+            "/posgrado/solicitud-de-certificados-y-diplomas",
+            "/posgrado/maestrias-internacionales",
+            "/posgrado/posgrados-en-ingenieria",
+            "/posgrado/doctorado",
+            "/posgrado/english-website",
+            "/posgrado/contacto"
+          ]
+        ],
+        [
+          "/investigacion",
+          [
+            "/investigacion/mision",
+            "/investigacion/areas-de-investigacion",
+            "/investigacion/relaciones-internacionales",
+            "/investigacion/doctorado",
+            "/investigacion/becas",
+            "/investigacion/maestrias",
+            "/investigacion/para-investigadores",
+            "/investigacion/subsidios",
+            "/investigacion/boletin-digital",
+            "/investigacion/doctorado"
+          ]
+        ],
+        [
+          "/bienestar",
+          [
+            "/bienestar/articulacion-social",
+            "/bienestar/becas",
+            "/bienestar/areas",
+            "/bienestar/cultura",
+            "/bienestar/deportes",
+            "/bienestar/derechos-humanos",
+            "/bienestar/expo-fiuba-laboral",
+            "/bienestar/inclusion-genero-y-diversidad",
+            "/bienestar/idiomas",
+            "/bienestar/insercion-laboral",
+            "/bienestar/orientacion-vocacional-y-educativa-sove",
+            "/bienestar/contacto"
+          ]
+        ],
+        [
+          "/extranjeros/english-website",
+          [
+            "/extranjeros/english-website/institutional",
+            "/extranjeros/english-website/undergraduate",
+            "/extranjeros/english-website/posgraduate",
+            "/extranjeros/english-website/doctorate"
+          ]
+        ],
+        [ "/biblioteca",
+          [
+            "/biblioteca/novedades",
+            "/biblioteca/donaciones",
+            "/biblioteca/formacion-y-ayuda",
+            "/biblioteca/sedes-y-horarios",
+            "/biblioteca/contactos",
+            "/biblioteca/fotogaleria",
+            "/biblioteca/buzon-de-sugerencias",
+            "/biblioteca/consulte-al-bibliotecario"
+          ]
+        ],
+        # [
+        #  "/transparencia",
+        #   [
+        #    "/transparencia/biblioteca",
+        #    "/transparencia/bolsa-de-trabajo",
+        #    "/institucional/secretarias/secretaria-administrativa/direccion-general-de-recursos-fisicos-y-financieros/direccion-de-compras-y-contrataciones",
+        #    "/bienestar/derechos-humanos",
+        #    "/noticias",
+        #    "/prensa",
+        #    "/institucional/secretarias/secretaria-de-relaciones-institucionales/convenios-y-trabajos-a-terceros",
+        #    "/grado/visitas-guiadas",
+        #    "/transparencia"
+        #   ]
+        # ]
+      ]
+
+    Enum.map(
+      elementos,
+      fn elemento ->
+
+        id_menu_lateral = elemento |> Enum.at(0) |> traer_id_menu_lateral()
+
+        ids_navs = Enum.map(
+          elemento |> Enum.at(1),
+          fn seo_url_grilla ->
+            traer_id_navegacion(seo_url_grilla)
+          end
+        )
+        actualizar_menu_lateral(id_menu_lateral, ids_navs)
       end
     )
 
