@@ -345,6 +345,7 @@ defmodule Utils do
       |> String.split(~r/href=/, trim: true)
       |> Enum.at(1)
       |> String.replace([~s{href="}, ~s{"}, ~s{target="_blank"}], "")
+      |> String.replace(" ", "%20")
 
     # if String.match?(link, ~r/.[.]pdf|.[.]xml|.[.]xls/) do
 
