@@ -2,7 +2,7 @@ defmodule FiubaWebMigration do
 
   import Migracion_noticias
   import Migracion_paneles_y_menues
-  import Migracion_pdfs
+  import Migracion_Archivos
   import Utils
 
   def migration() do
