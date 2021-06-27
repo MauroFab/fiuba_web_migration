@@ -4,9 +4,9 @@ defmodule Utils do
   import JSON
   import String
   import HTTPoison.Retry
+  import Migracion_Archivos
 
   def carga_nodos_raices() do
-
     # Docentes
     # Prensa
     # Biblioteca
@@ -94,8 +94,12 @@ defmodule Utils do
     respuesta.rows
   end
 
-  def crear_pagina( nombre_pagina \\ "", texto_pagina, id_menu_lateral \\ nil , id_imagen_portada \\ nil) do
-
+  def crear_pagina(
+        nombre_pagina \\ "",
+        texto_pagina,
+        id_menu_lateral \\ nil,
+        id_imagen_portada \\ nil
+      ) do
     :timer.sleep(300)
 
     pagina = %{
@@ -105,7 +109,12 @@ defmodule Utils do
       "componentes" => [
         %{
           "__component" => "paginas.texto-con-formato",
-          "texto" => (if (texto_pagina == nil) do "" else parcer(texto_pagina) end)
+          "texto" =>
+            if texto_pagina == nil do
+              ""
+            else
+              parcer(texto_pagina)
+            end
         }
       ]
     }
@@ -134,7 +143,6 @@ defmodule Utils do
   end
 
   def crear_navegacion(url_navegacion, nombre_navegacion, id_pagina) do
-
     :timer.sleep(300)
 
     vinculo = %{
@@ -163,7 +171,6 @@ defmodule Utils do
   end
 
   def crear_menu_lateral(nombre_menu) do
-
     :timer.sleep(300)
 
     menu_lateral = %{
@@ -185,7 +192,6 @@ defmodule Utils do
   end
 
   def actualizar_menu_lateral(id_menu_lateral, id_navegaciones) do
-
     :timer.sleep(300)
 
     links =
@@ -203,7 +209,6 @@ defmodule Utils do
       JSON.encode!(menu_lateral),
       [{"Content-type", "application/json"}]
     )
-
   end
 
   def cargar_hijos(plid) do
@@ -266,8 +271,14 @@ defmodule Utils do
     # # 1 = Tiene hijos, 0 = No tiene hijos
     has_children = elemento |> Enum.at(3)
 
-    id_menu_lateral = if (has_children == 1) do crear_menu_lateral(url_nav) else id_menu_lateral_padre end
-    id_pagina = crear_pagina( titulo, texto, id_menu_lateral, id_imagen_portada)
+    id_menu_lateral =
+      if has_children == 1 do
+        crear_menu_lateral(url_nav)
+      else
+        id_menu_lateral_padre
+      end
+
+    id_pagina = crear_pagina(titulo, texto, id_menu_lateral, id_imagen_portada)
 
     id_navegacion = crear_navegacion(url_nav, titulo, id_pagina)
 
@@ -291,9 +302,7 @@ defmodule Utils do
     id_navegacion
   end
 
-
   def procesar_nodo_raiz(nodo_raiz, id_portada_paginas) do
-
     nombre_pagina = nodo_raiz |> Enum.at(0)
     nodo = nodo_raiz |> Enum.at(1) |> cargar_nodo() |> Enum.at(0)
     hijos = nodo_raiz |> Enum.at(2) |> cargar_hijos()
@@ -305,51 +314,58 @@ defmodule Utils do
     id_pagina = crear_pagina(nombre_pagina, texto_pagina, id_menu_lateral, id_portada_paginas)
     id_navegacion = crear_navegacion(url_pagina, nombre_pagina, id_pagina)
 
-    ids_navs = Enum.map(
-      hijos,
-      fn hijo ->
-        :timer.sleep(1000)
-        busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
-      end
-    )
-    actualizar_menu_lateral(id_menu_lateral, ids_navs)
+    ids_navs =
+      Enum.map(
+        hijos,
+        fn hijo ->
+          :timer.sleep(1000)
+          busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
+        end
+      )
 
+    actualizar_menu_lateral(id_menu_lateral, ids_navs)
   end
 
-
   def formatear_link(linea) do
-    # IO.puts(linea)
-
     porciones = String.split(linea, ~r/[>,<]/, trim: true)
 
     indice =
       Enum.find_index(
         porciones,
         fn porcion ->
-          contains?(porcion, "a href=")
+          contains?(porcion, "href")
         end
       )
-
-    # IO.puts(indice)
 
     texto = porciones |> Enum.at(indice + 1)
 
     link =
       porciones
       |> Enum.at(indice)
-      |> String.replace([~s{a href=}, ~s{"}, ~s{target="_blank"}], "")
+      |> String.split(~r/href=/, trim: true)
+      |> Enum.at(1)
+      |> String.replace([~s{href="}, ~s{"}, ~s{target="_blank"}], "")
 
-    final = ~s/[#{texto}](#{link})/
+    # if String.match?(link, ~r/.[.]pdf|.[.]xml|.[.]xls/) do
 
-    final
+    link =
+      if String.match?(link, ~r/[.]pdf\Z/) do
+        IO.puts(link)
+        cargar_pdf(link)
+        # IO.puts("invocar cargar archivo")
+        # IO.puts(String.replace(link, "http://fi.uba.ar", "http://strapi"))
+      end
+
+    IO.puts(link)
+
+    ~s/[#{texto}](#{link})/
+
+    # final = ~s/[#{texto}](#{link})/
+    # final
   end
 
   def formatear_negrita(linea) do
     String.replace(linea, ["<strong>", "</strong>"], "**")
-  end
-
-  def formatear_head(linea) do
-    linea
   end
 
   def adaptar_linea(linea_sucia) do
@@ -357,7 +373,6 @@ defmodule Utils do
 
     linea =
       if(String.contains?(linea, "<strong>")) do
-        # IO.puts("strong")
         formatear_negrita(linea)
       else
         linea
@@ -365,28 +380,15 @@ defmodule Utils do
 
     linea =
       if(String.contains?(linea, "<a") && !String.contains?(linea, ">Ver video<")) do
-        # IO.puts("link")
         formatear_link(linea)
       else
         linea |> String.replace(["Ver video", "\n\n"], "")
       end
 
-    linea =
-      if(String.contains?(linea, "<h")) do
-        # IO.puts("head")
-        formatear_head(linea)
-      else
-        linea
-      end
-
-    # IO.puts("linea finalizada")
-    # IO.puts(linea)
     linea
   end
 
   def parcer(texto) do
-    # temp = ~s{<p><strong>Contacto:</strong><br />\r\nInt.:&nbsp;50404<br />\r\nDelegado general: Sr. Alejandro Marasco<br />\r\nCorreo electrónico:&nbsp;<a href=\"mailto:apuba@fi.uba.ar\">apuba@fi.uba.ar</a>&nbsp;<br />\r\n<a href=\"https://cifiuba.com/\">Sitio web</a>&nbsp;</p>\r\n\r\n<p> </p>\r\n\r\n<p> </p>\r\n}
-
     lineas_limpias =
       Enum.map(
         String.split(texto, "\r\n", trim: true),
@@ -395,8 +397,8 @@ defmodule Utils do
         end
       )
 
-    cuerpo = HtmlSanitizeEx.strip_tags(Enum.join(lineas_limpias, "\n\n"))
-
-    cuerpo
+    HtmlSanitizeEx.strip_tags(Enum.join(lineas_limpias, "\n\n"))
+    # cuerpo = HtmlSanitizeEx.strip_tags(Enum.join(lineas_limpias, "\n\n"))
+    # cuerpo
   end
 end
