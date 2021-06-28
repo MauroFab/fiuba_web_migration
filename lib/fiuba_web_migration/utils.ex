@@ -32,6 +32,7 @@ defmodule Utils do
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
 
+        menu_links.link_title = 'Grado' AND
         menu_links.link_title != 'Noticias'
 
       ORDER BY menu_links.mlid desc;"
@@ -346,6 +347,15 @@ defmodule Utils do
       |> Enum.at(1)
       |> String.replace([~s{href="}, ~s{"}, ~s{target="_blank"}], "")
       |> String.replace(" ", "%20")
+      |> String.replace("°", "%C2%BA")
+      |> String.replace("ñ", "%C3%B1")
+      |> String.replace("á", "%C3%A1")
+      |> String.replace("Á", "%C3%81")
+      |> String.replace("é", "%C3%A9")
+      |> String.replace("í", "%C3%AD")
+      |> String.replace("Í", "%C3%8D")
+      |> String.replace("ó", "%C3%B3")
+      |> String.replace("Ó", "%C3%93")
 
     # if String.match?(link, ~r/.[.]pdf|.[.]xml|.[.]xls/) do
 
