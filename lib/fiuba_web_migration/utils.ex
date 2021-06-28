@@ -327,7 +327,7 @@ defmodule Utils do
   end
 
   def formatear_link(linea) do
-    porciones = String.split(linea, ~r/[>,<]/, trim: true)
+    porciones = String.split(linea, ~r/>|</, trim: true)
 
     indice =
       Enum.find_index(
@@ -350,14 +350,16 @@ defmodule Utils do
     # if String.match?(link, ~r/.[.]pdf|.[.]xml|.[.]xls/) do
 
     link =
-      if String.match?(link, ~r/[.]pdf\Z/) do
+      if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
         IO.puts(link)
-        cargar_pdf(link)
+        # cargar_pdf(link)
         # IO.puts("invocar cargar archivo")
         # IO.puts(String.replace(link, "http://fi.uba.ar", "http://strapi"))
+      else
+        link
       end
 
-    IO.puts(link)
+    # IO.puts(link)
 
     ~s/[#{texto}](#{link})/
 
