@@ -325,12 +325,15 @@ defmodule Utils do
     actualizar_menu_lateral(id_menu_lateral, ids_navs)
   end
 
-  def checkear_link (link) do
-    if( String.split(link, "/", trim: true) |> Enum.at(0) |> String.contains?("archivos")) do
+  def checkear_link_fiuba(link) do
+    if(String.split(link, "/", trim: true) |> Enum.at(0) |> String.contains?("archivos")) do
       "http://fi.uba.ar" <> link
     else
       link
     end
+
+    String.replace(link, "sites/default/files", "archivos")
+
   end
 
   def formatear_link(linea) do
@@ -371,7 +374,7 @@ defmodule Utils do
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
         IO.puts(link)
 
-        checkear_link(link) |> cargar_pdf(extension)
+        checkear_link_fiuba(link) |> cargar_pdf(extension)
 
         # IO.puts("invocar cargar archivo")
         # IO.puts(String.replace(link, "http://fi.uba.ar", "http://strapi"))
@@ -387,11 +390,9 @@ defmodule Utils do
     # final
   end
 
-
   def formatear_negrita(linea) do
     String.replace(linea, ["<strong>", "</strong>"], "**")
   end
-
 
   def adaptar_linea(linea_sucia) do
     linea = linea_sucia
@@ -412,7 +413,6 @@ defmodule Utils do
 
     linea
   end
-
 
   def parcer(texto) do
     lineas_limpias =
