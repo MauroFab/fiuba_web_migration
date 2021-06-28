@@ -26,30 +26,59 @@ defmodule Migracion_Archivos do
   # end
 
 
-  def cargar_pdf( url_pdf_fiuba) do
+  def cargar_pdf( url_pdf_fiuba, extension) do
+
+    :timer.sleep(300)
 
     {:ok, result} = HTTPoison.get(url_pdf_fiuba)
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 10,
+        max_attempts: 40,
         wait: 20000,
         include_404s: false,
         retry_unknown_errors: false
       )
-    pdf = result.body
+    archivo = result.body
     headers = [{"Content-Type", "multipart/form-data"}]
     options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
 
 
-    titulo_pdf = url_pdf_fiuba |> String.split("/") |> List.last()
+    titulo_archivo =
+      url_pdf_fiuba
+      |> String.split("/")
+      |> List.last()
+      |> String.replace("%20", "")
+      |> String.replace("%C2%BA", "°")
+      |> String.replace("%C3%B1", "ñ")
+      |> String.replace("%C3%A1", "á")
+      |> String.replace("%C3%81", "Á")
+      |> String.replace("%C3%A9", "é")
+      |> String.replace("%C3%AD", "í")
+      |> String.replace("%C3%8D", "Í")
+      |> String.replace("%C3%B3", "ó")
+      |> String.replace("%C3%93", "Ó")
+
+
+    extension_types =
+      case extension do
+        "pdf" -> ["application/pdf", "file/pdf"]
+        "doc" -> ["application/msword", "file/doc"]
+        "xls" -> ["application/vnd.ms-excel", "file/xls"]
+        "xlsx" -> ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"]
+        "docx" -> ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file/docx"]
+        _ -> ["",""]
+      end
+
+    content_type = extension_types |> Enum.at(0)
+    type = extension_types |> Enum.at(1)
 
     {:ok, response} = HTTPoison.request(
         :post,
         "https://testing.cms.fiuba.lambdaclass.com/upload",
         {:multipart,
           [
-          {"file", pdf, {"form-data", [name: "files", filename: titulo_pdf ]},
-          [{"Content-Type", "application/pdf"}]},
-          {"type", "file/pdf"}
+          {"file", archivo, {"form-data", [name: "files", filename: titulo_archivo ]},
+          [{"Content-Type", content_type }]},
+          {"type", type}
           ]},
           headers,
           options

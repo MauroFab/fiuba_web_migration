@@ -31,7 +31,6 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-
         menu_links.link_title != 'Noticias'
 
       ORDER BY menu_links.mlid desc;"
@@ -346,13 +345,26 @@ defmodule Utils do
       |> Enum.at(1)
       |> String.replace([~s{href="}, ~s{"}, ~s{target="_blank"}], "")
       |> String.replace(" ", "%20")
+      |> String.replace("°", "%C2%BA")
+      |> String.replace("ñ", "%C3%B1")
+      |> String.replace("á", "%C3%A1")
+      |> String.replace("Á", "%C3%81")
+      |> String.replace("é", "%C3%A9")
+      |> String.replace("í", "%C3%AD")
+      |> String.replace("Í", "%C3%8D")
+      |> String.replace("ó", "%C3%B3")
+      |> String.replace("Ó", "%C3%93")
 
     # if String.match?(link, ~r/.[.]pdf|.[.]xml|.[.]xls/) do
+
+    extension = link |> String.split(".") |> List.last()
 
     link =
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
         IO.puts(link)
-        # cargar_pdf(link)
+
+        cargar_pdf(link, extension)
+
         # IO.puts("invocar cargar archivo")
         # IO.puts(String.replace(link, "http://fi.uba.ar", "http://strapi"))
       else
@@ -367,9 +379,11 @@ defmodule Utils do
     # final
   end
 
+
   def formatear_negrita(linea) do
     String.replace(linea, ["<strong>", "</strong>"], "**")
   end
+
 
   def adaptar_linea(linea_sucia) do
     linea = linea_sucia
@@ -390,6 +404,7 @@ defmodule Utils do
 
     linea
   end
+
 
   def parcer(texto) do
     lineas_limpias =
