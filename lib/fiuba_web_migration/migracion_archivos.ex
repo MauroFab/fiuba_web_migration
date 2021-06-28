@@ -40,7 +40,20 @@ defmodule Migracion_Archivos do
     options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
 
 
-    titulo_pdf = url_pdf_fiuba |> String.split("/") |> List.last()
+    titulo_pdf =
+      url_pdf_fiuba
+      |> String.split("/")
+      |> List.last()
+      |> String.replace("%20", "")
+      |> String.replace("%C2%BA", "°")
+      |> String.replace("%C3%B1", "ñ")
+      |> String.replace("%C3%A1", "á")
+      |> String.replace("%C3%81", "Á")
+      |> String.replace("%C3%A9", "é")
+      |> String.replace("%C3%AD", "í")
+      |> String.replace("%C3%8D", "Í")
+      |> String.replace("%C3%B3", "ó")
+      |> String.replace("%C3%93", "Ó")
 
     {:ok, response} = HTTPoison.request(
         :post,
