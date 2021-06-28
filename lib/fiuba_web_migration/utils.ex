@@ -325,6 +325,14 @@ defmodule Utils do
     actualizar_menu_lateral(id_menu_lateral, ids_navs)
   end
 
+  def checkear_link (link) do
+    if( String.split(link, "/", trim: true) |> Enum.at(0) |> String.contains?("archivos")) do
+      "http://fi.uba.ar" <> link
+    else
+      link
+    end
+  end
+
   def formatear_link(linea) do
     porciones = String.split(linea, ~r/>|</, trim: true)
 
@@ -363,7 +371,7 @@ defmodule Utils do
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
         IO.puts(link)
 
-        cargar_pdf(link, extension)
+        checkear_link(link) |> cargar_pdf(extension)
 
         # IO.puts("invocar cargar archivo")
         # IO.puts(String.replace(link, "http://fi.uba.ar", "http://strapi"))
