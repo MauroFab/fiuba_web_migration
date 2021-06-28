@@ -28,9 +28,11 @@ defmodule Migracion_Archivos do
 
   def cargar_pdf( url_pdf_fiuba, extension) do
 
+    :timer.sleep(300)
+
     {:ok, result} = HTTPoison.get(url_pdf_fiuba)
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 10,
+        max_attempts: 40,
         wait: 20000,
         include_404s: false,
         retry_unknown_errors: false
