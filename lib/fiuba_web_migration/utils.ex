@@ -31,8 +31,6 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-
-        menu_links.link_title = 'Grado' AND
         menu_links.link_title != 'Noticias'
 
       ORDER BY menu_links.mlid desc;"
@@ -359,10 +357,12 @@ defmodule Utils do
 
     # if String.match?(link, ~r/.[.]pdf|.[.]xml|.[.]xls/) do
 
+    extension = link |> String.split(".") |> List.last()
+
     link =
       if String.match?(link, ~r/[.]pdf\Z/) do
         IO.puts(link)
-        cargar_pdf(link)
+        cargar_pdf(link, extension)
         # IO.puts("invocar cargar archivo")
         # IO.puts(String.replace(link, "http://fi.uba.ar", "http://strapi"))
       end
@@ -375,9 +375,11 @@ defmodule Utils do
     # final
   end
 
+
   def formatear_negrita(linea) do
     String.replace(linea, ["<strong>", "</strong>"], "**")
   end
+
 
   def adaptar_linea(linea_sucia) do
     linea = linea_sucia
@@ -398,6 +400,7 @@ defmodule Utils do
 
     linea
   end
+
 
   def parcer(texto) do
     lineas_limpias =

@@ -58,11 +58,11 @@ defmodule Migracion_Archivos do
 
     extension_types =
       case extension do
-        ".pdf" -> ["application/pdf", "file/pdf"]
-        ".doc" -> ["application/msword", "file/doc"]
-        ".xls" -> ["application/vnd.ms-excel", "file/xls"]
-        ".xlsx" -> ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"]
-        ".docx" -> ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file/docx"]
+        "pdf" -> ["application/pdf", "file/pdf"]
+        "doc" -> ["application/msword", "file/doc"]
+        "xls" -> ["application/vnd.ms-excel", "file/xls"]
+        "xlsx" -> ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"]
+        "docx" -> ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file/docx"]
         _ -> ["",""]
       end
 
