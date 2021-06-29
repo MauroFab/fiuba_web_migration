@@ -31,8 +31,7 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-        menu_links.link_title != 'Noticias'
-      ORDER BY menu_links.mlid desc;"
+        menu_links.link_title != 'Noticias';"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -241,7 +240,8 @@ defmodule Utils do
         to_string(plid) <> "
     AND menu_links.hidden = 0
     AND menu_links.link_title != 'Video'
-    AND menu_links.router_path != 'departamento/32/novedades'
+    AND menu_links.link_path != 'node/1406'
+    AND menu_links.link_path != 'departamento/32/novedades'
     ORDER BY menu_links.mlid desc ;"
 
     {:ok, respuesta} = Repo.query(query_sql)
