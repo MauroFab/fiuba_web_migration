@@ -341,6 +341,11 @@ defmodule Utils do
   end
 
   def formatear_link(linea) do
+
+    texto_prelink = String.split(linea, ~r/<a/) |> List.first("")
+
+    texto_postlink = String.split(linea, ~r/<\/a>/) |> List.last("")
+
     porciones = String.split(linea, ~r/>|</, trim: true)
 
     indice =
@@ -381,15 +386,15 @@ defmodule Utils do
 
     link =
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
-        IO.puts("invocar cargar archivo")
+        # IO.puts("invocar cargar archivo")
         url_strapi <> (checkear_link_fiuba(link) |> cargar_pdf(extension))
       else
         link
       end
 
-    IO.puts(link)
+    # IO.puts(link)
 
-    ~s/[#{texto}](#{link})/
+    texto_prelink <> ~s/ [#{texto}](#{link}) / <> texto_postlink
 
     # final = ~s/[#{texto}](#{link})/
     # final
