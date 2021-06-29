@@ -104,11 +104,11 @@ defmodule Migracion_Archivos do
 
             url
           else
-            IO.puts("No subio a Strapi #{url_pdf_fiuba}")
+            IO.puts("Falló POST")
             ""
           end
       else
-        IO.puts("No agarro #{url_pdf_fiuba}")
+        IO.puts("Falló GET")
         ""
       end
 
