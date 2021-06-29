@@ -31,7 +31,7 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-        menu_links.link_title = 'Grado'
+        menu_links.link_title != 'Noticias'
       ORDER BY menu_links.mlid desc;"
 
     {:ok, respuesta} = Repo.query(query_sql)
@@ -98,7 +98,7 @@ defmodule Utils do
         id_menu_lateral \\ nil,
         id_imagen_portada \\ nil
       ) do
-    # :timer.sleep(300)
+    :timer.sleep(300)
 
     pagina = %{
       "nombre" => nombre_pagina,
@@ -124,7 +124,7 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 3,
+        max_attempts: 6,
         wait: 10000,
         include_404s: false,
         retry_unknown_errors: false
@@ -147,7 +147,7 @@ defmodule Utils do
   end
 
   def crear_navegacion(url_navegacion, nombre_navegacion, id_pagina) do
-    # :timer.sleep(300)
+    :timer.sleep(300)
 
     vinculo = %{
       "vinculo" => [
@@ -167,7 +167,7 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 3,
+        max_attempts: 6,
         wait: 10000,
         include_404s: false,
         retry_unknown_errors: false
@@ -181,7 +181,7 @@ defmodule Utils do
   end
 
   def crear_menu_lateral(nombre_menu) do
-    # :timer.sleep(300)
+    :timer.sleep(300)
 
     menu_lateral = %{
       "nombre" => nombre_menu
@@ -194,7 +194,7 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 3,
+        max_attempts: 6,
         wait: 10000,
         include_404s: false,
         retry_unknown_errors: false
@@ -208,7 +208,7 @@ defmodule Utils do
   end
 
   def actualizar_menu_lateral(id_menu_lateral, id_navegaciones) do
-    # :timer.sleep(300)
+    :timer.sleep(300)
 
     links =
       Enum.map(
@@ -387,8 +387,9 @@ defmodule Utils do
       |> String.split(~r/href=/, trim: true)
       |> Enum.at(1)
       |> String.replace([~s{href="}, ~s{"}, ~s{target="_blank"}], "")
+      |> String.trim()
+      |> String.replace(" ", "%20")
 
-    # |> String.replace(" ", "%20")
     # |> String.replace("°", "%C2%BA")
     # |> String.replace("ñ", "%C3%B1")
     # |> String.replace("á", "%C3%A1")
@@ -401,7 +402,7 @@ defmodule Utils do
 
     # if String.match?(link, ~r/.[.]pdf|.[.]xml|.[.]xls/) do
 
-    link = String.replace(link, ~r/[ ]\Z/, "")
+    # link = String.replace(link, ~r/[ ]\Z/, "")
 
     extension = link |> String.split(".") |> List.last()
 
@@ -412,6 +413,7 @@ defmodule Utils do
         IO.puts("invocar cargar archivo")
 
         if link |> checkear_link_valido do
+          IO.puts(link)
           url_strapi <> (parsear_link_fiuba(link) |> cargar_pdf(extension))
           # parsear_link_fiuba(link)
         else
