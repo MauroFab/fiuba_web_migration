@@ -241,7 +241,8 @@ defmodule Utils do
     WHERE menu_links.plid = " <>
         to_string(plid) <> "
     AND menu_links.hidden = 0
-    AND menu_links.link_title != 'Video' ;"
+    AND menu_links.link_title != 'Video'
+    ORDER BY menu_links.mlid desc ;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows

@@ -94,11 +94,18 @@ defmodule Migracion_Archivos do
           retry_unknown_errors: false
           )
 
-      response_body = response.body
-      {:ok, response_body_map} = JSON.decode(response_body)
-      {:ok, url} = Map.fetch(response_body_map |> Enum.at(0), "url")
+      if (response.status_code == 200) do
 
-      url
+        response_body = response.body
+        {:ok, response_body_map} = JSON.decode(response_body)
+        {:ok, url} = Map.fetch(response_body_map |> Enum.at(0), "url")
+
+        url
+
+      else
+        ""
+      end
+
     else
       ""
     end
