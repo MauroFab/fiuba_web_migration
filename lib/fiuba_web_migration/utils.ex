@@ -31,7 +31,7 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-        menu_links.link_title = 'Grado'
+        menu_links.link_title = 'Institucional'
 
       ORDER BY menu_links.mlid desc;"
 
@@ -124,6 +124,12 @@ defmodule Utils do
         JSON.encode!(pagina),
         [{"Content-type", "application/json"}]
       )
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 40,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
 
     response_body = response_pagina.body
     {:ok, response_body_map} = JSON.decode(response_body)
@@ -161,6 +167,12 @@ defmodule Utils do
         JSON.encode!(vinculo),
         [{"Content-type", "application/json"}]
       )
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 40,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
 
     response_body = response_navegacion.body
     {:ok, response_body_map} = JSON.decode(response_body)
@@ -181,6 +193,12 @@ defmodule Utils do
         "https://testing.cms.fiuba.lambdaclass.com/menu-laterals",
         JSON.encode!(menu_lateral),
         [{"Content-type", "application/json"}]
+      )
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 40,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
       )
 
     response_body = response_menu_laterals.body
@@ -213,14 +231,15 @@ defmodule Utils do
   def cargar_hijos(plid) do
     # video = ~s{a:2:\{s:9:"node_type";s:5:"video";s:5:"alter";b:1;\}}
 
-    query_sql = "SELECT
+    query_sql =
+      "SELECT
     menu_links.mlid AS mlid,
     menu_links.link_title AS titulo,
     menu_links.link_path AS Link_path,
     menu_links.has_children AS tiene_hijos
     FROM menu_links
-    WHERE menu_links.plid = "
-    <> to_string(plid) <> "
+    WHERE menu_links.plid = " <>
+        to_string(plid) <> "
     AND menu_links.hidden = 0
     AND menu_links.link_title != 'Video' ;"
 
@@ -330,7 +349,7 @@ defmodule Utils do
     actualizar_menu_lateral(id_menu_lateral, ids_navs)
   end
 
-  def checkear_link_fiuba(link) do
+  def parsear_link_fiuba(link) do
     url_fiuba = "http://fi.uba.ar"
 
     if(String.split(link, "/", trim: true) |> Enum.at(0) |> String.contains?("archivos")) do
@@ -341,10 +360,9 @@ defmodule Utils do
   end
 
   def formatear_link(linea) do
-
     texto_prelink = String.split(linea, ~r/<a/) |> List.first("")
 
-    texto_postlink = String.split(linea, ~r/<\/a>/) |> List.last("")
+    # texto_postlink = String.split(linea, ~r/<\/a>/) |> List.last("")
 
     porciones = String.split(linea, ~r/>|</, trim: true)
 
@@ -386,15 +404,18 @@ defmodule Utils do
 
     link =
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
-        # IO.puts("invocar cargar archivo")
-        url_strapi <> (checkear_link_fiuba(link) |> cargar_pdf(extension))
+         IO.puts("invocar cargar archivo")
+        # url_strapi <> (parsear_link_fiuba(link) |> cargar_pdf(extension))
+        parsear_link_fiuba(link)
       else
         link
       end
 
     # IO.puts(link)
 
-    texto_prelink <> ~s/ [#{texto}](#{link}) / <> texto_postlink
+    texto_prelink <> ~s/ [#{texto}](#{link}) /
+
+    # texto_prelink <> ~s/ [#{texto}](#{link}) / <> texto_postlink
 
     # final = ~s/[#{texto}](#{link})/
     # final
