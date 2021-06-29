@@ -219,7 +219,10 @@ defmodule Utils do
     menu_links.link_path AS Link_path,
     menu_links.has_children AS tiene_hijos
     FROM menu_links
-    WHERE menu_links.plid = " <> to_string(plid) <> " AND menu_links.hidden = 0 ;"
+    WHERE menu_links.plid = "
+    <> to_string(plid) <> "
+    AND menu_links.hidden = 0
+    AND menu_links.link_title != 'Video' ;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
