@@ -28,7 +28,7 @@ defmodule Migracion_Archivos do
 
   def cargar_pdf( url_pdf_fiuba, extension) do
 
-    :timer.sleep(300)
+    # :timer.sleep(300)
 
     {:ok, result} = HTTPoison.get(url_pdf_fiuba)
       |> HTTPoison.Retry.autoretry(
@@ -37,64 +37,71 @@ defmodule Migracion_Archivos do
         include_404s: false,
         retry_unknown_errors: false
       )
-    archivo = result.body
-    headers = [{"Content-Type", "multipart/form-data"}]
-    options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
+
+    if (result.status_code == 200) do
+      archivo = result.body
+      headers = [{"Content-Type", "multipart/form-data"}]
+      options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
 
 
-    titulo_archivo =
-      url_pdf_fiuba
-      |> String.split("/")
-      |> List.last()
-      |> String.replace("%20", "")
-      |> String.replace("%C2%BA", "°")
-      |> String.replace("%C3%B1", "ñ")
-      |> String.replace("%C3%A1", "á")
-      |> String.replace("%C3%81", "Á")
-      |> String.replace("%C3%A9", "é")
-      |> String.replace("%C3%AD", "í")
-      |> String.replace("%C3%8D", "Í")
-      |> String.replace("%C3%B3", "ó")
-      |> String.replace("%C3%93", "Ó")
+      titulo_archivo =
+        url_pdf_fiuba
+        |> String.split("/")
+        |> List.last()
+        |> String.replace("%20", "_")
+        |> String.replace("%C2%BA", "")
+        |> String.replace("%28", "")
+        |> String.replace("%29", "")
+        |> String.replace("%C3%B1", "n")
+        |> String.replace("%C3%A1", "a")
+        |> String.replace("%C3%81", "A")
+        |> String.replace("%C3%A9", "e")
+        |> String.replace("%C3%AD", "i")
+        |> String.replace("%C3%8D", "I")
+        |> String.replace("%C3%B3", "o")
+        |> String.replace("%C3%93", "O")
 
 
-    extension_types =
-      case extension do
-        "pdf" -> ["application/pdf", "file/pdf"]
-        "doc" -> ["application/msword", "file/doc"]
-        "xls" -> ["application/vnd.ms-excel", "file/xls"]
-        "xlsx" -> ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"]
-        "docx" -> ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file/docx"]
-        _ -> ["",""]
-      end
+      extension_types =
+        case extension do
+          "pdf" -> ["application/pdf", "file/pdf"]
+          "doc" -> ["application/msword", "file/doc"]
+          "xls" -> ["application/vnd.ms-excel", "file/xls"]
+          "xlsx" -> ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "file/xlsx"]
+          "docx" -> ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file/docx"]
+          _ -> ["",""]
+        end
 
-    content_type = extension_types |> Enum.at(0)
-    type = extension_types |> Enum.at(1)
+      content_type = extension_types |> Enum.at(0)
+      type = extension_types |> Enum.at(1)
 
-    {:ok, response} = HTTPoison.request(
-        :post,
-        "https://testing.cms.fiuba.lambdaclass.com/upload",
-        {:multipart,
-          [
-          {"file", archivo, {"form-data", [name: "files", filename: titulo_archivo ]},
-          [{"Content-Type", content_type }]},
-          {"type", type}
-          ]},
-          headers,
-          options
-      )
-      |> HTTPoison.Retry.autoretry(
-        max_attempts: 20,
-        wait: 20000,
-        include_404s: false,
-        retry_unknown_errors: false
-      )
+      {:ok, response} = HTTPoison.request(
+          :post,
+          "https://testing.cms.fiuba.lambdaclass.com/upload",
+          {:multipart,
+            [
+            {"file", archivo, {"form-data", [name: "files", filename: titulo_archivo ]},
+            [{"Content-Type", content_type }]},
+            {"type", type}
+            ]},
+            headers,
+            options
+        )
+          |> HTTPoison.Retry.autoretry(
+          max_attempts: 20,
+          wait: 20000,
+          include_404s: false,
+          retry_unknown_errors: false
+          )
 
       response_body = response.body
       {:ok, response_body_map} = JSON.decode(response_body)
       {:ok, url} = Map.fetch(response_body_map |> Enum.at(0), "url")
 
       url
+    else
+      ""
+    end
 
   end
 
