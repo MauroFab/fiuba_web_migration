@@ -410,7 +410,6 @@ defmodule Utils do
 
     link =
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
-        IO.puts("invocar cargar archivo")
 
         if link |> checkear_link_valido do
           IO.puts(link)
@@ -422,8 +421,6 @@ defmodule Utils do
       else
         link
       end
-
-    # IO.puts(link)
 
     texto_prelink <> ~s/ [#{texto}](#{link}) /
 
