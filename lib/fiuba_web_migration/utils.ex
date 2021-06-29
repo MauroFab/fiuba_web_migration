@@ -12,7 +12,7 @@ defmodule Utils do
     # Biblioteca
     # Grado
     # Posgrado
-    # Investigación MUERE
+    # Investigación
     # Bienestar
     # Institucional
     # Ingresantes
@@ -31,7 +31,7 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-        menu_links.link_title = 'Institucional'
+        menu_links.link_title = 'Investigacion'
 
       ORDER BY menu_links.mlid desc;"
 
@@ -99,7 +99,7 @@ defmodule Utils do
         id_menu_lateral \\ nil,
         id_imagen_portada \\ nil
       ) do
-    :timer.sleep(300)
+    # :timer.sleep(300)
 
     pagina = %{
       "nombre" => nombre_pagina,
@@ -148,7 +148,7 @@ defmodule Utils do
   end
 
   def crear_navegacion(url_navegacion, nombre_navegacion, id_pagina) do
-    :timer.sleep(300)
+    # :timer.sleep(300)
 
     vinculo = %{
       "vinculo" => [
@@ -182,7 +182,7 @@ defmodule Utils do
   end
 
   def crear_menu_lateral(nombre_menu) do
-    :timer.sleep(300)
+    # :timer.sleep(300)
 
     menu_lateral = %{
       "nombre" => nombre_menu
@@ -209,7 +209,7 @@ defmodule Utils do
   end
 
   def actualizar_menu_lateral(id_menu_lateral, id_navegaciones) do
-    :timer.sleep(300)
+    # :timer.sleep(300)
 
     links =
       Enum.map(
@@ -312,7 +312,7 @@ defmodule Utils do
         Enum.map(
           hijos,
           fn hijo ->
-            :timer.sleep(500)
+            # :timer.sleep(500)
             busqueda_recursiva(hijo, url_nav, id_menu_lateral, id_imagen_portada)
           end
         )
@@ -341,13 +341,19 @@ defmodule Utils do
       Enum.map(
         hijos,
         fn hijo ->
-          :timer.sleep(1000)
+          # :timer.sleep(1000)
           busqueda_recursiva(hijo, url_pagina, id_menu_lateral, id_portada_paginas)
         end
       )
 
     actualizar_menu_lateral(id_menu_lateral, ids_navs)
   end
+
+
+  def checkear_link_valido(link) do
+    (String.contains?(link,"/archivos/") or (String.contains?(link, "/sites/default/files/")))
+  end
+
 
   def parsear_link_fiuba(link) do
     url_fiuba = "http://fi.uba.ar"
@@ -405,8 +411,10 @@ defmodule Utils do
     link =
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
          IO.puts("invocar cargar archivo")
-        # url_strapi <> (parsear_link_fiuba(link) |> cargar_pdf(extension))
-        parsear_link_fiuba(link)
+         if ( link |> checkear_link_valido ) do
+          url_strapi <> (parsear_link_fiuba(link) |> cargar_pdf(extension))
+          parsear_link_fiuba(link)
+         end
       else
         link
       end
