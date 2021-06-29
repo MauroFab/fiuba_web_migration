@@ -31,10 +31,7 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-        menu_links.link_title != 'Investigacion' AND
-        menu_links.link_title != 'Institucional' AND
-        menu_links.link_title != 'Noticias'
-
+        menu_links.link_title = 'Grado'
       ORDER BY menu_links.mlid desc;"
 
     {:ok, respuesta} = Repo.query(query_sql)
@@ -416,8 +413,10 @@ defmodule Utils do
          IO.puts("invocar cargar archivo")
          if ( link |> checkear_link_valido ) do
           url_strapi <> (parsear_link_fiuba(link) |> cargar_pdf(extension))
-          parsear_link_fiuba(link)
-         end
+          # parsear_link_fiuba(link)
+        else
+          link
+        end
       else
         link
       end

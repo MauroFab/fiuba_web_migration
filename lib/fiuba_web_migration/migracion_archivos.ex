@@ -38,77 +38,79 @@ defmodule Migracion_Archivos do
         retry_unknown_errors: false
       )
 
-    if (result.status_code == 200) do
-      archivo = result.body
-      headers = [{"Content-Type", "multipart/form-data"}]
-      options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
+    link_nuevo =
+      if (result.status_code == 200) do
+        archivo = result.body
+        headers = [{"Content-Type", "multipart/form-data"}]
+        options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
 
 
-      titulo_archivo =
-        url_pdf_fiuba
-        |> String.split("/")
-        |> List.last()
-        |> String.replace("%20", "_")
-        |> String.replace("%C2%BA", "")
-        |> String.replace("%28", "")
-        |> String.replace("%29", "")
-        |> String.replace("%C3%B1", "n")
-        |> String.replace("%C3%A1", "a")
-        |> String.replace("%C3%81", "A")
-        |> String.replace("%C3%A9", "e")
-        |> String.replace("%C3%AD", "i")
-        |> String.replace("%C3%8D", "I")
-        |> String.replace("%C3%B3", "o")
-        |> String.replace("%C3%93", "O")
+        titulo_archivo =
+          url_pdf_fiuba
+          |> String.split("/")
+          |> List.last()
+          |> String.replace("%20", "_")
+          |> String.replace("%C2%BA", "")
+          |> String.replace("%28", "")
+          |> String.replace("%29", "")
+          |> String.replace("%C3%B1", "n")
+          |> String.replace("%C3%A1", "a")
+          |> String.replace("%C3%81", "A")
+          |> String.replace("%C3%A9", "e")
+          |> String.replace("%C3%AD", "i")
+          |> String.replace("%C3%8D", "I")
+          |> String.replace("%C3%B3", "o")
+          |> String.replace("%C3%93", "O")
 
 
-      extension_types =
-        case extension do
-          "pdf" -> ["application/pdf", "file/pdf"]
-          "doc" -> ["application/msword", "file/doc"]
-          "xls" -> ["application/vnd.ms-excel", "file/xls"]
-          "xlsx" -> ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "file/xlsx"]
-          "docx" -> ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file/docx"]
-          _ -> ["",""]
-        end
+        extension_types =
+          case extension do
+            "pdf" -> ["application/pdf", "file/pdf"]
+            "doc" -> ["application/msword", "file/doc"]
+            "xls" -> ["application/vnd.ms-excel", "file/xls"]
+            "xlsx" -> ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "file/xlsx"]
+            "docx" -> ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file/docx"]
+            _ -> ["",""]
+          end
 
-      content_type = extension_types |> Enum.at(0)
-      type = extension_types |> Enum.at(1)
+        content_type = extension_types |> Enum.at(0)
+        type = extension_types |> Enum.at(1)
 
-      {:ok, response} = HTTPoison.request(
-          :post,
-          "https://testing.cms.fiuba.lambdaclass.com/upload",
-          {:multipart,
-            [
-            {"file", archivo, {"form-data", [name: "files", filename: titulo_archivo ]},
-            [{"Content-Type", content_type }]},
-            {"type", type}
-            ]},
-            headers,
-            options
-        )
-          |> HTTPoison.Retry.autoretry(
-          max_attempts: 3,
-          wait: 10000,
-          include_404s: false,
-          retry_unknown_errors: false
+        {:ok, response} = HTTPoison.request(
+            :post,
+            "https://testing.cms.fiuba.lambdaclass.com/upload",
+            {:multipart,
+              [
+              {"file", archivo, {"form-data", [name: "files", filename: titulo_archivo ]},
+              [{"Content-Type", content_type }]},
+              {"type", type}
+              ]},
+              headers,
+              options
           )
+            |> HTTPoison.Retry.autoretry(
+            max_attempts: 3,
+            wait: 10000,
+            include_404s: false,
+            retry_unknown_errors: false
+            )
 
-      if (response.status_code == 200) do
+        link_guardado_strapi =
+          if (response.status_code == 200) do
 
-        response_body = response.body
-        {:ok, response_body_map} = JSON.decode(response_body)
-        {:ok, url} = Map.fetch(response_body_map |> Enum.at(0), "url")
+            response_body = response.body
+            {:ok, response_body_map} = JSON.decode(response_body)
+            {:ok, url} = Map.fetch(response_body_map |> Enum.at(0), "url")
 
-        url
-
+            url
+          else
+            IO.puts("No subio a Strapi #{url_pdf_fiuba}")
+            ""
+          end
       else
+        IO.puts("No agarro #{url_pdf_fiuba}")
         ""
       end
-
-    else
-      ""
-    end
 
   end
 
