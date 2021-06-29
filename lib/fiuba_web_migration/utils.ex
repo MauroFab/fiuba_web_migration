@@ -241,6 +241,7 @@ defmodule Utils do
         to_string(plid) <> "
     AND menu_links.hidden = 0
     AND menu_links.link_title != 'Video'
+    AND menu_links.router_path != 'departamento/32/novedades'
     ORDER BY menu_links.mlid desc ;"
 
     {:ok, respuesta} = Repo.query(query_sql)
@@ -349,11 +350,9 @@ defmodule Utils do
     actualizar_menu_lateral(id_menu_lateral, ids_navs)
   end
 
-
   def checkear_link_valido(link) do
-    (String.contains?(link,"/archivos/") or (String.contains?(link, "/sites/default/files/")))
+    String.contains?(link, "/archivos/") or String.contains?(link, "/sites/default/files/")
   end
-
 
   def parsear_link_fiuba(link) do
     url_fiuba = "http://fi.uba.ar"
@@ -410,8 +409,9 @@ defmodule Utils do
 
     link =
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
-         IO.puts("invocar cargar archivo")
-         if ( link |> checkear_link_valido ) do
+        IO.puts("invocar cargar archivo")
+
+        if link |> checkear_link_valido do
           url_strapi <> (parsear_link_fiuba(link) |> cargar_pdf(extension))
           # parsear_link_fiuba(link)
         else
