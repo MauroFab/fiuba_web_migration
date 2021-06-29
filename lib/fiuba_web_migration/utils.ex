@@ -31,7 +31,9 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-        menu_links.link_title = 'Investigacion'
+        menu_links.link_title != 'Investigacion' AND
+        menu_links.link_title != 'Institucional' AND
+        menu_links.link_title != 'Noticias'
 
       ORDER BY menu_links.mlid desc;"
 
@@ -125,8 +127,8 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 40,
-        wait: 20000,
+        max_attempts: 3,
+        wait: 10000,
         include_404s: false,
         retry_unknown_errors: false
       )
@@ -168,8 +170,8 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 40,
-        wait: 20000,
+        max_attempts: 3,
+        wait: 10000,
         include_404s: false,
         retry_unknown_errors: false
       )
@@ -195,8 +197,8 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 40,
-        wait: 20000,
+        max_attempts: 3,
+        wait: 10000,
         include_404s: false,
         retry_unknown_errors: false
       )

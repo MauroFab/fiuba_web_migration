@@ -32,8 +32,8 @@ defmodule Migracion_Archivos do
 
     {:ok, result} = HTTPoison.get(url_pdf_fiuba)
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 40,
-        wait: 20000,
+        max_attempts: 3,
+        wait: 10000,
         include_404s: false,
         retry_unknown_errors: false
       )
@@ -88,8 +88,8 @@ defmodule Migracion_Archivos do
             options
         )
           |> HTTPoison.Retry.autoretry(
-          max_attempts: 20,
-          wait: 20000,
+          max_attempts: 3,
+          wait: 10000,
           include_404s: false,
           retry_unknown_errors: false
           )
