@@ -31,7 +31,7 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-        menu_links.link_title != 'Noticias'
+        menu_links.link_title = 'Grado'
 
       ORDER BY menu_links.mlid desc;"
 
@@ -211,13 +211,15 @@ defmodule Utils do
   end
 
   def cargar_hijos(plid) do
+    # video = ~s{a:2:\{s:9:"node_type";s:5:"video";s:5:"alter";b:1;\}}
+
     query_sql = "SELECT
     menu_links.mlid AS mlid,
     menu_links.link_title AS titulo,
     menu_links.link_path AS Link_path,
     menu_links.has_children AS tiene_hijos
     FROM menu_links
-    WHERE menu_links.plid = " <> to_string(plid) <> " ;"
+    WHERE menu_links.plid = " <> to_string(plid) <> " AND menu_links.hidden = 0 ;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -326,14 +328,13 @@ defmodule Utils do
   end
 
   def checkear_link_fiuba(link) do
+    url_fiuba = "http://fi.uba.ar"
+
     if(String.split(link, "/", trim: true) |> Enum.at(0) |> String.contains?("archivos")) do
-      "http://fi.uba.ar" <> link
+      url_fiuba <> link
     else
-      link
+      String.replace(link, "sites/default/files", "archivos")
     end
-
-    String.replace(link, "sites/default/files", "archivos")
-
   end
 
   def formatear_link(linea) do
@@ -355,34 +356,35 @@ defmodule Utils do
       |> String.split(~r/href=/, trim: true)
       |> Enum.at(1)
       |> String.replace([~s{href="}, ~s{"}, ~s{target="_blank"}], "")
-      |> String.replace(" ", "%20")
-      |> String.replace("°", "%C2%BA")
-      |> String.replace("ñ", "%C3%B1")
-      |> String.replace("á", "%C3%A1")
-      |> String.replace("Á", "%C3%81")
-      |> String.replace("é", "%C3%A9")
-      |> String.replace("í", "%C3%AD")
-      |> String.replace("Í", "%C3%8D")
-      |> String.replace("ó", "%C3%B3")
-      |> String.replace("Ó", "%C3%93")
+
+    # |> String.replace(" ", "%20")
+    # |> String.replace("°", "%C2%BA")
+    # |> String.replace("ñ", "%C3%B1")
+    # |> String.replace("á", "%C3%A1")
+    # |> String.replace("Á", "%C3%81")
+    # |> String.replace("é", "%C3%A9")
+    # |> String.replace("í", "%C3%AD")
+    # |> String.replace("Í", "%C3%8D")
+    # |> String.replace("ó", "%C3%B3")
+    # |> String.replace("Ó", "%C3%93")
 
     # if String.match?(link, ~r/.[.]pdf|.[.]xml|.[.]xls/) do
 
+    link = String.replace(link, ~r/[ ]\Z/, "")
+
     extension = link |> String.split(".") |> List.last()
+
+    url_strapi = "https://testing.cms.fiuba.lambdaclass.com"
 
     link =
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
-        IO.puts(link)
-
-        checkear_link_fiuba(link) |> cargar_pdf(extension)
-
-        # IO.puts("invocar cargar archivo")
-        # IO.puts(String.replace(link, "http://fi.uba.ar", "http://strapi"))
+        IO.puts("invocar cargar archivo")
+        url_strapi <> (checkear_link_fiuba(link) |> cargar_pdf(extension))
       else
         link
       end
 
-    # IO.puts(link)
+    IO.puts(link)
 
     ~s/[#{texto}](#{link})/
 
