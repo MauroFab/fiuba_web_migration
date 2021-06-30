@@ -357,13 +357,10 @@ defmodule Utils do
   end
 
   def parsear_link_fiuba(link) do
-    url_fiuba = "http://fi.uba.ar"
 
-    if(String.split(link, "/", trim: true) |> Enum.at(0) |> String.contains?("archivos")) do
-      url_fiuba <> link
-    else
-      String.replace(link, "sites/default/files", "archivos")
-    end
+    nuevo_link = link |> String.split("/", trim: true) |> List.last()
+
+    "http://fi.uba.ar/archivos/" <> nuevo_link
   end
 
   def formatear_link(linea) do
