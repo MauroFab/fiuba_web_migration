@@ -242,7 +242,6 @@ defmodule Utils do
     AND menu_links.hidden = 0
     AND menu_links.link_title != 'Video'
     AND menu_links.link_path != 'node/1406'
-    AND menu_links.link_path != 'node/58'
     AND menu_links.link_path != 'departamento/32/novedades'
     ORDER BY menu_links.mlid desc ;"
 
