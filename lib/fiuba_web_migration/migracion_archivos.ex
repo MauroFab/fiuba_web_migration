@@ -26,100 +26,102 @@ defmodule Migracion_Archivos do
   def cargar_pdf(url_pdf_fiuba, extension) do
     # :timer.sleep(300)
 
-    {:ok, result} =
-      HTTPoison.get(url_pdf_fiuba, [], ssl: [{:versions, [:"tlsv1.2"]}])
-      |> HTTPoison.Retry.autoretry(
-        max_attempts: 3,
-        wait: 10000,
-        include_404s: false,
-        retry_unknown_errors: false
-      )
 
-    link_nuevo =
-      if result.status_code == 200 do
-        archivo = result.body
-        headers = [{"Content-Type", "multipart/form-data"}]
-        options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
+    case HTTPoison.get(url_pdf_fiuba) do
+      {:ok, result} ->
 
-        titulo_archivo =
-          url_pdf_fiuba
-          |> String.split("/")
-          |> List.last()
-          |> String.replace("%20", "_")
-          |> String.replace("%C2%BA", "")
-          |> String.replace("%28", "")
-          |> String.replace("%29", "")
-          |> String.replace("%C3%B1", "n")
-          |> String.replace("%C3%A1", "a")
-          |> String.replace("%C3%81", "A")
-          |> String.replace("%C3%A9", "e")
-          |> String.replace("%C3%AD", "i")
-          |> String.replace("%C3%8D", "I")
-          |> String.replace("%C3%B3", "o")
-          |> String.replace("%C3%93", "O")
+        link_nuevo =
+          if result.status_code == 200 do
+            archivo = result.body
+            headers = [{"Content-Type", "multipart/form-data"}]
+            options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
 
-        extension_types =
-          case extension do
-            "pdf" ->
-              ["application/pdf", "file/pdf"]
+            titulo_archivo =
+              url_pdf_fiuba
+              |> String.split("/")
+              |> List.last()
+              |> String.replace("%20", "_")
+              |> String.replace("%C2%BA", "")
+              |> String.replace("%28", "")
+              |> String.replace("%29", "")
+              |> String.replace("%C3%B1", "n")
+              |> String.replace("%C3%A1", "a")
+              |> String.replace("%C3%81", "A")
+              |> String.replace("%C3%A9", "e")
+              |> String.replace("%C3%AD", "i")
+              |> String.replace("%C3%8D", "I")
+              |> String.replace("%C3%B3", "o")
+              |> String.replace("%C3%93", "O")
 
-            "doc" ->
-              ["application/msword", "file/doc"]
+            extension_types =
+              case extension do
+                "pdf" ->
+                  ["application/pdf", "file/pdf"]
 
-            "xls" ->
-              ["application/vnd.ms-excel", "file/xls"]
+                "doc" ->
+                  ["application/msword", "file/doc"]
 
-            "xlsx" ->
-              ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "file/xlsx"]
+                "xls" ->
+                  ["application/vnd.ms-excel", "file/xls"]
 
-            "docx" ->
-              [
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "file/docx"
-              ]
+                "xlsx" ->
+                  ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "file/xlsx"]
 
-            _ ->
-              ["", ""]
-          end
+                "docx" ->
+                  [
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "file/docx"
+                  ]
 
-        content_type = extension_types |> Enum.at(0)
-        type = extension_types |> Enum.at(1)
+                _ ->
+                  ["", ""]
+              end
 
-        {:ok, response} =
-          HTTPoison.request(
-            :post,
-            "https://testing.cms.fiuba.lambdaclass.com/upload",
-            {:multipart,
-             [
-               {"file", archivo, {"form-data", [name: "files", filename: titulo_archivo]},
-                [{"Content-Type", content_type}]},
-               {"type", type}
-             ]},
-            headers,
-            options
-          )
-          |> HTTPoison.Retry.autoretry(
-            max_attempts: 3,
-            wait: 10000,
-            include_404s: false,
-            retry_unknown_errors: false
-          )
+            content_type = extension_types |> Enum.at(0)
+            type = extension_types |> Enum.at(1)
 
-        link_guardado_strapi =
-          if response.status_code == 200 do
-            response_body = response.body
-            {:ok, response_body_map} = JSON.decode(response_body)
-            {:ok, url} = Map.fetch(response_body_map |> Enum.at(0), "url")
+            {:ok, response} =
+              HTTPoison.request(
+                :post,
+                "https://testing.cms.fiuba.lambdaclass.com/upload",
+                {:multipart,
+                 [
+                   {"file", archivo, {"form-data", [name: "files", filename: titulo_archivo]},
+                    [{"Content-Type", content_type}]},
+                   {"type", type}
+                 ]},
+                headers,
+                options
+              )
+              |> HTTPoison.Retry.autoretry(
+                max_attempts: 3,
+                wait: 10000,
+                include_404s: false,
+                retry_unknown_errors: false
+              )
 
-            url
+            link_guardado_strapi =
+              if response.status_code == 200 do
+                response_body = response.body
+                {:ok, response_body_map} = JSON.decode(response_body)
+                {:ok, url} = Map.fetch(response_body_map |> Enum.at(0), "url")
+
+                url
+              else
+                IO.puts("Falló POST")
+                ""
+              end
           else
-            IO.puts("Falló POST")
+            IO.puts("Falló GET")
             ""
           end
-      else
-        IO.puts("Falló GET")
-        ""
-      end
+
+      {:error, respuesta} ->
+        IO.puts(":error HTTPoison")
+        url_pdf_fiuba
+    end
+
+
   end
 
   # def url_pdf_parser(url_pdf) do
