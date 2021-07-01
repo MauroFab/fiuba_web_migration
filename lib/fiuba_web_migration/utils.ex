@@ -101,7 +101,7 @@ defmodule Utils do
 
     pagina = %{
       "nombre" => nombre_pagina,
-      "portada" => id_imagen_portada,
+      # "portada" => id_imagen_portada,
       "menu_lateral" => id_menu_lateral,
       "componentes" => [
         %{
