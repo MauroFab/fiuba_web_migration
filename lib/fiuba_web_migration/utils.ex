@@ -123,8 +123,8 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 6,
-        wait: 10000,
+        max_attempts: 20,
+        wait: 15000,
         include_404s: false,
         retry_unknown_errors: false
       )
@@ -166,8 +166,8 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 6,
-        wait: 10000,
+        max_attempts: 20,
+        wait: 15000,
         include_404s: false,
         retry_unknown_errors: false
       )
@@ -193,8 +193,8 @@ defmodule Utils do
         [{"Content-type", "application/json"}]
       )
       |> HTTPoison.Retry.autoretry(
-        max_attempts: 6,
-        wait: 10000,
+        max_attempts: 20,
+        wait: 15000,
         include_404s: false,
         retry_unknown_errors: false
       )
