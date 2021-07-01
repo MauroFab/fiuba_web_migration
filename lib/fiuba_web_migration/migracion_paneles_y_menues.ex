@@ -103,6 +103,7 @@ defmodule Migracion_paneles_y_menues do
     # 1282,Biblioteca, /biblioteca LISTO
     # 2473,English website LISTO
     # 2602,Graduados, /graduados LISTO
+
     # 2827,Revista .ing
 
     # 1712,Orientación Vocacional y Educativa (institucional/videoteca/inclusion, genero, bienestar y articulacion social / orientacion vocacional y educativa)
@@ -198,62 +199,62 @@ defmodule Migracion_paneles_y_menues do
             "/posgrado/doctorado"
           ]
         ],
-        ["/investigacion",
-          [
-            "/investigacion/areas-de-investigacion/ambiente",
-            "/investigacion/areas-de-investigacion/arqueometria",
-            "/investigacion/areas-de-investigacion/bioingenieria",
-            "/investigacion/areas-de-investigacion/bioprinting",
-            "/investigacion/areas-de-investigacion/comunicaciones",
-            "/investigacion/areas-de-investigacion/diseno-y-desarrollo-de-productos",
-            "/investigacion/areas-de-investigacion/electronica",
-            "/investigacion/areas-de-investigacion/energia",
-            "/investigacion/areas-de-investigacion/ensenanza",
-            "/investigacion/areas-de-investigacion/fluidos",
-            "/investigacion/areas-de-investigacion/geodesiageofisica",
-            "/investigacion/areas-de-investigacion/hidrodinamica-naval",
-            "/investigacion/areas-de-investigacion/hidrologiahidraulica",
-            "/investigacion/areas-de-investigacion/informatica",
-            "/investigacion/areas-de-investigacion/matematica-aplicada",
-            "/investigacion/areas-de-investigacion/materiales-y-estructuras-para-ingenieria-civil",
-            "/investigacion/areas-de-investigacion/materiales-y-nanotecnologia",
-            "/investigacion/areas-de-investigacion/mecanica-y-robotica",
-            "/investigacion/areas-de-investigacion/medicion-y-control",
-            "/investigacion/areas-de-investigacion/metodos-y-modelos-aplicados-a-la-gestion",
-            "/investigacion/areas-de-investigacion/optica-y-laser",
-            "/investigacion/areas-de-investigacion/procesos-quimicos",
-            "/investigacion/areas-de-investigacion/quimica",
-            "/investigacion/areas-de-investigacion/tecnologia-de-alimentos"
-          ]
-        ],
-        ["/investigacion/areas-de-investigacion",
-          [
-            "/investigacion/areas-de-investigacion/ambiente",
-            "/investigacion/areas-de-investigacion/arqueometria",
-            "/investigacion/areas-de-investigacion/bioingenieria",
-            "/investigacion/areas-de-investigacion/bioprinting",
-            "/investigacion/areas-de-investigacion/comunicaciones",
-            "/investigacion/areas-de-investigacion/diseno-y-desarrollo-de-productos",
-            "/investigacion/areas-de-investigacion/electronica",
-            "/investigacion/areas-de-investigacion/energia",
-            "/investigacion/areas-de-investigacion/ensenanza",
-            "/investigacion/areas-de-investigacion/fluidos",
-            "/investigacion/areas-de-investigacion/geodesiageofisica",
-            "/investigacion/areas-de-investigacion/hidrodinamica-naval",
-            "/investigacion/areas-de-investigacion/hidrologiahidraulica",
-            "/investigacion/areas-de-investigacion/informatica",
-            "/investigacion/areas-de-investigacion/matematica-aplicada",
-            "/investigacion/areas-de-investigacion/materiales-y-estructuras-para-ingenieria-civil",
-            "/investigacion/areas-de-investigacion/materiales-y-nanotecnologia",
-            "/investigacion/areas-de-investigacion/mecanica-y-robotica",
-            "/investigacion/areas-de-investigacion/medicion-y-control",
-            "/investigacion/areas-de-investigacion/metodos-y-modelos-aplicados-a-la-gestion",
-            "/investigacion/areas-de-investigacion/optica-y-laser",
-            "/investigacion/areas-de-investigacion/procesos-quimicos",
-            "/investigacion/areas-de-investigacion/quimica",
-            "/investigacion/areas-de-investigacion/tecnologia-de-alimentos"
-          ]
-        ],
+        # ["/investigacion",
+        #   [
+        #     "/investigacion/areas-de-investigacion/ambiente",
+        #     "/investigacion/areas-de-investigacion/arqueometria",
+        #     "/investigacion/areas-de-investigacion/bioingenieria",
+        #     "/investigacion/areas-de-investigacion/bioprinting",
+        #     "/investigacion/areas-de-investigacion/comunicaciones",
+        #     "/investigacion/areas-de-investigacion/diseno-y-desarrollo-de-productos",
+        #     "/investigacion/areas-de-investigacion/electronica",
+        #     "/investigacion/areas-de-investigacion/energia",
+        #     "/investigacion/areas-de-investigacion/ensenanza",
+        #     "/investigacion/areas-de-investigacion/fluidos",
+        #     "/investigacion/areas-de-investigacion/geodesiageofisica",
+        #     "/investigacion/areas-de-investigacion/hidrodinamica-naval",
+        #     "/investigacion/areas-de-investigacion/hidrologiahidraulica",
+        #     "/investigacion/areas-de-investigacion/informatica",
+        #     "/investigacion/areas-de-investigacion/matematica-aplicada",
+        #     "/investigacion/areas-de-investigacion/materiales-y-estructuras-para-ingenieria-civil",
+        #     "/investigacion/areas-de-investigacion/materiales-y-nanotecnologia",
+        #     "/investigacion/areas-de-investigacion/mecanica-y-robotica",
+        #     "/investigacion/areas-de-investigacion/medicion-y-control",
+        #     "/investigacion/areas-de-investigacion/metodos-y-modelos-aplicados-a-la-gestion",
+        #     "/investigacion/areas-de-investigacion/optica-y-laser",
+        #     "/investigacion/areas-de-investigacion/procesos-quimicos",
+        #     "/investigacion/areas-de-investigacion/quimica",
+        #     "/investigacion/areas-de-investigacion/tecnologia-de-alimentos"
+        #   ]
+        # ],
+        # ["/investigacion/areas-de-investigacion",
+        #   [
+        #     "/investigacion/areas-de-investigacion/ambiente",
+        #     "/investigacion/areas-de-investigacion/arqueometria",
+        #     "/investigacion/areas-de-investigacion/bioingenieria",
+        #     "/investigacion/areas-de-investigacion/bioprinting",
+        #     "/investigacion/areas-de-investigacion/comunicaciones",
+        #     "/investigacion/areas-de-investigacion/diseno-y-desarrollo-de-productos",
+        #     "/investigacion/areas-de-investigacion/electronica",
+        #     "/investigacion/areas-de-investigacion/energia",
+        #     "/investigacion/areas-de-investigacion/ensenanza",
+        #     "/investigacion/areas-de-investigacion/fluidos",
+        #     "/investigacion/areas-de-investigacion/geodesiageofisica",
+        #     "/investigacion/areas-de-investigacion/hidrodinamica-naval",
+        #     "/investigacion/areas-de-investigacion/hidrologiahidraulica",
+        #     "/investigacion/areas-de-investigacion/informatica",
+        #     "/investigacion/areas-de-investigacion/matematica-aplicada",
+        #     "/investigacion/areas-de-investigacion/materiales-y-estructuras-para-ingenieria-civil",
+        #     "/investigacion/areas-de-investigacion/materiales-y-nanotecnologia",
+        #     "/investigacion/areas-de-investigacion/mecanica-y-robotica",
+        #     "/investigacion/areas-de-investigacion/medicion-y-control",
+        #     "/investigacion/areas-de-investigacion/metodos-y-modelos-aplicados-a-la-gestion",
+        #     "/investigacion/areas-de-investigacion/optica-y-laser",
+        #     "/investigacion/areas-de-investigacion/procesos-quimicos",
+        #     "/investigacion/areas-de-investigacion/quimica",
+        #     "/investigacion/areas-de-investigacion/tecnologia-de-alimentos"
+        #   ]
+        # # ],
         ["/bienestar",
           [
             "/bienestar/articulacion-social",
@@ -351,7 +352,6 @@ defmodule Migracion_paneles_y_menues do
 
     elementos =
       [
-
         [ "/institucional",
           [
             "/institucional/sedes",
@@ -364,7 +364,7 @@ defmodule Migracion_paneles_y_menues do
             "/institucional/institutos-centros-y-escuelas",
             "/institucional/consulta-de-resoluciones",
             "/institucional/consulta-de-expedientes",
-            # "/institucional/videoteca",
+            "/institucional/videoteca",
             "/institucional/comunicacion-institucional",
             "/institucional/coleccion-biblioteca-ingenieria",
             "/institucional/ceremonial",
@@ -428,7 +428,7 @@ defmodule Migracion_paneles_y_menues do
           ]
         ],
         [
-          "posgrado/carreras-de-especializacion",
+          "/posgrado/carreras-de-especializacion",
           [
             "/posgrado/carreras-de-especializacion",
             "/posgrado/carreras-de-especializacion/automatizacion-industrial",
@@ -453,21 +453,21 @@ defmodule Migracion_paneles_y_menues do
             "/posgrado/carreras-de-especializacion/tecnologias-urbanas-sostenibles",
           ]
         ],
-        [
-          "/investigacion",
-          [
-            "/investigacion/mision",
-            "/investigacion/areas-de-investigacion",
-            "/investigacion/relaciones-internacionales",
-            "/investigacion/doctorado",
-            "/investigacion/becas",
-            "/investigacion/maestrias",
-            "/investigacion/para-investigadores",
-            "/investigacion/subsidios",
-            "/investigacion/boletin-digital",
-            "/investigacion/doctorado"
-          ]
-        ],
+        # [
+        #   "/investigacion",
+        #   [
+        #     "/investigacion/mision",
+        #     "/investigacion/areas-de-investigacion",
+        #     "/investigacion/relaciones-internacionales",
+        #     "/investigacion/doctorado",
+        #     "/investigacion/becas",
+        #     "/investigacion/maestrias",
+        #     "/investigacion/para-investigadores",
+        #     "/investigacion/subsidios",
+        #     "/investigacion/boletin-digital",
+        #     "/investigacion/doctorado"
+        #   ]
+        # ],
         [
           "/bienestar",
           [
@@ -494,7 +494,8 @@ defmodule Migracion_paneles_y_menues do
             "/extranjeros/english-website/doctorate"
           ]
         ],
-        [ "/biblioteca",
+        [
+          "/biblioteca",
           [
             "/biblioteca/novedades",
             "/biblioteca/donaciones",
@@ -505,21 +506,7 @@ defmodule Migracion_paneles_y_menues do
             "/biblioteca/buzon-de-sugerencias",
             "/biblioteca/consulte-al-bibliotecario"
           ]
-        ],
-        # [
-        #  "/transparencia",
-        #   [
-        #    "/transparencia/biblioteca",
-        #    "/transparencia/bolsa-de-trabajo",
-        #    "/institucional/secretarias/secretaria-administrativa/direccion-general-de-recursos-fisicos-y-financieros/direccion-de-compras-y-contrataciones",
-        #    "/bienestar/derechos-humanos",
-        #    "/noticias",
-        #    "/prensa",
-        #    "/institucional/secretarias/secretaria-de-relaciones-institucionales/convenios-y-trabajos-a-terceros",
-        #    "/grado/visitas-guiadas",
-        #    "/transparencia"
-        #   ]
-        # ]
+        ]
       ]
 
     Enum.map(
