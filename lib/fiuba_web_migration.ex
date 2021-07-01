@@ -8,20 +8,20 @@ defmodule FiubaWebMigration do
   def migration() do
 
     # portada_noticias = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada_noticias.jpg")
-    # noticias(portada_noticias)
+    noticias()
 
-    portada_paginas = 42 #cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_institucional_dcdabf29f7.png", "portada_paginas.jpg")
+    # portada_paginas = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_institucional_dcdabf29f7.png", "portada_paginas.jpg")
     nodos_raices = carga_nodos_raices()
 
     Enum.map(
       nodos_raices,
       fn nodo_raiz ->
-        procesar_nodo_raiz(nodo_raiz, portada_paginas)
+        procesar_nodo_raiz(nodo_raiz )#, portada_paginas)
       end
     )
 
-    # paneles()
-    # menues_laterales()
+    paneles()
+    menues_laterales()
 
   end
 end
