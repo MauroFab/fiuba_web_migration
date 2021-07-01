@@ -1,6 +1,7 @@
 defmodule Migracion_noticias do
 
   alias FiubaWebMigration.Repo
+  import HTTPoison.Retry
   import Utils
 
 
@@ -14,8 +15,7 @@ defmodule Migracion_noticias do
       FROM node
       INNER JOIN field_data_body ON  node.nid = field_data_body.entity_id
       LEFT JOIN field_data_field_date ON node.nid = field_data_field_date.entity_id
-      WHERE node.type = 'article' AND node.status = 1
-      ORDER BY field_data_field_date.field_date_value DESC;"
+      WHERE node.type = 'article' AND node.status = 1;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
@@ -31,7 +31,7 @@ defmodule Migracion_noticias do
   end
 
 
-  def noticias(id_imagen_portada) do
+  def noticias(id_imagen_portada \\ nil) do
 
     noticias = cargar_noticias()
 
@@ -45,20 +45,19 @@ defmodule Migracion_noticias do
         imagenes_id = Enum.map(
           url_imgs,
           fn elemento ->
-
             url_img = elemento |> Enum.at(0) |> String.replace(" ","%20")
             cargar_imagen(url_img,url_noticia)
           end
           )
 
+        texto = noticia |> Enum.at(3) |> parcer()
+
         noticia_body = %{
           "seo_url" => url_noticia,
           "titulo" => noticia |> Enum.at(1),
           "fecha_publicacion" => noticia |> Enum.at(2) |> fecha_format(),
-          "cuerpo" => HtmlSanitizeEx.strip_tags(Enum.at(noticia, 3)),
-          "bajada" =>
-            (noticia |> Enum.at(3) |> HtmlSanitizeEx.strip_tags() |> String.slice(0, 265)) <>
-              "...",
+          "cuerpo" => texto,
+          "bajada" => ( texto |> String.slice(0, 265)) <> "...",
           "portada" => %{
             "id" => id_imagen_portada
           },
@@ -75,6 +74,12 @@ defmodule Migracion_noticias do
           JSON.encode!(noticia_body),
           [{"Content-type", "application/json"}]
         )
+        |> HTTPoison.Retry.autoretry(
+        max_attempts: 3,
+        wait: 10000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
       end
     )
   end
