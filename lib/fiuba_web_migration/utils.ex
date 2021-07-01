@@ -31,7 +31,6 @@ defmodule Utils do
         menu_links.plid = 0 AND
         menu_links.router_path = 'node/%' AND
         menu_links.mlid > 900 AND
-        menu_links.link_title = 'Institucional' AND
         menu_links.link_title != 'Noticias';"
 
     {:ok, respuesta} = Repo.query(query_sql)
@@ -237,9 +236,7 @@ defmodule Utils do
     menu_links.link_path AS Link_path,
     menu_links.has_children AS tiene_hijos
     FROM menu_links
-    WHERE menu_links.plid = " <>
-        to_string(plid) <> "
-    AND menu_links.hidden = 0
+    WHERE menu_links.plid = " <> to_string(plid) <> "
     AND menu_links.link_title != 'Video'
     AND menu_links.link_path != 'node/1406'
     AND menu_links.link_path != 'departamento/32/novedades'
@@ -327,7 +324,7 @@ defmodule Utils do
     id_navegacion
   end
 
-  def procesar_nodo_raiz(nodo_raiz, id_portada_paginas) do
+  def procesar_nodo_raiz(nodo_raiz, id_portada_paginas\\nil) do
     nombre_pagina = nodo_raiz |> Enum.at(0)
     nodo = nodo_raiz |> Enum.at(1) |> cargar_nodo() |> Enum.at(0)
     hijos = nodo_raiz |> Enum.at(2) |> cargar_hijos()
