@@ -7,8 +7,8 @@ defmodule FiubaWebMigration do
 
   def migration() do
 
-    # portada_noticias = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada_noticias.jpg")
-    # noticias()
+    id_portada_noticias = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada_noticias.jpg")
+    noticias(id_portada_noticias)
 
     id_portada_bienestar = subir_imagen("public/imagenes_portadas_bienestar.png")
     id_portada_posgrado = subir_imagen("public/imagenes_portadas_posgrado.png")
@@ -26,7 +26,7 @@ defmodule FiubaWebMigration do
       ["Investigación", "node/452" ,1161, id_portada_investigacion],
       ["Bienestar", "node/453", 1162, id_portada_bienestar],
       ["Institucional", "node/514", 1225, id_portada_institucional],
-      ["Ingresantes", "node/744", 1599], id_portada_institucional,
+      ["Ingresantes", "node/744", 1599, id_portada_institucional],
       ["Estudiantes", "node/745", 1600, id_portada_institucional],
       ["Extranjeros", "node/747", 1602, id_portada_institucional],
       ["Nodocentes", "node/749", 1604, id_portada_institucional],
