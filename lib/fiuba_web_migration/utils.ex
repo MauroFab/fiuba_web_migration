@@ -6,36 +6,73 @@ defmodule Utils do
   import HTTPoison.Retry
   import Migracion_Archivos
 
-  def carga_nodos_raices() do
-    # Docentes
-    # Prensa
-    # Biblioteca
-    # Grado
-    # Posgrado
-    # Investigación
-    # Bienestar
-    # Institucional
-    # Ingresantes
-    # Estudiantes
-    # Extranjeros
-    # Nodocentes
-    # Transparencia
-    # Graduados
+  # def carga_nodos_raices() do
+  #   # Docentes
+  #   # Prensa
+  #   # Biblioteca
+  #   # Grado
+  #   # Posgrado
+  #   # Investigación
+  #   # Bienestar
+  #   # Institucional
+  #   # Ingresantes
+  #   # Estudiantes
+  #   # Extranjeros
+  #   # Nodocentes
+  #   # Transparencia
+  #   # Graduados
 
-    query_sql = "SELECT
-        menu_links.link_title AS TITULO,
-        menu_links.link_path AS PATH,
-        menu_links.mlid AS MLID
-      FROM menu_links
-      WHERE
-        menu_links.plid = 0 AND
-        menu_links.router_path = 'node/%' AND
-        menu_links.mlid > 900 AND
-        menu_links.link_title != 'Noticias';"
+  #   query_sql = "SELECT
+  #       menu_links.link_title AS TITULO,
+  #       menu_links.link_path AS PATH,
+  #       menu_links.mlid AS MLID
+  #     FROM menu_links
+  #     WHERE
+  #       menu_links.plid = 0 AND
+  #       menu_links.router_path = 'node/%' AND
+  #       menu_links.mlid > 900 AND
+  #       menu_links.link_title != 'Noticias';"
 
-    {:ok, respuesta} = Repo.query(query_sql)
-    respuesta.rows
+  #   {:ok, respuesta} = Repo.query(query_sql)
+  #   respuesta.rows
+  # end
+
+
+  def subir_imagen(path) do
+
+    {:ok, file} = File.read(path)
+    nombre_file = path |> String.split("/", trim: :true) |> List.last()
+
+    headers = [{"Content-Type", "multipart/form-data"}]
+    options = [ssl: [{:versions, [:"tlsv1.2"]}], recv_timeout: 20000]
+
+    {:ok, response_imagen} =
+      HTTPoison.request(
+        :post,
+        "https://testing.cms.fiuba.lambdaclass.com/upload",
+        {:multipart,
+         [
+           {"file", file, {"form-data", [name: "files", filename: nombre_file]},
+            [{"Content-Type", "image/png"}]},
+           {"type", "image/png"}
+         ]},
+        headers,
+        options
+      )
+      |> HTTPoison.Retry.autoretry(
+        max_attempts: 20,
+        wait: 20000,
+        include_404s: false,
+        retry_unknown_errors: false
+      )
+
+    response_body = response_imagen.body
+    {:ok, response_body_map} = JSON.decode(response_body)
+    {:ok, id_imagen} = Map.fetch(response_body_map |> Enum.at(0), "id")
+
+    id_imagen
   end
+
 
   def cargar_imagen(url_imagen, nombre_imagen) do
     {:ok, result} =
@@ -101,7 +138,7 @@ defmodule Utils do
 
     pagina = %{
       "nombre" => nombre_pagina,
-      # "portada" => id_imagen_portada,
+      "portada" => id_imagen_portada,
       "menu_lateral" => id_menu_lateral,
       "componentes" => [
         %{
