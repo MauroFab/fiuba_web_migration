@@ -7,7 +7,7 @@ defmodule FiubaWebMigration do
 
   def migration() do
 
-    id_portada_noticias = cargar_imagen("https://testing.cms.fiuba.lambdaclass.com/uploads/Imagenes_noticia_LH_2_da25e81fa7.png","portada_noticias.jpg")
+    id_portada_noticias = subir_imagen("public/imagenes_portadas_noticias.png")
     noticias(id_portada_noticias)
 
     id_portada_bienestar = subir_imagen("public/imagenes_portadas_bienestar.png")

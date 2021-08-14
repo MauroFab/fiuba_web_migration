@@ -6,7 +6,7 @@ defmodule Migracion_Limpieza do
   import HTTPoison.Retry
 
   def limpiar_coleccion(url_coleccion, limit \\ "-1") do
-    url_base = "https://testing.cms.fiuba.lambdaclass.com"
+    url_base = "https://webtest.cms.fi.uba.ar"
     url = url_base <> url_coleccion <> "/?_limit=" <> limit
 
     # :timer.sleep(300)

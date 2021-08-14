@@ -70,7 +70,7 @@ defmodule Migracion_noticias do
         }
 
         HTTPoison.post!(
-          "https://testing.cms.fiuba.lambdaclass.com/noticias",
+          "https://webtest.cms.fi.uba.ar/noticias",
           JSON.encode!(noticia_body),
           [{"Content-type", "application/json"}]
         )

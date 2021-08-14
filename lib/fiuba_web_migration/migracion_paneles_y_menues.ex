@@ -10,7 +10,7 @@ defmodule Migracion_paneles_y_menues do
 
   def traer_id_pagina(navegacion_seo_url) do
 
-    response_pagina = HTTPoison.get!("https://testing.cms.fiuba.lambdaclass.com/navegacion?seo_url=" <> navegacion_seo_url)
+    response_pagina = HTTPoison.get!("https://webtest.cms.fi.uba.ar/navegacion?seo_url=" <> navegacion_seo_url)
 
     |> HTTPoison.Retry.autoretry(
         max_attempts: 20,
@@ -32,7 +32,7 @@ defmodule Migracion_paneles_y_menues do
 
   def traer_id_navegacion(navegacion_seo_url) do
 
-    response_pagina = HTTPoison.get!("https://testing.cms.fiuba.lambdaclass.com/navegacion?seo_url=" <> navegacion_seo_url)
+    response_pagina = HTTPoison.get!("https://webtest.cms.fi.uba.ar/navegacion?seo_url=" <> navegacion_seo_url)
 
     response_body = response_pagina.body
     {:ok, response_body_map} = JSON.decode(response_body)
@@ -61,7 +61,7 @@ defmodule Migracion_paneles_y_menues do
     }
 
     HTTPoison.put!(
-      "https://testing.cms.fiuba.lambdaclass.com/paginas/" <> to_string(id_pagina),
+      "https://webtest.cms.fi.uba.ar/paginas/" <> to_string(id_pagina),
       JSON.encode!(pagina_actualizaciones),
       [{"Content-type", "application/json"}]
     )
@@ -77,7 +77,7 @@ defmodule Migracion_paneles_y_menues do
 
   def traer_id_menu_lateral(navegacion_seo_url) do
 
-    response_pagina = HTTPoison.get!("https://testing.cms.fiuba.lambdaclass.com/navegacion?seo_url=" <> navegacion_seo_url)
+    response_pagina = HTTPoison.get!("https://webtest.cms.fi.uba.ar/navegacion?seo_url=" <> navegacion_seo_url)
 
     response_body = response_pagina.body
     {:ok, response_body_map} = JSON.decode(response_body)

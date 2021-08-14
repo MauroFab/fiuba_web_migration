@@ -49,7 +49,7 @@ defmodule Utils do
     {:ok, response_imagen} =
       HTTPoison.request(
         :post,
-        "https://testing.cms.fiuba.lambdaclass.com/upload",
+        "https://webtest.cms.fi.uba.ar/upload",
         {:multipart,
          [
            {"file", file, {"form-data", [name: "files", filename: nombre_file]},
@@ -91,7 +91,7 @@ defmodule Utils do
     {:ok, response_imagen} =
       HTTPoison.request(
         :post,
-        "https://testing.cms.fiuba.lambdaclass.com/upload",
+        "https://webtest.cms.fi.uba.ar/upload",
         {:multipart,
          [
            {"file", imagen, {"form-data", [name: "files", filename: nombre_imagen <> ".jpg"]},
@@ -155,7 +155,7 @@ defmodule Utils do
 
     response_pagina =
       HTTPoison.post!(
-        "https://testing.cms.fiuba.lambdaclass.com/paginas",
+        "https://webtest.cms.fi.uba.ar/paginas",
         JSON.encode!(pagina),
         [{"Content-type", "application/json"}]
       )
@@ -198,7 +198,7 @@ defmodule Utils do
 
     response_navegacion =
       HTTPoison.post!(
-        "https://testing.cms.fiuba.lambdaclass.com/navegacion",
+        "https://webtest.cms.fi.uba.ar/navegacion",
         JSON.encode!(vinculo),
         [{"Content-type", "application/json"}]
       )
@@ -225,7 +225,7 @@ defmodule Utils do
 
     response_menu_laterals =
       HTTPoison.post!(
-        "https://testing.cms.fiuba.lambdaclass.com/menu-laterals",
+        "https://webtest.cms.fi.uba.ar/menu-laterals",
         JSON.encode!(menu_lateral),
         [{"Content-type", "application/json"}]
       )
@@ -257,7 +257,7 @@ defmodule Utils do
     menu_lateral = %{"links" => links}
 
     HTTPoison.put!(
-      "https://testing.cms.fiuba.lambdaclass.com/menu-laterals/" <> to_string(id_menu_lateral),
+      "https://webtest.cms.fi.uba.ar/menu-laterals/" <> to_string(id_menu_lateral),
       JSON.encode!(menu_lateral),
       [{"Content-type", "application/json"}]
     )
@@ -438,7 +438,7 @@ defmodule Utils do
 
     extension = link |> String.split(".") |> List.last()
 
-    url_strapi = "https://testing.cms.fiuba.lambdaclass.com"
+    url_strapi = "https://webtest.cms.fi.uba.ar"
 
     link =
       if String.match?(link, ~r/.[.](pdf|xml|doc|docx|xls)\Z/) do
@@ -463,7 +463,7 @@ defmodule Utils do
   end
 
   def formatear_negrita(linea) do
-    String.replace(linea, ["<strong>", "</strong>"], "**")
+    String.replace(linea, ["<strong>", "</strong>", ~s{ </strong>}], "**")
   end
 
   def adaptar_linea(linea_sucia) do

@@ -83,7 +83,7 @@ defmodule Migracion_Archivos do
             {:ok, response} =
               HTTPoison.request(
                 :post,
-                "https://testing.cms.fiuba.lambdaclass.com/upload",
+                "https://webtest.cms.fi.uba.ar/upload",
                 {:multipart,
                  [
                    {"file", archivo, {"form-data", [name: "files", filename: titulo_archivo]},
