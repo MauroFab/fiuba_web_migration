@@ -463,7 +463,7 @@ defmodule Utils do
   end
 
   def formatear_negrita(linea) do
-    String.replace(linea, ["<strong>", "</strong>", ~s{ </strong>}], "**")
+    String.replace(linea, ~r/\s*<\/?strong>\s*/, "**")
   end
 
   def adaptar_linea(linea_sucia) do
