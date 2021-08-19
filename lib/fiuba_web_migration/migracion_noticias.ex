@@ -15,7 +15,8 @@ defmodule Migracion_noticias do
       FROM node
       INNER JOIN field_data_body ON  node.nid = field_data_body.entity_id
       LEFT JOIN field_data_field_date ON node.nid = field_data_field_date.entity_id
-      WHERE node.type = 'article' AND node.status = 1;"
+      WHERE node.type = 'article' AND node.status = 1
+      ORDER BY node.nid DESC;"
 
     {:ok, respuesta} = Repo.query(query_sql)
     respuesta.rows
